@@ -1,4 +1,4 @@
-package io.github.springstudent;
+package io.github.springstudent.dekstop.common;
 
 public class Main {
     public static void main(String[] args) {
