@@ -2,6 +2,8 @@ package io.github.springstudent.dekstop.client;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -18,10 +20,13 @@ public class RemoteScreen implements Reconfigureable{
 
     private String screenName;
 
-    public RemoteScreen(String screenName){
+    private RemoteClient remoteClient;
+
+    public RemoteScreen(String screenName,RemoteClient remoteClient){
         // 创建主窗口
         this.jFrame = new JFrame("远程桌面");
-        this.screenName = String.format("%s的远程桌面",screenName);
+        this.screenName = String.format("%s的桌面",screenName);
+        this.remoteClient = remoteClient;
         initFrame();
         initPannel();
     }
@@ -62,10 +67,16 @@ public class RemoteScreen implements Reconfigureable{
     }
 
     private void initFrame() {
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         jFrame.setSize(800, 600);
         jFrame.setLayout(new BorderLayout());
         jFrame.setLocationRelativeTo(null);
+        jFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                RemoteScreen.this.remoteClient.closeRemoteScreen();
+            }
+        });
     }
 
     public void launch(){

@@ -11,20 +11,49 @@ public class RemoteClient extends RemoteFrame {
     private RemoteScreen screen;
 
     public RemoteClient(){
-        connect();
+        //TODO 连接至远程服务器
+        connectServer();
         setDeviceCode("abcdefg");
         setPassword("aoeiue");
     }
 
     @Override
-    protected void launchRemoteScreen(String remoteName) {
-        this.screen = new RemoteScreen(remoteName);
+    protected void openRemoteScreen(String remoteName) {
+        this.screen = new RemoteScreen(remoteName,this);
+        controll = new RemoteController();
+        openSession();
         screen.launch();
     }
 
-    private void connect(){
+    @Override
+    protected void closeRemoteScreen() {
+        if(isController){
+            super.closeRemoteScreen();
+        }
+        closeSession();
+    }
+
+    /**
+     * 连接至server
+     */
+    private void connectServer(){
 
     }
+
+    /**
+     * 关闭会话
+     */
+    private void closeSession(){
+
+    }
+
+    /**
+     * 打开会话
+     */
+    private void openSession(){
+
+    }
+
 
     public static void main(String[] args) {
         new RemoteClient();

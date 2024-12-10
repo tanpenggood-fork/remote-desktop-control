@@ -15,10 +15,59 @@
     </modules>
 
     <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
+        <fastjson.version>1.2.28</fastjson.version>
+        <mysql.connector.version>8.0.16</mysql.connector.version>
+        <druid.version>1.1.23</druid.version>
+        <lombok.version>1.18.20</lombok.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!-- spring -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--module-->
+            <dependency>
+                <groupId>io.github.springstudent</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <!--tools-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.4.1</version>
+            </dependency>
+            <!-- JDBC -->
+            <dependency>
+                <groupId>io.github.springstudent</groupId>
+                <artifactId>GyJdbc</artifactId>
+                <version>1.4.1.RELEASE</version>
+            </dependency>
+            <!--fast json-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.45.Final</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

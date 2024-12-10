@@ -20,7 +20,7 @@ public abstract class RemoteFrame extends JFrame {
 
     protected Boolean isController;
 
-    public RemoteFrame(){
+    public RemoteFrame() {
         super("远程桌面控制");
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(600, 400);
@@ -67,9 +67,9 @@ public abstract class RemoteFrame extends JFrame {
         gbc.gridx = 2;
         this.connectButton = new JButton("连接");
         this.connectButton.addActionListener(e -> {
-            this.isController = true;
+            openRemoteScreen(remoteDeviceField.getText());
             connectButton.setText("断开");
-            launchRemoteScreen(remoteDeviceField.getText());
+            this.isController = true;
         });
         bottomPanel.add(connectButton, gbc);
         mainPanel.add(topPanel);
@@ -80,13 +80,18 @@ public abstract class RemoteFrame extends JFrame {
         super.setVisible(true);
     }
 
-    protected abstract void launchRemoteScreen(String remoteName);
+    protected abstract void openRemoteScreen(String remoteName);
 
-    protected final void setDeviceCode(String deviceCode){
+    protected void closeRemoteScreen() {
+        this.connectButton.setText("连接");
+        this.isController = false;
+    }
+
+    protected final void setDeviceCode(String deviceCode) {
         this.deviceCodeField.setText(deviceCode);
     }
 
-    protected final void setPassword(String password){
+    protected final void setPassword(String password) {
         this.passwordField.setText(password);
     }
 }
