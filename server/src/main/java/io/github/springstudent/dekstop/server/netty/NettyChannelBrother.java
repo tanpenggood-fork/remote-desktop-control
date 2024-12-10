@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
  * @author ZhouNing
  * @date 2024/12/10 14:15
  **/
-public class ChannelBrother {
+public class NettyChannelBrother {
     /**
      * 控制端
      */
@@ -16,7 +16,7 @@ public class ChannelBrother {
      */
     private Channel controlled;
 
-    public ChannelBrother(Channel controller, Channel controlled) {
+    public NettyChannelBrother(Channel controller, Channel controlled) {
         this.controller = controller;
         this.controlled = controlled;
     }

@@ -15,10 +15,7 @@ public abstract class RemoteFrame extends JFrame {
     private JTextField deviceCodeField;
     private JTextField passwordField;
     private JTextField remoteDeviceField;
-
     private JButton connectButton;
-    protected Boolean isController;
-
 
     public RemoteFrame() {
         /**
@@ -36,7 +33,7 @@ public abstract class RemoteFrame extends JFrame {
         titleBar.setBorder(new EmptyBorder(5, 10, 5, 10));
         titleBar.setBackground(Color.WHITE);
         titleLabel = new JLabel();
-        titleLabel.setText("<html>远程桌面控制<span style='color:#ffdc15;'>（准备中）</span></html>");
+        titleLabel.setText("<html>远程桌面控制<span style='color:red;'>（连接中）</span></html>");
         titleLabel.setForeground(Color.black);
         titleBar.add(titleLabel, BorderLayout.WEST);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -126,9 +123,11 @@ public abstract class RemoteFrame extends JFrame {
         gbc.gridx = 2;
         this.connectButton = new JButton("连接");
         this.connectButton.addActionListener(e -> {
-            openRemoteScreen(remoteDeviceField.getText());
-            connectButton.setText("断开");
-            this.isController = true;
+            if(openRemoteScreen(remoteDeviceField.getText())){
+                connectButton.setText("断开");
+            }else{
+                JOptionPane.showMessageDialog(this, "请等待连接服务器成功！", "连接错误", JOptionPane.ERROR_MESSAGE);
+            }
         });
         bottomPanel.add(connectButton, gbc);
         mainPanel.add(topPanel);
@@ -153,11 +152,10 @@ public abstract class RemoteFrame extends JFrame {
     }
 
 
-    protected abstract void openRemoteScreen(String remoteName);
+    protected abstract boolean openRemoteScreen(String remoteName);
 
     protected void closeRemoteScreen() {
         this.connectButton.setText("连接");
-        this.isController = false;
     }
 
     protected final void setDeviceCode(String deviceCode) {

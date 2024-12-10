@@ -5,10 +5,6 @@ package io.github.springstudent.dekstop.common.bean;
  **/
 public class Constants {
     public static final byte COMMAND_HEARTBEAT = 0x00;
-
-
     public static final byte COMMAND_REQUEST_CAPTURE = 0x10;
-
-
     public static final byte COMMAND_RESPONSE_CLIENTINFO = 0x20;
 }

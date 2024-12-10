@@ -9,7 +9,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,13 +22,15 @@ public class RemoteClient extends RemoteFrame {
 
     private RemoteScreen screen;
 
+    private Boolean isController;
+
     private String serverIp;
 
     private Integer serverPort;
 
     private boolean connectStatus;
 
-    public RemoteClient(String serverIp,Integer serverPort) {
+    public RemoteClient(String serverIp, Integer serverPort) {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
         connectServer();
@@ -37,15 +38,15 @@ public class RemoteClient extends RemoteFrame {
 
 
     @Override
-    protected void openRemoteScreen(String remoteName) {
-        if(connectStatus){
-            openSession();
-            this.screen = new RemoteScreen(remoteName, this);
-            controll = new RemoteController();
+    protected boolean openRemoteScreen(String remoteName) {
+        if (connectStatus) {
+            isController = true;
+            screen = new RemoteScreen(remoteName, this);
             screen.launch();
-        }else{
-            JOptionPane.showMessageDialog(this, "请等待连接服务器成功！", "连接错误", JOptionPane.ERROR_MESSAGE);
+            openSession();
+            return true;
         }
+        return false;
 
     }
 
@@ -53,6 +54,7 @@ public class RemoteClient extends RemoteFrame {
     @Override
     protected void closeRemoteScreen() {
         if (isController) {
+            this.isController = false;
             super.closeRemoteScreen();
         }
         closeSession();
@@ -110,7 +112,7 @@ public class RemoteClient extends RemoteFrame {
 
 
     public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient("172.16.1.72",54321);
+        RemoteClient remoteClient = new RemoteClient("172.16.1.72", 54321);
     }
 
 }
