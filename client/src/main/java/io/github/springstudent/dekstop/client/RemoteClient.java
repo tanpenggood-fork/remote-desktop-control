@@ -28,6 +28,7 @@ public class RemoteClient extends RemoteFrame {
         setPassword("aoeiue");
     }
 
+
     @Override
     protected void openRemoteScreen(String remoteName) {
         openSession();
@@ -35,6 +36,7 @@ public class RemoteClient extends RemoteFrame {
         controll = new RemoteController();
         screen.launch();
     }
+
 
     @Override
     protected void closeRemoteScreen() {
@@ -60,18 +62,21 @@ public class RemoteClient extends RemoteFrame {
                     }
                 });
         //连接至远程客户端
-        connect(bootstrap, "172.16.1.72", 12345, 0);
+        connect(bootstrap, 0);
     }
 
-    private void connect(Bootstrap bootstrap, String host, int port, int retry) {
-        bootstrap.connect(host, port).addListener(future -> {
+    private void connect(Bootstrap bootstrap, int retry) {
+        bootstrap.connect(getServerIp(), getServerPort()).addListener(future -> {
             if (future.isSuccess()) {
                 logger.info("connect to remote server success");
+                RemoteClient.super.updateConnectionStatus(true);
             } else {
+                RemoteClient.super.updateConnectionStatus(false);
                 Integer order = retry + 1;
-                bootstrap.config().group().schedule(() -> connect(bootstrap, host, port, order), 5, TimeUnit
+                logger.info("reconnect to remote server serverIp={},serverPort={},retry times ={}", getServerIp(), getServerPort(), order);
+                bootstrap.config().group().schedule(() -> connect(bootstrap, order), 5, TimeUnit
                         .SECONDS);
-                logger.info("reconnect to remote server,retry times ={}", order);
+
             }
         });
     }
@@ -89,6 +94,7 @@ public class RemoteClient extends RemoteFrame {
     private void openSession() {
 
     }
+
 
     public static void main(String[] args) {
         RemoteClient remoteClient = new RemoteClient();
