@@ -11,10 +11,6 @@ import java.awt.event.MouseEvent;
  * @date 2024/12/9 10:53
  **/
 public abstract class RemoteFrame extends JFrame {
-
-    private String serverIp = "172.16.1.72";
-    private String serverPort = "54321";
-
     private JLabel titleLabel;
     private JTextField deviceCodeField;
     private JTextField passwordField;
@@ -40,7 +36,7 @@ public abstract class RemoteFrame extends JFrame {
         titleBar.setBorder(new EmptyBorder(5, 10, 5, 10));
         titleBar.setBackground(Color.WHITE);
         titleLabel = new JLabel();
-        titleLabel.setText("<html>远程桌面控制—<span style='color:#ffdc15;'>准备中</span></html>");
+        titleLabel.setText("<html>远程桌面控制<span style='color:#ffdc15;'>（准备中）</span></html>");
         titleLabel.setForeground(Color.black);
         titleBar.add(titleLabel, BorderLayout.WEST);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -51,11 +47,7 @@ public abstract class RemoteFrame extends JFrame {
         // 关闭按钮
         JButton closeButton = createTitleBarButton("关闭(x)");
         closeButton.addActionListener(e -> System.exit(0));
-        // 设置按钮
-        JButton settingsButton = createTitleBarButton("设置(⚙)");
-        settingsButton.addActionListener(e -> openSettingsDialog());
         // 添加按钮到按钮区域
-        buttonPanel.add(settingsButton);
         buttonPanel.add(minimizeButton);
         buttonPanel.add(closeButton);
         // 添加按钮区域到标题栏
@@ -160,51 +152,6 @@ public abstract class RemoteFrame extends JFrame {
         return button;
     }
 
-    /**
-     * 显示设置对话框
-     */
-    private void openSettingsDialog() {
-        JDialog settingsDialog = new JDialog(this, "设置", true);
-        settingsDialog.setSize(300, 200);
-        settingsDialog.setLayout(new BorderLayout());
-        settingsDialog.setLocationRelativeTo(this);
-
-        JPanel contentPanel = new JPanel(new GridBagLayout());
-        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        contentPanel.add(new JLabel("服务器ip:"), gbc);
-        gbc.gridx = 1;
-        JTextField serverIpField = new JTextField(15);
-        serverIpField.setText(serverIp);
-        contentPanel.add(serverIpField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        contentPanel.add(new JLabel("服务器port:"), gbc);
-        gbc.gridx = 1;
-        JTextField serverPortField = new JTextField(15);
-        serverPortField.setText(serverPort);
-        contentPanel.add(serverPortField, gbc);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton confirmButton = new JButton("确定");
-        confirmButton.addActionListener(e -> {
-            this.serverIp = serverIpField.getText();
-            this.serverPort = serverPortField.getText();
-            settingsDialog.dispose();
-        });
-        buttonPanel.add(confirmButton);
-
-        settingsDialog.add(contentPanel, BorderLayout.CENTER);
-        settingsDialog.add(buttonPanel, BorderLayout.SOUTH);
-        settingsDialog.setVisible(true);
-    }
-
 
     protected abstract void openRemoteScreen(String remoteName);
 
@@ -223,18 +170,10 @@ public abstract class RemoteFrame extends JFrame {
 
     protected final void updateConnectionStatus(boolean connected) {
         if (connected) {
-            titleLabel.setText("<html>远程桌面控制—<span style='color:blue;'>已就绪</span></html>");
+            titleLabel.setText("<html>远程桌面控制<span style='color:blue;'>（已就绪）</span></html>");
         } else {
-            titleLabel.setText("<html>远程桌面控制—<span style='color:red;'>连接中</span></html>");
+            titleLabel.setText("<html>远程桌面控制<span style='color:red;'>（连接中）</span></html>");
         }
     }
 
-
-    public String getServerIp() {
-        return serverIp;
-    }
-
-    public Integer getServerPort() {
-        return Integer.parseInt(serverPort);
-    }
 }

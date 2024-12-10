@@ -22,10 +22,16 @@ public class RemoteClient extends RemoteFrame {
 
     private RemoteScreen screen;
 
-    public RemoteClient() {
+    private String serverIp;
+
+    private Integer serverPort;
+
+    private boolean connectStatus;
+
+    public RemoteClient(String serverIp,Integer serverPort) {
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
         connectServer();
-        setDeviceCode("abcdefg");
-        setPassword("aoeiue");
     }
 
 
@@ -66,17 +72,18 @@ public class RemoteClient extends RemoteFrame {
     }
 
     private void connect(Bootstrap bootstrap, int retry) {
-        bootstrap.connect(getServerIp(), getServerPort()).addListener(future -> {
+        bootstrap.connect(serverIp, serverPort).addListener(future -> {
             if (future.isSuccess()) {
                 logger.info("connect to remote server success");
+                this.connectStatus = true;
                 RemoteClient.super.updateConnectionStatus(true);
             } else {
+                this.connectStatus = false;
                 RemoteClient.super.updateConnectionStatus(false);
                 Integer order = retry + 1;
-                logger.info("reconnect to remote server serverIp={},serverPort={},retry times ={}", getServerIp(), getServerPort(), order);
+                logger.info("reconnect to remote server serverIp={},serverPort={},retry times ={}", serverIp, serverPort, order);
                 bootstrap.config().group().schedule(() -> connect(bootstrap, order), 5, TimeUnit
                         .SECONDS);
-
             }
         });
     }
@@ -97,7 +104,7 @@ public class RemoteClient extends RemoteFrame {
 
 
     public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient();
+        RemoteClient remoteClient = new RemoteClient("172.16.1.72",54321);
     }
 
 }
