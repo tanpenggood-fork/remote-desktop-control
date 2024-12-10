@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  * @author ZhouNing
  * @date 2024/12/9 8:42
  **/
-public class RemoteScreen implements Reconfigureable{
+public class RemoteScreen {
     private BufferedImage image;
 
     private JFrame jFrame;

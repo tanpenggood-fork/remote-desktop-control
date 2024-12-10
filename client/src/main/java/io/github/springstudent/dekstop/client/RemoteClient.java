@@ -30,9 +30,9 @@ public class RemoteClient extends RemoteFrame {
 
     @Override
     protected void openRemoteScreen(String remoteName) {
+        openSession();
         this.screen = new RemoteScreen(remoteName, this);
         controll = new RemoteController();
-        openSession();
         screen.launch();
     }
 
