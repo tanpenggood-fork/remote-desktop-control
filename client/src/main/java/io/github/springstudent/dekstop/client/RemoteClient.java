@@ -9,6 +9,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,10 +38,15 @@ public class RemoteClient extends RemoteFrame {
 
     @Override
     protected void openRemoteScreen(String remoteName) {
-        openSession();
-        this.screen = new RemoteScreen(remoteName, this);
-        controll = new RemoteController();
-        screen.launch();
+        if(connectStatus){
+            openSession();
+            this.screen = new RemoteScreen(remoteName, this);
+            controll = new RemoteController();
+            screen.launch();
+        }else{
+            JOptionPane.showMessageDialog(this, "请等待连接服务器成功！", "连接错误", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
 
