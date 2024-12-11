@@ -5,5 +5,6 @@ package io.github.springstudent.dekstop.client;
  * @author ZhouNing
  * @date 2024/12/9 8:40
  **/
-public class RemoteControlled implements RemoteControll {
+public interface RemoteControlled extends RemoteControll {
+
 }

@@ -158,15 +158,12 @@ public abstract class RemoteFrame extends JFrame {
         this.connectButton.setText("连接");
     }
 
-    protected final void setDeviceCode(String deviceCode) {
+    public final void setDeviceCodeAndPassword(String deviceCode,String password) {
         this.deviceCodeField.setText(deviceCode);
-    }
-
-    protected final void setPassword(String password) {
         this.passwordField.setText(password);
     }
 
-    protected final void updateConnectionStatus(boolean connected) {
+    public final void updateConnectionStatus(boolean connected) {
         if (connected) {
             titleLabel.setText("<html>远程桌面控制<span style='color:blue;'>（已就绪）</span></html>");
         } else {

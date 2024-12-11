@@ -11,10 +11,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  **/
 @SpringBootApplication
 @EnableScheduling
-public class DesktopServerStarter {
+public class RemoteServer {
 
     public static void main(String[] args) {
-        SpringApplication.run(DesktopServerStarter.class, args);
+        SpringApplication.run(RemoteServer.class, args);
     }
 
 }

@@ -1,6 +1,8 @@
 package io.github.springstudent.dekstop.server.netty;
 
 import cn.hutool.core.thread.NamedThreadFactory;
+import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
+import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -49,6 +51,7 @@ public class NettyServer implements InitializingBean, DisposableBean {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(new NettyDecoder());
                         socketChannel.pipeline().addLast(new NettyEncoder());
+                        socketChannel.pipeline().addLast(new NettyIdleStateHandler());
                         socketChannel.pipeline().addLast(new NettyServerHandler());
                     }
                 });

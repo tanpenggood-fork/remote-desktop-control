@@ -78,7 +78,7 @@
                 <version>2.3.4.RELEASE</version>
                 <!--这里写上main方法所在类的路径-->
                 <configuration>
-                    <mainClass>io.github.springstudent.dekstop.server.DesktopServerStarter</mainClass>
+                    <mainClass>io.github.springstudent.dekstop.server.RemoteServer</mainClass>
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
                 <executions>
