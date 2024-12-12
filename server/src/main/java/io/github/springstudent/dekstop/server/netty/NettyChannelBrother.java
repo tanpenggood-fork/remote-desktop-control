@@ -26,20 +26,11 @@ public class NettyChannelBrother {
         this.controlled = controlled;
     }
 
-    public boolean startControll() {
+    public void startControll() {
         NettyUtils.updateControllFlag(controller, Constants.CONTROLLER);
         NettyUtils.updateControllFlag(controlled, Constants.CONTROLLED);
-        AtomicBoolean result = new AtomicBoolean();
-        controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_)).addListener(future -> {
-            if (future.isDone()) {
-                controller.writeAndFlush(new CmdResCapture(CmdResCapture.START));
-                result.set(true);
-            } else {
-                controller.writeAndFlush(new CmdResCapture(CmdResCapture.FAIL));
-                result.set(false);
-            }
-        });
-        return result.get();
+        controller.writeAndFlush(new CmdResCapture(CmdResCapture.START));
+        controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_));
     }
 
     public void stopControll() {

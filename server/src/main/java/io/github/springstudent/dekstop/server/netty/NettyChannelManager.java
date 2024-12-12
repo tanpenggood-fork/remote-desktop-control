@@ -28,11 +28,11 @@ public class NettyChannelManager {
 
     public static void bindChannelBrother(Channel controller, Channel controlled) {
         NettyChannelBrother channelBrother = new NettyChannelBrother(controller, controlled);
-        if(channelBrother.startControll()){
-            channelBrotherMap.putIfAbsent(NettyUtils.getDeviceCode(controlled), channelBrother);
-        }
+        channelBrother.startControll();
+        channelBrotherMap.putIfAbsent(NettyUtils.getDeviceCode(controlled), channelBrother);
 
     }
+
     public static NettyChannelBrother unbindChannelBrother(Channel controller, Channel controlled) {
         NettyChannelBrother channelBrother = channelBrotherMap.get(NettyUtils.getDeviceCode(controlled));
         if (channelBrother != null) {
@@ -42,9 +42,9 @@ public class NettyChannelManager {
         return channelBrother;
     }
 
-    public static Channel getControllerChannel(Channel controlled){
+    public static Channel getControllerChannel(Channel controlled) {
         NettyChannelBrother channelBrother = channelBrotherMap.get(NettyUtils.getDeviceCode(controlled));
-        if(channelBrother!=null){
+        if (channelBrother != null) {
             return channelBrother.getController();
         }
         return null;
