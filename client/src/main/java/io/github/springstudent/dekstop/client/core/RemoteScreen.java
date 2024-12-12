@@ -55,7 +55,7 @@ public class RemoteScreen extends JFrame{
         //顶部菜单
         JPanel topPanel = new JPanel(new BorderLayout()); // 使用 BorderLayout
         topPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
-        JLabel titleLabel = new JLabel("遠程桌面画面", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("远程桌面画面", SwingConstants.CENTER);
         titleLabel.setFont(new Font("宋体", Font.BOLD, 12));
         topPanel.add(titleLabel, BorderLayout.NORTH);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
