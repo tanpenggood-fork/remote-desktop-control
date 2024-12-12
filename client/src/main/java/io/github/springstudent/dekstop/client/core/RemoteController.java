@@ -40,10 +40,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private int prevHeight = -1;
 
-    private RemoteScreen remoteScreen;
-
     public RemoteController(){
-        this.remoteScreen = RemoteClient.getRemoteClient().getRemoteScreen();
         deCompressorEngine = new DeCompressorEngine(this);
         start();
     }
@@ -89,6 +86,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onDeCompressed(Capture capture, int cacheHits, double compressionRatio) {
+        RemoteScreen remoteScreen = RemoteClient.getRemoteClient().getRemoteScreen();
         final AbstractMap.SimpleEntry<BufferedImage, byte[]> image;
         synchronized (prevBufferLOCK) {
             image = capture.createBufferedImage(prevBuffer, prevWidth, prevHeight);
@@ -113,6 +111,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private BufferedImage scaleImage(BufferedImage image, int width, int height) {
+        RemoteScreen remoteScreen = RemoteClient.getRemoteClient().getRemoteScreen();
         AffineTransform scaleTransform = AffineTransform.getScaleInstance(remoteScreen.getxFactor(), remoteScreen.getyFactor());
         try {
             AffineTransformOp bilinearScaleOp = new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);
