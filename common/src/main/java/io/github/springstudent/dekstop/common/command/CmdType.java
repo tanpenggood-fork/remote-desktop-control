@@ -7,5 +7,10 @@ public enum CmdType {
     ReqPing,
     ReqCapture,
     ResCliInfo,
-    ResPong;
+    ResCapture,
+    ResPong,
+
+    Capture,
+
+    CompressorConfig;
 }

@@ -9,6 +9,9 @@ import io.netty.util.AttributeKey;
  **/
 public class NettyUtils {
     private static final AttributeKey<String> ATTR_KEY_READER_TIME = AttributeKey.valueOf("readerTime");
+    private static final AttributeKey<String> ATTR_KEY_DEVICE_CODE = AttributeKey.valueOf("deviceCode");
+
+    private static final AttributeKey<String> ATTR_KEY_CONTROLL_FLAG = AttributeKey.valueOf("controllFlag");
 
     public static void updateReaderTime(Channel channel, Long time) {
         channel.attr(ATTR_KEY_READER_TIME).set(time.toString());
@@ -22,4 +25,20 @@ public class NettyUtils {
         return null;
     }
 
+    public static void updateDeviceCode(Channel channel,String deviceCode){
+        channel.attr(ATTR_KEY_DEVICE_CODE).set(deviceCode);
+    }
+
+    public static String getDeviceCode(Channel channel){
+        return channel.attr(ATTR_KEY_DEVICE_CODE).get();
+    }
+
+    public static void updateControllFlag(Channel channel,String controllFlag){
+        channel.attr(ATTR_KEY_CONTROLL_FLAG).set(controllFlag);
+    }
+
+    public static String getControllFlag(Channel channel){
+        return channel.attr(ATTR_KEY_CONTROLL_FLAG).get();
+    }
 }
+

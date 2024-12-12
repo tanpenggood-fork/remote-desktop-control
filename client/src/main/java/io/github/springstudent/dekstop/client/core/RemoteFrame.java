@@ -1,4 +1,4 @@
-package io.github.springstudent.dekstop.client;
+package io.github.springstudent.dekstop.client.core;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -123,11 +123,7 @@ public abstract class RemoteFrame extends JFrame {
         gbc.gridx = 2;
         this.connectButton = new JButton("连接");
         this.connectButton.addActionListener(e -> {
-            if(openRemoteScreen(remoteDeviceField.getText())){
-                connectButton.setText("断开");
-            }else{
-                JOptionPane.showMessageDialog(this, "请等待连接服务器成功！", "连接错误", JOptionPane.ERROR_MESSAGE);
-            }
+            openRemoteScreen(remoteDeviceField.getText());
         });
         bottomPanel.add(connectButton, gbc);
         mainPanel.add(topPanel);
@@ -137,6 +133,10 @@ public abstract class RemoteFrame extends JFrame {
         this.add(titleBar, BorderLayout.NORTH);
         this.add(mainPanel, BorderLayout.CENTER);
         this.setVisible(true);
+    }
+
+    public void showMessageDialog(Object msg,int messageType){
+        JOptionPane.showMessageDialog(this, msg, "提示", messageType);
     }
 
     /**
@@ -152,11 +152,9 @@ public abstract class RemoteFrame extends JFrame {
     }
 
 
-    protected abstract boolean openRemoteScreen(String remoteName);
+    public abstract void openRemoteScreen(String remoteName);
 
-    protected void closeRemoteScreen() {
-        this.connectButton.setText("连接");
-    }
+    public abstract void closeRemoteScreen();
 
     public final void setDeviceCodeAndPassword(String deviceCode,String password) {
         this.deviceCodeField.setText(deviceCode);

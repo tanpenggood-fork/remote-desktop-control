@@ -16,7 +16,7 @@ public class NettyEncoder extends MessageToByteEncoder {
         if (o instanceof Cmd) {
             Cmd cmd = (Cmd) o;
             Cmd.encodeMagicNumber(byteBuf);
-            Cmd.encodeCmdType(byteBuf, cmd.getType());
+            Cmd.encodeEnum(byteBuf, cmd.getType());
             Cmd.encodeWireSize(byteBuf, cmd.getWireSize());
             cmd.encode(byteBuf);
         }

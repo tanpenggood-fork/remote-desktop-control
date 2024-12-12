@@ -1,7 +1,12 @@
 package io.github.springstudent.dekstop.client;
 
+import io.github.springstudent.dekstop.client.core.RemoteControlled;
+import io.github.springstudent.dekstop.client.core.RemoteController;
+import io.github.springstudent.dekstop.client.core.RemoteFrame;
+import io.github.springstudent.dekstop.client.core.RemoteScreen;
 import io.github.springstudent.dekstop.client.netty.RemoteChannelHandler;
 import io.github.springstudent.dekstop.client.netty.RemoteStateIdleHandler;
+import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
@@ -13,18 +18,17 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author ZhouNing
  * @date 2024/12/6
  */
-public class RemoteClient extends RemoteFrame{
+public class RemoteClient extends RemoteFrame {
     private static RemoteClient remoteClient;
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteClient.class);
-
-    private Boolean isController;
 
     private String serverIp;
 
@@ -32,37 +36,41 @@ public class RemoteClient extends RemoteFrame{
 
     private boolean connectStatus;
 
-    private RemoteScreen screen;
+    private RemoteScreen remoteScreen;
+
+    private RemoteControlled controlled;
+
+    private RemoteController controller;
 
     public RemoteClient(String serverIp, Integer serverPort) {
         remoteClient = this;
         this.serverIp = serverIp;
         this.serverPort = serverPort;
-        connectServer();
+        this.controlled = new RemoteControlled();
+        this.controller = new RemoteController();
+        this.connectServer();
     }
 
 
     @Override
-    protected boolean openRemoteScreen(String remoteName) {
-        if (connectStatus) {
-            isController = true;
-            screen = new RemoteScreen(remoteName, this);
-            screen.launch();
-            openSession();
-            return true;
+    public void openRemoteScreen(String deviceCode) {
+        if (!connectStatus) {
+            showMessageDialog("请等待连接连接服务器成功", JOptionPane.ERROR_MESSAGE);
+        } else {
+            controller.openSession(deviceCode);
+            this.remoteScreen = new RemoteScreen(deviceCode, this);
         }
-        return false;
-
     }
 
 
     @Override
-    protected void closeRemoteScreen() {
-        if (isController) {
-            this.isController = false;
-            super.closeRemoteScreen();
-        }
-        closeSession();
+    public void closeRemoteScreen() {
+        controller.closeSession();
+        remoteScreen.close();
+    }
+
+    public RemoteScreen getRemoteScreen() {
+        return remoteScreen;
     }
 
     /**
@@ -102,18 +110,18 @@ public class RemoteClient extends RemoteFrame{
         });
     }
 
-    /**
-     * 关闭会话
-     */
-    private void closeSession() {
 
+    public RemoteController getController() {
+        return controller;
     }
 
-    /**
-     * 打开会话
-     */
-    private void openSession() {
+    public RemoteControlled getControlled() {
+        return controlled;
+    }
 
+    public void handleCmd(Cmd cmd) {
+        controller.handleCmd(cmd);
+        controlled.handleCmd(cmd);
     }
 
     public static RemoteClient getRemoteClient() {

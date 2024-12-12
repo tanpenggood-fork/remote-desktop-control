@@ -1,6 +1,5 @@
 package io.github.springstudent.dekstop.client.netty;
 
-import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.command.CmdReqPing;
 import io.netty.channel.ChannelFutureListener;

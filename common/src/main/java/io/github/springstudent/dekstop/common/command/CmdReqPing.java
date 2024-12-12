@@ -3,6 +3,7 @@ package io.github.springstudent.dekstop.common.command;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author ZhouNing
@@ -21,7 +22,7 @@ public class CmdReqPing extends Cmd{
 
     @Override
     public String toString() {
-        return CmdReqPing.class.getName();
+        return CmdReqPing.class.getSimpleName();
     }
 
     @Override

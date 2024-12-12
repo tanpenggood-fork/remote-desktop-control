@@ -39,7 +39,7 @@ public abstract class Cmd implements Serializable {
         }
     }
 
-    public static <T extends Enum<T>> void encodeCmdType(ByteBuf out, Enum<T> value) throws IOException {
+    public static <T extends Enum<T>> void encodeEnum(ByteBuf out, Enum<T> value) throws IOException {
         out.writeByte(value.ordinal());
     }
 
@@ -47,7 +47,7 @@ public abstract class Cmd implements Serializable {
         return in.readInt();
     }
 
-    public static <T extends Enum<T>> T decodeCmdType(ByteBuf in, Class<T> enumClass) throws IOException {
+    public static <T extends Enum<T>> T decodeEnum(ByteBuf in, Class<T> enumClass) throws IOException {
         final byte ordinal = in.readByte();
         final T[] xenums = enumClass.getEnumConstants();
         return Arrays.stream(xenums)

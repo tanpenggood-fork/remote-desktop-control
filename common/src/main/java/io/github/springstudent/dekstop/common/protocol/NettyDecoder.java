@@ -21,7 +21,7 @@ public class NettyDecoder extends ByteToMessageDecoder {
         }
         byteBuf.markReaderIndex();
         Cmd.decodeMagicNumber(byteBuf);
-        CmdType cmdType = Cmd.decodeCmdType(byteBuf, CmdType.class);
+        CmdType cmdType = Cmd.decodeEnum(byteBuf, CmdType.class);
         int wireSize = Cmd.decodeWireSize(byteBuf);
         if (byteBuf.readableBytes() < wireSize) {
             byteBuf.resetReaderIndex();
@@ -35,15 +35,19 @@ public class NettyDecoder extends ByteToMessageDecoder {
                 list.add(new CmdResPong());
                 break;
             case ReqCapture:
-
+                list.add(CmdReqCapture.decode(byteBuf));
+                break;
+            case ResCapture:
+                list.add(CmdResCapture.decode(byteBuf));
                 break;
             case ResCliInfo:
                 list.add(CmdResCliInfo.decode(byteBuf));
                 break;
+            case Capture:
+                list.add(CmdCapture.decode(byteBuf));
+                break;
             default:
                 throw new IllegalArgumentException(format("unknown cmdType=%s",cmdType));
         }
-
-
     }
 }

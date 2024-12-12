@@ -1,6 +1,11 @@
 package io.github.springstudent.dekstop.server.netty;
 
+import io.github.springstudent.dekstop.common.bean.Constants;
+import io.github.springstudent.dekstop.common.command.CmdResCapture;
+import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author ZhouNing
@@ -21,19 +26,27 @@ public class NettyChannelBrother {
         this.controlled = controlled;
     }
 
-    public Channel getController() {
-        return controller;
+    public boolean startControll() {
+        NettyUtils.updateControllFlag(controller, Constants.CONTROLLER);
+        NettyUtils.updateControllFlag(controlled, Constants.CONTROLLED);
+        AtomicBoolean result = new AtomicBoolean();
+        controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_)).addListener(future -> {
+            if (future.isDone()) {
+                controller.writeAndFlush(new CmdResCapture(CmdResCapture.START));
+                result.set(true);
+            } else {
+                controller.writeAndFlush(new CmdResCapture(CmdResCapture.FAIL));
+                result.set(false);
+            }
+        });
+        return result.get();
     }
 
-    public void setController(Channel controller) {
-        this.controller = controller;
+    public void stopControll() {
+        NettyUtils.updateControllFlag(controller, null);
+        NettyUtils.updateControllFlag(controlled, null);
+        controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
+        controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
     }
 
-    public Channel getControlled() {
-        return controlled;
-    }
-
-    public void setControlled(Channel controlled) {
-        this.controlled = controlled;
-    }
 }

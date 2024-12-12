@@ -1,8 +1,6 @@
 package io.github.springstudent.dekstop.common.command;
 
-
 import io.netty.buffer.ByteBuf;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -47,11 +45,11 @@ public class CmdResCliInfo extends Cmd {
         out.writeCharSequence(password, StandardCharsets.UTF_8);
     }
 
-    public static CmdResCliInfo decode(ByteBuf byteBuf) {
-        int deviceCodeLength = byteBuf.readInt();
-        String deviceCode = byteBuf.readCharSequence(deviceCodeLength, StandardCharsets.UTF_8).toString();
-        int passwordLength = byteBuf.readInt();
-        String password = byteBuf.readCharSequence(passwordLength, StandardCharsets.UTF_8).toString();
+    public static CmdResCliInfo decode(ByteBuf in) {
+        int deviceCodeLength = in.readInt();
+        String deviceCode = in.readCharSequence(deviceCodeLength, StandardCharsets.UTF_8).toString();
+        int passwordLength = in.readInt();
+        String password = in.readCharSequence(passwordLength, StandardCharsets.UTF_8).toString();
         return new CmdResCliInfo(deviceCode, password);
     }
 

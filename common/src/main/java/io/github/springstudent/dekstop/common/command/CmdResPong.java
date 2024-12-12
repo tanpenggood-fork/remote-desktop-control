@@ -21,7 +21,7 @@ public class CmdResPong extends Cmd{
 
     @Override
     public String toString() {
-        return CmdResPong.class.getName();
+        return CmdResPong.class.getSimpleName();
     }
 
     @Override
