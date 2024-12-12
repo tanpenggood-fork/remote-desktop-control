@@ -8,6 +8,7 @@ import io.github.springstudent.dekstop.client.compress.CompressorEngineListener;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.MemByteBuffer;
 import io.github.springstudent.dekstop.common.command.*;
+import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
 import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
 /**
  * 被控制方
@@ -23,6 +24,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
 
     public RemoteControlled() {
         captureEngine = new CaptureEngine(new RobotCaptureFactory(true));
+        captureEngine.configure(new CaptureEngineConfiguration());
         compressorEngine = new CompressorEngine();
         captureEngine.addListener(compressorEngine);
         compressorEngine.addListener(this);
