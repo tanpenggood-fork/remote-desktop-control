@@ -29,8 +29,6 @@ public class RemoteScreen extends JFrame{
 
     private String screenName;
 
-    private RemoteClient remoteClient;
-
     private Dimension canvas;
 
     private CanvasPannel screenPannel;
@@ -44,11 +42,10 @@ public class RemoteScreen extends JFrame{
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
 
-    public RemoteScreen(String screenName,RemoteClient remoteClient){
+    public RemoteScreen(String screenName){
         // 创建主窗口
         super("远程桌面");
         this.screenName = String.format("%s的桌面",screenName);
-        this.remoteClient = remoteClient;
         initFrame();
         initPannel();
     }
@@ -100,7 +97,7 @@ public class RemoteScreen extends JFrame{
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                RemoteScreen.this.remoteClient.closeRemoteScreen();
+                RemoteClient.getRemoteClient().closeRemoteScreen();
             }
         });
     }

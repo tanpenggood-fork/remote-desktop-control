@@ -1,5 +1,7 @@
 package io.github.springstudent.dekstop.server.netty;
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
@@ -58,7 +60,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        String deviceCode = "zhouning";
+        String deviceCode = RandomUtil.randomString(8);
         NettyUtils.updateDeviceCode(ctx.channel(), deviceCode);
         NettyChannelManager.addChannel(deviceCode, ctx.channel());
         ctx.channel().writeAndFlush(new CmdResCliInfo(deviceCode, "111111"));

@@ -30,14 +30,15 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
 
     @Override
     public void stop() {
-        captureEngine.start();
-        compressorEngine.start(1);
+        captureEngine.stop();
+        compressorEngine.stop();
+
     }
 
     @Override
     public void start() {
-        captureEngine.stop();
-        compressorEngine.stop();
+        captureEngine.start();
+        compressorEngine.start(1);
     }
 
     public void closeSession(String deviceCode) {

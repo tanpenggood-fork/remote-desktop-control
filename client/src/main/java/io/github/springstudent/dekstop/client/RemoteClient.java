@@ -58,7 +58,7 @@ public class RemoteClient extends RemoteFrame {
             showMessageDialog("请等待连接连接服务器成功", JOptionPane.ERROR_MESSAGE);
         } else {
             controller.openSession(deviceCode);
-            this.remoteScreen = new RemoteScreen(deviceCode, this);
+            this.remoteScreen = new RemoteScreen(deviceCode);
         }
     }
 
