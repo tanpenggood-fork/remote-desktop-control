@@ -25,7 +25,7 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
 
     private final Listeners<CaptureEngineListener> listeners = new Listeners<>();
 
-    private final Thread thread;
+    private Thread thread;
 
     /**
      * I keep only the checksum as I do not want to keep the referenceS to the
@@ -47,16 +47,6 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
         this.previousCapture = new long[x * y];
         resetPreviousCapture();
 
-        this.thread = new Thread(new RunnableEx() {
-            @Override
-            protected void doRun() {
-                try {
-                    CaptureEngine.this.mainLoop();
-                } catch (InterruptedException e) {
-                    thread.interrupt();
-                }
-            }
-        }, "CaptureEngine");
     }
 
     @Override
@@ -83,6 +73,16 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
 
     public void start() {
         Log.debug("CaptureEngine start");
+        this.thread = new Thread(new RunnableEx() {
+            @Override
+            protected void doRun() {
+                try {
+                    CaptureEngine.this.mainLoop();
+                } catch (InterruptedException e) {
+                    thread.interrupt();
+                }
+            }
+        }, "CaptureEngine");
         thread.start();
     }
 
