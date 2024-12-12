@@ -26,6 +26,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         captureEngine = new CaptureEngine(new RobotCaptureFactory(true));
         captureEngine.configure(new CaptureEngineConfiguration());
         compressorEngine = new CompressorEngine();
+        compressorEngine.configure(new CompressorEngineConfiguration());
         captureEngine.addListener(compressorEngine);
         compressorEngine.addListener(this);
     }
