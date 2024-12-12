@@ -41,7 +41,9 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
     @Override
     public void start() {
         captureEngine.start();
+        captureEngine.configure(new CaptureEngineConfiguration());
         compressorEngine.start(1);
+        compressorEngine.configure(new CompressorEngineConfiguration());
     }
 
     public void closeSession(String deviceCode) {
