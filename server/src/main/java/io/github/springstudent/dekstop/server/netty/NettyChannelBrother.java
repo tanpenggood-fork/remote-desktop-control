@@ -49,4 +49,11 @@ public class NettyChannelBrother {
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
     }
 
+    public Channel getController() {
+        return controller;
+    }
+
+    public Channel getControlled() {
+        return controlled;
+    }
 }

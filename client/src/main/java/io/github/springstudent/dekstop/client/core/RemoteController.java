@@ -42,7 +42,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     public RemoteController(){
         deCompressorEngine = new DeCompressorEngine(this);
-        start();
+        deCompressorEngine.start(8);
     }
     @Override
     public void stop() {
@@ -51,7 +51,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void start() {
-        deCompressorEngine.start(8);
+
     }
 
     public void openSession(String deviceCode) {

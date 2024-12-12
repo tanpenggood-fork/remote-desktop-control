@@ -41,4 +41,12 @@ public class NettyChannelManager {
         }
         return channelBrother;
     }
+
+    public static Channel getControllerChannel(Channel controlled){
+        NettyChannelBrother channelBrother = channelBrotherMap.get(NettyUtils.getDeviceCode(controlled));
+        if(channelBrother!=null){
+            return channelBrother.getController();
+        }
+        return null;
+    }
 }
