@@ -20,9 +20,10 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
             CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
             RemoteClient.getRemoteClient().setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
             RemoteClient.getRemoteClient().updateConnectionStatus(true);
-        } else if (cmd.getType().equals(CmdType.ResCapture)) {
+        }else{
             RemoteClient.getRemoteClient().handleCmd(cmd);
         }
+
     }
 
     @Override
