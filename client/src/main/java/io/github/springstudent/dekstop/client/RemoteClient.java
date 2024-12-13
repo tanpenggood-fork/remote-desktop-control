@@ -98,6 +98,20 @@ public class RemoteClient extends RemoteFrame {
         connect(bootstrap, 0);
     }
 
+
+    public RemoteController getController() {
+        return controller;
+    }
+
+    public RemoteControlled getControlled() {
+        return controlled;
+    }
+
+    public void handleCmd(Cmd cmd) {
+        controller.handleCmd(cmd);
+        controlled.handleCmd(cmd);
+    }
+
     private void connect(Bootstrap bootstrap, int retry) {
         bootstrap.connect(serverIp, serverPort).addListener(future -> {
             if (future.isSuccess()) {
@@ -111,19 +125,6 @@ public class RemoteClient extends RemoteFrame {
                         .SECONDS);
             }
         });
-    }
-
-    public RemoteController getController() {
-        return controller;
-    }
-
-    public RemoteControlled getControlled() {
-        return controlled;
-    }
-
-    public void handleCmd(Cmd cmd) {
-        controller.handleCmd(cmd);
-        controlled.handleCmd(cmd);
     }
 
     public static RemoteClient getRemoteClient() {

@@ -149,7 +149,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 final JPanel pane = new JPanel();
                 pane.setLayout(new GridLayout(3, 2, 10, 10));
 
-                final JLabel tickLbl = new JLabel("");
+                final JLabel tickLbl = new JLabel("屏幕捕获间隔");
                 tickLbl.setToolTipText("屏幕捕获间隔");
                 final JSlider tickMillisSlider = new JSlider(HORIZONTAL, 30, 1000, captureEngineConfiguration.getCaptureTick());
                 final Properties tickLabelTable = new Properties();
@@ -320,7 +320,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         configure.putValue(Action.NAME, "压缩设置");
         return configure;
     }
-    
+
     private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
         new Thread(() -> this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration))).start();
     }
