@@ -72,7 +72,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
         deCompressorEngine.start(8);
-        RemoteClient.getRemoteClient().getRemoteScreen().addListener(this);
     }
 
     @Override

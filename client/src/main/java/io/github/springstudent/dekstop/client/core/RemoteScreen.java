@@ -162,7 +162,7 @@ public class RemoteScreen extends JFrame {
             }
         });
     }
-    
+
     public void addListener(RemoteScreenListener listener) {
         listeners.add(listener);
     }
