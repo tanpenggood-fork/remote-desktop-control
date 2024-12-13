@@ -64,9 +64,12 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             if (cmdResCapture.getCode() == CmdResCapture.START_) {
                 start();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_) {
-
                 stop();
             }
+        }else if(cmd.getType().equals(CmdType.CaptureConfig)){
+            captureEngine.reconfigure(((CmdCaptureConf) cmd).getConfiguration());
+        }else if(cmd.getType().equals(CmdType.CompressorConfig)){
+            compressorEngine.reconfigure(((CmdCompressorConf) cmd).getConfiguration());
         }
     }
 
