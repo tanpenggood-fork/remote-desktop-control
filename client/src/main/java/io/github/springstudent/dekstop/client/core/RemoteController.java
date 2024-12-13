@@ -244,7 +244,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private void sendCaptureConfiguration(final CaptureEngineConfiguration captureEngineConfiguration) {
-        this.fireCmd(new CmdCaptureConf(captureEngineConfiguration));
+        new Thread(() -> this.fireCmd(new CmdCaptureConf(captureEngineConfiguration))).start();
     }
 
     public Action createCompressionConfigurationAction() {
@@ -345,6 +345,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
-        this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration));
+        new Thread(() -> this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration))).start();
     }
 }
