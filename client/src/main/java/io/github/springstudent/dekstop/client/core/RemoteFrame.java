@@ -146,7 +146,7 @@ public abstract class RemoteFrame extends JFrame {
         closeSessionLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                closeRemoteScreen(remoteDeviceField.getText());
+                closeRemoteScreen(deviceCodeField.getText());
             }
         });
         closeSessionLabel.setVisible(false);
