@@ -157,7 +157,6 @@ public abstract class RemoteFrame extends JFrame {
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
-
     public void showMessageDialog(Object msg, int messageType) {
         JOptionPane.showMessageDialog(this, msg, "提示", messageType);
     }

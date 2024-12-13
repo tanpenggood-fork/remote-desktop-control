@@ -17,6 +17,7 @@ public class CmdResCapture extends Cmd {
     public static final byte OFFLINE = 0x02;
     public static final byte CONTROL = 0x03;
     public static final byte FAIL = 0x04;
+    public static final byte SELF = 0x05;
     /**
      * 被控制端响应状态码
      */

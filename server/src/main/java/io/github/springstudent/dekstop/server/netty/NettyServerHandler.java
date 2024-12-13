@@ -41,7 +41,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                     ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.OFFLINE));
                 } else {
                     if (StrUtil.isEmpty(NettyUtils.getControllFlag(ctx.channel())) && StrUtil.isEmpty(NettyUtils.getControllFlag(controlledChannel))) {
-                        NettyChannelManager.bindChannelBrother(ctx.channel(), controlledChannel);
+                        if (NettyUtils.getDeviceCode(ctx.channel()).equals(StrUtil.isEmpty(NettyUtils.getDeviceCode(controlledChannel)))) {
+
+                        } else {
+                            NettyChannelManager.bindChannelBrother(ctx.channel(), controlledChannel);
+                        }
                     } else {
                         //控制端正在被控制发起其他远程控制，提示“请先断开其他远程控制中的连接”
                         ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.CONTROL));

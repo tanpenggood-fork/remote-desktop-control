@@ -1,5 +1,6 @@
 package io.github.springstudent.dekstop.client;
 
+import cn.hutool.core.util.StrUtil;
 import io.github.springstudent.dekstop.client.core.RemoteControlled;
 import io.github.springstudent.dekstop.client.core.RemoteController;
 import io.github.springstudent.dekstop.client.core.RemoteFrame;
@@ -58,7 +59,11 @@ public class RemoteClient extends RemoteFrame {
         if (!connectStatus) {
             showMessageDialog("请等待连接连接服务器成功", JOptionPane.ERROR_MESSAGE);
         } else {
-            controller.openSession(deviceCode);
+            if (StrUtil.isEmpty(deviceCode)) {
+                showMessageDialog("请输入远程设备代码", JOptionPane.ERROR_MESSAGE);
+            } else {
+                controller.openSession(deviceCode);
+            }
         }
     }
 

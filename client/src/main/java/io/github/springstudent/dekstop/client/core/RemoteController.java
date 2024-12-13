@@ -108,6 +108,8 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 RemoteClient.getRemoteClient().showMessageDialog("请先断开其他远程控制中的连接", JOptionPane.ERROR_MESSAGE);
             } else if (cmdResCapture.getCode() == CmdResCapture.FAIL) {
                 RemoteClient.getRemoteClient().showMessageDialog("远程控制失败", JOptionPane.ERROR_MESSAGE);
+            } else if (cmdResCapture.getCode() == CmdResCapture.SELF) {
+                RemoteClient.getRemoteClient().showMessageDialog("无法对自己发起远程", JOptionPane.ERROR_MESSAGE);
             }
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
@@ -200,15 +202,13 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 tickMillisSlider.addChangeListener(e -> {
                     actualTick.setText(tickMillisSlider.getValue() < 1000 ? format("%dms", tickMillisSlider.getValue()) : "1s");
                     if (!tickMillisSlider.getValueIsAdjusting()) {
-                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                                Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), captureEngineConfiguration.isCaptureColors()));
+                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(), Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), captureEngineConfiguration.isCaptureColors()));
                     }
                 });
                 grayLevelsSlider.addChangeListener(e -> {
                     actualLevels.setText(format("%d", Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
                     if (!grayLevelsSlider.getValueIsAdjusting() && !captureEngineConfiguration.isCaptureColors()) {
-                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                                Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), false));
+                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(), Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), false));
                     }
                 });
                 colorsCb.addActionListener(e -> {
@@ -219,8 +219,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 final boolean ok = DialogFactory.showOkCancel(captureFrame, "远程图像设置", pane, true, null);
 
                 if (ok) {
-                    final CaptureEngineConfiguration newCaptureEngineConfiguration = new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                            Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), colorsCb.isSelected());
+                    final CaptureEngineConfiguration newCaptureEngineConfiguration = new CaptureEngineConfiguration(tickMillisSlider.getValue(), Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), colorsCb.isSelected());
                     updateCaptureConfiguration(newCaptureEngineConfiguration);
                 }
             }
@@ -319,8 +318,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 });
 
                 if (ok) {
-                    final CompressorEngineConfiguration newCompressorEngineConfiguration = new CompressorEngineConfiguration((CompressionMethod) methodCb.getSelectedItem(),
-                            useCacheCb.isSelected(), Integer.parseInt(maxSizeTf.getText()), Integer.parseInt(purgeSizeTf.getText()));
+                    final CompressorEngineConfiguration newCompressorEngineConfiguration = new CompressorEngineConfiguration((CompressionMethod) methodCb.getSelectedItem(), useCacheCb.isSelected(), Integer.parseInt(maxSizeTf.getText()), Integer.parseInt(purgeSizeTf.getText()));
                     if (!newCompressorEngineConfiguration.equals(compressorEngineConfiguration)) {
                         compressorEngineConfiguration = newCompressorEngineConfiguration;
                         compressorEngineConfiguration.persist();
