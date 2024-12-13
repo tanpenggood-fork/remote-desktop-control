@@ -1,9 +1,6 @@
 package io.github.springstudent.dekstop.client.core;
 
 import io.github.springstudent.dekstop.client.RemoteClient;
-import io.github.springstudent.dekstop.client.utils.DialogFactory;
-import io.github.springstudent.dekstop.common.bean.Gray8Bits;
-import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
@@ -13,12 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static javax.swing.SwingConstants.HORIZONTAL;
 
 /**
  * 远程端桌面
@@ -95,7 +90,6 @@ public class RemoteScreen extends JFrame {
         };
         keepAspectRatioButton.setAction(keepAspectRatio);
         keepAspectRatioButton.setVisible(false);
-
         JButton sessionButton = new JButton();
         sessionButton.setAction(RemoteClient.getRemoteClient().getController().createCaptureConfigurationAction());
         JButton settingsButton = new JButton();
