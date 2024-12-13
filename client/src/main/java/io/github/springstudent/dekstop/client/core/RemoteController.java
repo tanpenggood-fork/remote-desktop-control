@@ -167,7 +167,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 final JLabel grayLevelsLbl = new JLabel("灰度值");
                 final JSlider grayLevelsSlider = new JSlider(HORIZONTAL, 0, 6, 6 - captureEngineConfiguration.getCaptureQuantization().ordinal());
                 final Properties grayLabelTable = new Properties();
-                JLabel actualLevels = new JLabel(format("  %d  ", toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
+                JLabel actualLevels = new JLabel(format("  %d  ", Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
                 grayLabelTable.put(0, new JLabel("最小"));
                 grayLabelTable.put(3, actualLevels);
                 grayLabelTable.put(6, new JLabel("最大"));
@@ -188,14 +188,14 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                     actualTick.setText(tickMillisSlider.getValue() < 1000 ? format("%dms", tickMillisSlider.getValue()) : "1s");
                     if (!tickMillisSlider.getValueIsAdjusting()) {
                         sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                                toGrayLevel(grayLevelsSlider.getValue()), captureEngineConfiguration.isCaptureColors()));
+                                Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), captureEngineConfiguration.isCaptureColors()));
                     }
                 });
                 grayLevelsSlider.addChangeListener(e -> {
-                    actualLevels.setText(format("%d", toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
+                    actualLevels.setText(format("%d", Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
                     if (!grayLevelsSlider.getValueIsAdjusting() && !captureEngineConfiguration.isCaptureColors()) {
                         sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                                toGrayLevel(grayLevelsSlider.getValue()), false));
+                                Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), false));
                     }
                 });
                 colorsCb.addActionListener(e -> {
@@ -207,7 +207,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
                 if (ok) {
                     final CaptureEngineConfiguration newCaptureEngineConfiguration = new CaptureEngineConfiguration(tickMillisSlider.getValue(),
-                            toGrayLevel(grayLevelsSlider.getValue()), colorsCb.isSelected());
+                            Gray8Bits.toGrayLevel(grayLevelsSlider.getValue()), colorsCb.isSelected());
                     updateCaptureConfiguration(newCaptureEngineConfiguration);
                 }
             }
@@ -221,25 +221,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             captureEngineConfiguration = newCaptureEngineConfiguration;
             captureEngineConfiguration.persist();
             sendCaptureConfiguration(captureEngineConfiguration);
-        }
-    }
-
-    private Gray8Bits toGrayLevel(int value) {
-        switch (value) {
-            case 6:
-                return Gray8Bits.X_256;
-            case 5:
-                return Gray8Bits.X_128;
-            case 4:
-                return Gray8Bits.X_64;
-            case 3:
-                return Gray8Bits.X_32;
-            case 2:
-                return Gray8Bits.X_16;
-            case 1:
-                return Gray8Bits.X_8;
-            default:
-                return Gray8Bits.X_4;
         }
     }
 
@@ -305,7 +286,23 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                     if (maxValue <= 0) {
                         return "缓存最大值必须为正整数";
                     }
-                    return validatePurgeValue(purgeSizeTf, maxValue);
+                    final String purge = purgeSizeTf.getText();
+                    if (purge.isEmpty()) {
+                        return "缓存重置值不能为空";
+                    }
+                    final int purgeValue;
+                    try {
+                        purgeValue = Integer.parseInt(purge);
+                    } catch (NumberFormatException ex) {
+                        return "缓存重置值必须为数字";
+                    }
+                    if (purgeValue <= 0) {
+                        return "缓存重置值必须为正整数";
+                    }
+                    if (purgeValue >= maxValue) {
+                        return "缓存重置值不能大于缓存最大值";
+                    }
+                    return null;
                 });
 
                 if (ok) {
@@ -323,27 +320,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         configure.putValue(Action.NAME, "压缩设置");
         return configure;
     }
-
-    private String validatePurgeValue(JTextField purgeSizeTf, int maxValue) {
-        final String purge = purgeSizeTf.getText();
-        if (purge.isEmpty()) {
-            return "缓存重置值不能为空";
-        }
-        final int purgeValue;
-        try {
-            purgeValue = Integer.parseInt(purge);
-        } catch (NumberFormatException ex) {
-            return "缓存重置值必须为数字";
-        }
-        if (purgeValue <= 0) {
-            return "缓存重置值必须为正整数";
-        }
-        if (purgeValue >= maxValue) {
-            return "缓存重置值不能大于缓存最大值";
-        }
-        return null;
-    }
-
+    
     private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
         new Thread(() -> this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration))).start();
     }
