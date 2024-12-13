@@ -61,6 +61,10 @@ public class RemoteClient extends RemoteFrame {
         }
     }
 
+    @Override
+    public void closeRemoteScreen(String deviceCode) {
+        controlled.closeSession(deviceCode);
+    }
 
     @Override
     public void closeRemoteScreen() {
@@ -108,7 +112,6 @@ public class RemoteClient extends RemoteFrame {
             }
         });
     }
-
 
     public RemoteController getController() {
         return controller;

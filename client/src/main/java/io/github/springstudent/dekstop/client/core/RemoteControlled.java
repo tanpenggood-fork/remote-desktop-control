@@ -1,5 +1,6 @@
 package io.github.springstudent.dekstop.client.core;
 
+import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Capture;
 import io.github.springstudent.dekstop.client.capture.CaptureEngine;
 import io.github.springstudent.dekstop.client.capture.RobotCaptureFactory;
@@ -61,8 +62,10 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         if (cmd.getType().equals(CmdType.ResCapture)) {
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START_) {
+                RemoteClient.getRemoteClient().setControlledAndCloseSessionLabelVisible(true);
                 start();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_) {
+                RemoteClient.getRemoteClient().setControlledAndCloseSessionLabelVisible(false);
                 stop();
             }
         } else if (cmd.getType().equals(CmdType.CaptureConfig)) {

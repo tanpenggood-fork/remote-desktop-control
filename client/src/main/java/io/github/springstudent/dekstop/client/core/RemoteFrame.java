@@ -17,6 +17,10 @@ public abstract class RemoteFrame extends JFrame {
     private JTextField remoteDeviceField;
     private JButton connectButton;
 
+    private JLabel controlledLabel;
+
+    private JLabel closeSessionLabel;
+
     public RemoteFrame() {
         initFrame();
         initTitle();
@@ -85,6 +89,7 @@ public abstract class RemoteFrame extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(5, 20, 5, 20));
+
         JPanel topPanel = new JPanel(new GridBagLayout());
         topPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -106,6 +111,7 @@ public abstract class RemoteFrame extends JFrame {
         this.passwordField = new JTextField(10);
         passwordField.setText("");
         topPanel.add(passwordField, gbc);
+
         JPanel bottomPanel = new JPanel(new GridBagLayout());
         bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
         gbc = new GridBagConstraints();
@@ -119,17 +125,38 @@ public abstract class RemoteFrame extends JFrame {
         gbc.gridx = 1;
         this.remoteDeviceField = new JTextField(15);
         bottomPanel.add(remoteDeviceField, gbc);
+
         gbc.gridx = 2;
         this.connectButton = new JButton("连接");
         this.connectButton.addActionListener(e -> {
             openRemoteScreen(remoteDeviceField.getText());
         });
         bottomPanel.add(connectButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.insets = new Insets(-55, 10, 0, 10);
+        this.controlledLabel = new JLabel("正在被远程控制中...");
+        bottomPanel.add(controlledLabel, gbc);
+        controlledLabel.setVisible(false);
+        gbc.gridx = 2;
+        this.closeSessionLabel = new JLabel("<html><u>断开连接</u></html>");
+        closeSessionLabel.setForeground(Color.BLUE);
+        closeSessionLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                closeRemoteScreen(remoteDeviceField.getText());
+            }
+        });
+        closeSessionLabel.setVisible(false);
+        bottomPanel.add(closeSessionLabel, gbc);
         mainPanel.add(topPanel);
         mainPanel.add(Box.createVerticalStrut(5)); // 间距
         mainPanel.add(bottomPanel);
         this.add(mainPanel, BorderLayout.CENTER);
     }
+
 
     public void showMessageDialog(Object msg, int messageType) {
         JOptionPane.showMessageDialog(this, msg, "提示", messageType);
@@ -139,6 +166,8 @@ public abstract class RemoteFrame extends JFrame {
     public abstract void openRemoteScreen(String remoteName);
 
     public abstract void closeRemoteScreen();
+
+    public abstract void closeRemoteScreen(String deviceCode);
 
     public final void setDeviceCodeAndPassword(String deviceCode, String password) {
         this.deviceCodeField.setText(deviceCode);
@@ -151,6 +180,11 @@ public abstract class RemoteFrame extends JFrame {
         } else {
             titleLabel.setText("<html>远程桌面控制<span style='color:red;'>（连接中）</span></html>");
         }
+    }
+
+    public final void setControlledAndCloseSessionLabelVisible(boolean flag) {
+        this.controlledLabel.setVisible(flag);
+        this.closeSessionLabel.setVisible(flag);
     }
 
 }
