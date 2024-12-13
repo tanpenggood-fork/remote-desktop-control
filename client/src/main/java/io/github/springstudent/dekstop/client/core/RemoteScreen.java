@@ -1,13 +1,12 @@
 package io.github.springstudent.dekstop.client.core;
 
 import io.github.springstudent.dekstop.client.RemoteClient;
+import io.github.springstudent.dekstop.client.bean.Listeners;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,13 +14,14 @@ import static java.lang.Math.abs;
 import static java.lang.String.format;
 
 /**
- *
  * @author ZhouNing
  * @date 2024/12/9 8:42
  */
 public class RemoteScreen extends JFrame {
 
     private static final int OFFSET = 6;
+
+    private transient Listeners<RemoteScreenListener> listeners = new Listeners();
 
     private static final int DEFAULT_FACTOR = 1;
     private double xFactor = DEFAULT_FACTOR;
@@ -37,12 +37,16 @@ public class RemoteScreen extends JFrame {
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
 
+    private final AtomicBoolean isImmutableWindowsSize = new AtomicBoolean(false);
+
     public RemoteScreen() {
         super("远程桌面");
         initFrame();
         initCanvasPanel();
         initMenuBar();
+        initListeners();
     }
+
 
     private void initFrame() {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -105,6 +109,77 @@ public class RemoteScreen extends JFrame {
         optionsMenu.add(compressionConfigItem);
         menuBar.add(optionsMenu);
         this.setJMenuBar(menuBar);
+    }
+
+    private void initListeners() {
+        addKeyListeners();
+        addMouseListeners();
+        addResizeListener();
+        addMinMaximizedListener();
+    }
+
+
+    private void addMouseListeners() {
+        screenPannel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent ev) {
+                    fireOnMousePressed(ev.getX(), ev.getY(), ev.getButton());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent ev) {
+                    fireOnMouseReleased(ev.getX(), ev.getY(), ev.getButton());
+            }
+        });
+
+        screenPannel.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent ev) {
+                    fireOnMouseMove(ev.getX(), ev.getY());
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent ev) {
+                    fireOnMouseMove(ev.getX(), ev.getY());
+            }
+        });
+
+        screenPannel.addMouseWheelListener(ev -> {
+                fireOnMouseWheeled(ev.getX(), ev.getY(), ev.getWheelRotation());
+        });
+    }
+
+    private void addKeyListeners() {
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent ev) {
+                fireOnKeyPressed(ev.getKeyCode(), ev.getKeyChar());
+            }
+
+            @Override
+            public void keyReleased(KeyEvent ev) {
+                fireOnKeyReleased(ev.getKeyCode(), ev.getKeyChar());
+            }
+        });
+    }
+
+    private void addResizeListener() {
+        addComponentListener(new ComponentAdapter() {
+            private Timer resizeTimer;
+            @Override
+            public void componentResized(ComponentEvent ev) {
+                if (resizeTimer != null) {
+                    resizeTimer.stop();
+                }
+                resizeTimer = new Timer(500, e -> resetCanvas());
+                resizeTimer.setRepeats(false);
+                resizeTimer.start();
+            }
+        });
+    }
+
+    private void addMinMaximizedListener() {
+        addWindowStateListener(event -> isImmutableWindowsSize.set((event.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED || (event.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH));
     }
 
     public boolean getFitToScreenActivated() {
@@ -187,6 +262,38 @@ public class RemoteScreen extends JFrame {
 
     void resetCanvas() {
         canvas = null;
+    }
+
+    private void fireOnMouseMove(int x, int y) {
+        listeners.getListeners().forEach(listener -> listener.onMouseMove(scaleXPosition(x), scaleYPosition(y)));
+    }
+
+    private void fireOnMousePressed(int x, int y, int button) {
+        listeners.getListeners().forEach(listener -> listener.onMousePressed(scaleXPosition(x), scaleYPosition(y), button));
+    }
+
+    private void fireOnMouseReleased(int x, int y, int button) {
+        listeners.getListeners().forEach(listener -> listener.onMouseReleased(scaleXPosition(x), scaleYPosition(y), button));
+    }
+
+    private void fireOnMouseWheeled(int x, int y, int rotations) {
+        listeners.getListeners().forEach(listener -> listener.onMouseWheeled(scaleXPosition(x), scaleYPosition(y), rotations));
+    }
+
+    private int scaleYPosition(int y) {
+        return (int) Math.round(y / yFactor);
+    }
+
+    private int scaleXPosition(int x) {
+        return (int) Math.round(x / xFactor);
+    }
+
+    private void fireOnKeyPressed(int keyCode, char keyChar) {
+        listeners.getListeners().forEach(listener -> listener.onKeyPressed(keyCode, keyChar));
+    }
+
+    private void fireOnKeyReleased(int keyCode, char keyChar) {
+        listeners.getListeners().forEach(listener -> listener.onKeyReleased(keyCode, keyChar));
     }
 
     static class CanvasPannel extends JPanel {
