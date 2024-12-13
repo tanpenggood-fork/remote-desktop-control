@@ -123,29 +123,29 @@ public class RemoteScreen extends JFrame {
         screenPannel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent ev) {
-                    fireOnMousePressed(ev.getX(), ev.getY(), ev.getButton());
+                fireOnMousePressed(ev.getX(), ev.getY(), ev.getButton());
             }
 
             @Override
             public void mouseReleased(MouseEvent ev) {
-                    fireOnMouseReleased(ev.getX(), ev.getY(), ev.getButton());
+                fireOnMouseReleased(ev.getX(), ev.getY(), ev.getButton());
             }
         });
 
         screenPannel.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent ev) {
-                    fireOnMouseMove(ev.getX(), ev.getY());
+                fireOnMouseMove(ev.getX(), ev.getY());
             }
 
             @Override
             public void mouseMoved(MouseEvent ev) {
-                    fireOnMouseMove(ev.getX(), ev.getY());
+                fireOnMouseMove(ev.getX(), ev.getY());
             }
         });
 
         screenPannel.addMouseWheelListener(ev -> {
-                fireOnMouseWheeled(ev.getX(), ev.getY(), ev.getWheelRotation());
+            fireOnMouseWheeled(ev.getX(), ev.getY(), ev.getWheelRotation());
         });
     }
 
@@ -162,10 +162,15 @@ public class RemoteScreen extends JFrame {
             }
         });
     }
+    
+    public void addListener(RemoteScreenListener listener) {
+        listeners.add(listener);
+    }
 
     private void addResizeListener() {
         addComponentListener(new ComponentAdapter() {
             private Timer resizeTimer;
+
             @Override
             public void componentResized(ComponentEvent ev) {
                 if (resizeTimer != null) {
