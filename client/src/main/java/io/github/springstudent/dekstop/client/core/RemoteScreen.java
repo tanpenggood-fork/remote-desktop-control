@@ -118,7 +118,7 @@ public class RemoteScreen extends JFrame {
         statusLabel.setFont(new Font("Monospaced", Font.PLAIN, 10));
         bottomPanel.add(statusLabel, BorderLayout.WEST);
         mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(screenPannel, BorderLayout.CENTER);
+        mainPanel.add(screenPanelWrapper, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
         this.add(mainPanel);
     }
@@ -222,14 +222,8 @@ public class RemoteScreen extends JFrame {
 
     static class CanvasPannel extends JPanel {
 
-        private static final int MOUSE_CURSOR_WIDTH = 12;
-        private static final int MOUSE_CURSOR_HEIGHT = 20;
-
         private int captureWidth = -1;
         private int captureHeight = -1;
-
-        private int mouseX = -1;
-        private int mouseY = -1;
 
         private transient BufferedImage captureImage;
 
@@ -244,7 +238,6 @@ public class RemoteScreen extends JFrame {
                 g.drawImage(captureImage, 0, 0, this);
             }
         }
-
 
         /**
          * Called from within the de-compressor engine thread (!)
@@ -262,17 +255,6 @@ public class RemoteScreen extends JFrame {
                 }
                 this.captureImage = captureImage;
                 repaint();
-            });
-        }
-
-        void onMouseLocationUpdated(final int x, final int y) {
-            SwingUtilities.invokeLater(() -> {
-                if (this.mouseX > -1 && this.mouseY > -1) {
-                    repaint(this.mouseX, this.mouseY, MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT);
-                }
-                this.mouseX = x;
-                this.mouseY = y;
-                repaint(x, y, MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT);
             });
         }
     }

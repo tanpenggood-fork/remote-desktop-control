@@ -112,7 +112,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             prevHeight = image.getKey().getHeight();
         }
         if (remoteScreen.getFitToScreenActivated()) {
-            if (remoteScreen.getScreenPannel() == null) {
+            if (remoteScreen.getCanvas() == null) {
                 Log.debug(format("ComputeScaleFactors for w: %s h: %s", prevWidth, prevHeight));
                 remoteScreen.computeScaleFactors(prevWidth, prevHeight, remoteScreen.getKeepAspectRatioActivated());
             }
