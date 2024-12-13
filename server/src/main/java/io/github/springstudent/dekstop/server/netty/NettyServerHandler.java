@@ -42,7 +42,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                 } else {
                     if (StrUtil.isEmpty(NettyUtils.getControllFlag(ctx.channel())) && StrUtil.isEmpty(NettyUtils.getControllFlag(controlledChannel))) {
                         if (NettyUtils.getDeviceCode(ctx.channel()).equals(StrUtil.isEmpty(NettyUtils.getDeviceCode(controlledChannel)))) {
-
+                            ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.SELF));
                         } else {
                             NettyChannelManager.bindChannelBrother(ctx.channel(), controlledChannel);
                         }
