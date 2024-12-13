@@ -4,6 +4,8 @@ import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Capture;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
+import io.github.springstudent.dekstop.client.concurrent.DefaultThreadFactoryEx;
+import io.github.springstudent.dekstop.client.concurrent.Executable;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -15,19 +17,26 @@ import io.github.springstudent.dekstop.common.log.Log;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Stream;
 
+import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.PRESSED;
+import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.RELEASED;
 import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.swing.SwingConstants.HORIZONTAL;
 
 /**
@@ -36,7 +45,7 @@ import static javax.swing.SwingConstants.HORIZONTAL;
  * @author ZhouNing
  * @date 2024/12/9 8:39
  **/
-public class RemoteController extends RemoteControll implements DeCompressorEngineListener {
+public class RemoteController extends RemoteControll implements DeCompressorEngineListener, RemoteScreenListener {
 
     private String deviceCode;
 
@@ -54,7 +63,11 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private int prevHeight = -1;
 
+    private final ThreadPoolExecutor executor;
+
     public RemoteController() {
+        executor = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new LinkedBlockingQueue<>());
+        executor.setThreadFactory(new DefaultThreadFactoryEx("controller-executor"));
         captureEngineConfiguration = new CaptureEngineConfiguration();
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
@@ -323,5 +336,101 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
         new Thread(() -> this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration))).start();
+    }
+
+    @Override
+    public void onMouseMove(final int xs, final int ys) {
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                RemoteController.this.fireCmd(new CmdMouseControl(xs, ys));
+            }
+        });
+    }
+
+    @Override
+    public void onMousePressed(final int xs, final int ys, final int button) {
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                int xbutton = getActingMouseButton(button);
+                if (xbutton != CmdMouseControl.UNDEFINED) {
+                    RemoteController.this.fireCmd(new CmdMouseControl(xs, ys, CmdMouseControl.ButtonState.PRESSED, xbutton));
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onMouseReleased(final int x, final int y, final int button) {
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                int xbutton = getActingMouseButton(button);
+                if (xbutton != CmdMouseControl.UNDEFINED) {
+                    RemoteController.this.fireCmd(new CmdMouseControl(x, y, CmdMouseControl.ButtonState.RELEASED, xbutton));
+                }
+            }
+        });
+    }
+
+    private int getActingMouseButton(final int button) {
+        if (MouseEvent.BUTTON1 == button) {
+            return CmdMouseControl.BUTTON1;
+        }
+        if (MouseEvent.BUTTON2 == button) {
+            return CmdMouseControl.BUTTON2;
+        }
+        if (MouseEvent.BUTTON3 == button) {
+            return CmdMouseControl.BUTTON3;
+        }
+        return CmdMouseControl.UNDEFINED;
+    }
+
+    @Override
+    public void onMouseWheeled(final int x, final int y, final int rotations) {
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                RemoteController.this.fireCmd(new CmdMouseControl(x, y, rotations));
+            }
+        });
+    }
+
+
+    private final HashMap<Integer, Character> pressedKeys = new HashMap<>();
+
+    @Override
+    public void onKeyPressed(final int keyCode, final char keyChar) {
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                pressedKeys.put(keyCode, keyChar);
+                RemoteController.this.fireCmd(new CmdKeyControl(PRESSED, keyCode, keyChar));
+            }
+        });
+    }
+
+    /**
+     * From AWT thread (!)
+     */
+    @Override
+    public void onKeyReleased(final int keyCode, final char keyChar) {
+        if (keyCode == -1) {
+            Log.warn(format("Got keyCode %s keyChar '%s' - releasing all keys", keyCode, keyChar));
+            pressedKeys.forEach(this::onKeyReleased);
+            return;
+        }
+        if (!pressedKeys.containsKey(keyCode)) {
+            Log.warn(format("Not releasing unpressed keyCode %s keyChar '%s'", keyCode, keyChar));
+            return;
+        }
+        executor.execute(new Executable(executor) {
+            @Override
+            protected void execute() {
+                pressedKeys.remove(keyCode);
+                fireCmd(new CmdKeyControl(RELEASED, keyCode, keyChar));
+            }
+        });
     }
 }

@@ -12,5 +12,8 @@ public enum CmdType {
 
     Capture,
     CompressorConfig,
-    CaptureConfig;
+    CaptureConfig,
+
+    KeyControl,
+    MouseControl;
 }

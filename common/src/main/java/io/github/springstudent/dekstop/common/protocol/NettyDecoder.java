@@ -52,8 +52,14 @@ public class NettyDecoder extends ByteToMessageDecoder {
             case CompressorConfig:
                 list.add(CmdCompressorConf.decode(byteBuf));
                 break;
+            case KeyControl:
+                list.add(CmdKeyControl.decode(byteBuf));
+                break;
+            case MouseControl:
+                list.add(CmdMouseControl.decode(byteBuf));
+                break;
             default:
-                throw new IllegalArgumentException(format("unknown cmdType=%s",cmdType));
+                throw new IllegalArgumentException(format("unknown cmdType=%s", cmdType));
         }
     }
 }
