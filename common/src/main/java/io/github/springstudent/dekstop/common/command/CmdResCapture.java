@@ -30,10 +30,6 @@ public class CmdResCapture extends Cmd {
         this.code = code;
     }
 
-    public boolean isController() {
-        return code >= START_;
-    }
-
     public byte getCode() {
         return code;
     }

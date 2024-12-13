@@ -1,6 +1,8 @@
 package io.github.springstudent.dekstop.server.netty;
 
 
+import cn.hutool.core.util.StrUtil;
+import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
 
@@ -13,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class NettyChannelManager {
 
-
     private static Map<String, Channel> deviceCodeChannelMap = new ConcurrentHashMap<>(32);
 
     private static Map<String, NettyChannelBrother> channelBrotherMap = new ConcurrentHashMap<>(32);
@@ -24,6 +25,18 @@ public class NettyChannelManager {
 
     public static Channel getChannel(String deviceCode) {
         return deviceCodeChannelMap.get(deviceCode);
+    }
+
+    public static synchronized void removeChannelAndBrother(Channel channel) {
+        String controllFlag = NettyUtils.getControllFlag(channel);
+        deviceCodeChannelMap.remove(NettyUtils.getDeviceCode(channel));
+        if (StrUtil.isNotEmpty(controllFlag)) {
+            if (controllFlag.equals(Constants.CONTROLLED)) {
+                channelBrotherMap.remove(NettyUtils.getDeviceCode(channel));
+            } else if (controllFlag.equals(Constants.CONTROLLER)) {
+                channelBrotherMap.remove(NettyUtils.getControllDeviceCode(channel));
+            }
+        }
     }
 
     public static void bindChannelBrother(Channel controller, Channel controlled) {
@@ -57,5 +70,6 @@ public class NettyChannelManager {
         }
         return null;
     }
+
 
 }
