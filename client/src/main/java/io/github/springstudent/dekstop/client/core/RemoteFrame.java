@@ -1,5 +1,7 @@
 package io.github.springstudent.dekstop.client.core;
 
+import cn.hutool.core.util.StrUtil;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -129,7 +131,13 @@ public abstract class RemoteFrame extends JFrame {
         gbc.gridx = 2;
         this.connectButton = new JButton("连接");
         this.connectButton.addActionListener(e -> {
-            openRemoteScreen(remoteDeviceField.getText());
+            if (StrUtil.isEmpty(remoteDeviceField.getText())) {
+                showMessageDialog("请输入远程设备代码", JOptionPane.ERROR_MESSAGE);
+            } else if (remoteDeviceField.getText().equals(deviceCodeField.getText())) {
+                showMessageDialog("远程控制设备代码不能为自己", JOptionPane.ERROR_MESSAGE);
+            } else {
+                openRemoteScreen(remoteDeviceField.getText());
+            }
         });
         bottomPanel.add(connectButton, gbc);
 

@@ -106,10 +106,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 RemoteClient.getRemoteClient().showMessageDialog("被控制端不在线", JOptionPane.ERROR_MESSAGE);
             } else if (cmdResCapture.getCode() == CmdResCapture.CONTROL) {
                 RemoteClient.getRemoteClient().showMessageDialog("请先断开其他远程控制中的连接", JOptionPane.ERROR_MESSAGE);
-            } else if (cmdResCapture.getCode() == CmdResCapture.FAIL) {
-                RemoteClient.getRemoteClient().showMessageDialog("远程控制失败", JOptionPane.ERROR_MESSAGE);
-            } else if (cmdResCapture.getCode() == CmdResCapture.SELF) {
-                RemoteClient.getRemoteClient().showMessageDialog("无法对自己发起远程", JOptionPane.ERROR_MESSAGE);
             }
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
