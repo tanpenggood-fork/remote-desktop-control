@@ -11,6 +11,6 @@ public enum CmdType {
     ResPong,
 
     Capture,
-
-    CompressorConfig;
+    CompressorConfig,
+    CaptureConfig;
 }

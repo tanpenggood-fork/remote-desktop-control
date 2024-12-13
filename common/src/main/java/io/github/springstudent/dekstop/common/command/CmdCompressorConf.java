@@ -46,6 +46,7 @@ public class CmdCompressorConf extends Cmd{
         return new CmdCompressorConf(new CompressorEngineConfiguration(method, useCase, maxSize, purgeSize));
     }
 
+
     public String toString() {
         return String.format("[configuration:%s]", configuration.getMethod());
     }

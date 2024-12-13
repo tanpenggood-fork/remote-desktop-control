@@ -54,11 +54,16 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                     ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
                 }
             }
-        }else if(cmd.getType().equals(CmdType.Capture)){
+        } else if (cmd.getType().equals(CmdType.Capture)) {
             //TODO 存在场景控制端直接关闭，此时发送的截图包无人接收，此时向被控制端发送停止抓图
             Channel controllerChannel = NettyChannelManager.getControllerChannel(ctx.channel());
-            if(controllerChannel!=null){
+            if (controllerChannel != null) {
                 controllerChannel.writeAndFlush(cmd);
+            }
+        } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig)) {
+            Channel controlledChannel = NettyChannelManager.getControlledChannel(ctx.channel());
+            if (controlledChannel != null) {
+                controlledChannel.writeAndFlush(cmd);
             }
         }
     }

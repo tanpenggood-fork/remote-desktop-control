@@ -4,8 +4,10 @@ package io.github.springstudent.dekstop.server.netty;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 /**
  * @author ZhouNing
@@ -49,4 +51,19 @@ public class NettyChannelManager {
         }
         return null;
     }
+
+    public static Channel getControlledChannel(Channel controller){
+        Channel controlled = null;
+        Iterator<Map.Entry<String, NettyChannelBrother>> iterator = channelBrotherMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String, NettyChannelBrother> next = iterator.next();
+            if(next.getValue().getController().equals(controller)){
+                controlled = next.getValue().getControlled();
+                break;
+            }
+        }
+        return controlled;
+    }
+
+
 }

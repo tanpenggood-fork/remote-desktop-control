@@ -30,7 +30,6 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         captureEngineConfiguration = new CaptureEngineConfiguration();
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         captureEngine = new CaptureEngine(new RobotCaptureFactory(true));
-
         captureEngine.configure(captureEngineConfiguration);
         compressorEngine = new CompressorEngine();
         compressorEngine.configure(compressorEngineConfiguration);
@@ -52,6 +51,8 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         compressorEngine.start(1);
     }
 
+
+
     public void closeSession(String deviceCode) {
         fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.STOP_CAPTURE));
     }
@@ -63,6 +64,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             if (cmdResCapture.getCode() == CmdResCapture.START_) {
                 start();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_) {
+
                 stop();
             }
         }

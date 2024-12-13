@@ -86,7 +86,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         if (cmd.getType().equals(CmdType.ResCapture)) {
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START) {
-//                RemoteClient.getRemoteClient().getRemoteScreen().launch();
+                RemoteClient.getRemoteClient().getRemoteScreen().launch();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
             } else if (cmdResCapture.getCode() == CmdResCapture.OFFLINE) {
@@ -184,7 +184,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 colorsCb.setSelected(captureEngineConfiguration.isCaptureColors());
                 pane.add(colorsLbl).setEnabled(!false);
                 pane.add(colorsCb).setEnabled(!false);
-
                 tickMillisSlider.addChangeListener(e -> {
                     actualTick.setText(tickMillisSlider.getValue() < 1000 ? format("%dms", tickMillisSlider.getValue()) : "1s");
                     if (!tickMillisSlider.getValueIsAdjusting()) {
@@ -245,7 +244,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private void sendCaptureConfiguration(final CaptureEngineConfiguration captureEngineConfiguration) {
-        this.fireCmd(new CmdCaptureConf());
+        this.fireCmd(new CmdCaptureConf(captureEngineConfiguration));
     }
 
     public Action createCompressionConfigurationAction() {
@@ -346,6 +345,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
-        System.out.println(compressorEngineConfiguration);
+        this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration));
     }
 }
