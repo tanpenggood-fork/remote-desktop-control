@@ -23,4 +23,5 @@ public class Constants {
      * Number of tiles after a purge.
      */
     public static final int DEFAULT_PURGE_SIZE = 24 * 4096;
+
 }

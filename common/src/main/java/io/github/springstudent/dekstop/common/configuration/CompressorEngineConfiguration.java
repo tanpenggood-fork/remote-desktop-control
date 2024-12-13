@@ -26,7 +26,6 @@ public class CompressorEngineConfiguration extends Configuration {
     /**
      * Default : takes its values from the current preferences.
      *
-     * @see mpo.dayon.common.preference.Preferences
      */
     public CompressorEngineConfiguration() {
         final Preferences prefs = Preferences.getPreferences();

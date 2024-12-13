@@ -10,6 +10,7 @@ import io.github.springstudent.dekstop.common.bean.MemByteBuffer;
 import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
 import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
+
 /**
  * 被控制方
  *
@@ -51,8 +52,6 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         compressorEngine.start(1);
     }
 
-
-
     public void closeSession(String deviceCode) {
         fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.STOP_CAPTURE));
     }
@@ -66,9 +65,9 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_) {
                 stop();
             }
-        }else if(cmd.getType().equals(CmdType.CaptureConfig)){
+        } else if (cmd.getType().equals(CmdType.CaptureConfig)) {
             captureEngine.reconfigure(((CmdCaptureConf) cmd).getConfiguration());
-        }else if(cmd.getType().equals(CmdType.CompressorConfig)){
+        } else if (cmd.getType().equals(CmdType.CompressorConfig)) {
             compressorEngine.reconfigure(((CmdCompressorConf) cmd).getConfiguration());
         }
     }

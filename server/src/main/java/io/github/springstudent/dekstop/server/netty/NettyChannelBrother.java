@@ -26,14 +26,18 @@ public class NettyChannelBrother {
 
     public void startControll() {
         NettyUtils.updateControllFlag(controller, Constants.CONTROLLER);
+        NettyUtils.updateControllDeviceCode(controller, NettyUtils.getDeviceCode(controlled));
         NettyUtils.updateControllFlag(controlled, Constants.CONTROLLED);
+        NettyUtils.updateControllDeviceCode(controlled, NettyUtils.getDeviceCode(controller));
         controller.writeAndFlush(new CmdResCapture(CmdResCapture.START));
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_));
     }
 
     public void stopControll() {
         NettyUtils.updateControllFlag(controller, null);
+        NettyUtils.updateControllDeviceCode(controller, null);
         NettyUtils.updateControllFlag(controlled, null);
+        NettyUtils.updateControllDeviceCode(controlled, null);
         controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
     }
@@ -45,4 +49,5 @@ public class NettyChannelBrother {
     public Channel getControlled() {
         return controlled;
     }
+
 }

@@ -23,7 +23,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
     @SuppressWarnings("unchecked")
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Cmd cmd) throws Exception {
-        System.out.println(cmd);
         NettyUtils.updateReaderTime(ctx.channel(), System.currentTimeMillis());
         if (cmd.getType().equals(CmdType.ReqPing)) {
             ctx.writeAndFlush(new CmdResPong()).addListeners((ChannelFutureListener) future -> {
@@ -55,7 +54,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                 }
             }
         } else if (cmd.getType().equals(CmdType.Capture)) {
-            //TODO 存在场景控制端直接关闭，此时发送的截图包无人接收，此时向被控制端发送停止抓图
             Channel controllerChannel = NettyChannelManager.getControllerChannel(ctx.channel());
             if (controllerChannel != null) {
                 controllerChannel.writeAndFlush(cmd);
@@ -74,6 +72,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
         NettyUtils.updateDeviceCode(ctx.channel(), deviceCode);
         NettyChannelManager.addChannel(deviceCode, ctx.channel());
         ctx.channel().writeAndFlush(new CmdResCliInfo(deviceCode, "111111"));
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
     }
 
     @Override
