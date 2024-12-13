@@ -4,7 +4,6 @@ import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -16,18 +15,16 @@ import static java.lang.Math.abs;
 import static java.lang.String.format;
 
 /**
- * 远程端桌面
  *
  * @author ZhouNing
  * @date 2024/12/9 8:42
- **/
+ */
 public class RemoteScreen extends JFrame {
 
     private static final int OFFSET = 6;
 
     private static final int DEFAULT_FACTOR = 1;
     private double xFactor = DEFAULT_FACTOR;
-
     private double yFactor = DEFAULT_FACTOR;
 
     private Dimension canvas;
@@ -36,85 +33,15 @@ public class RemoteScreen extends JFrame {
 
     private JScrollPane screenPanelWrapper;
 
-    private JToggleButton fitToScreenButton;
-
-    private JToggleButton keepAspectRatioButton;
-
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
-
-    private final AtomicBoolean isImmutableWindowsSize = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
 
     public RemoteScreen() {
-        // 创建主窗口
         super("远程桌面");
         initFrame();
-        initPannel();
-    }
-
-    private void initPannel() {
-        // 主容器
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        //顶部菜单
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        this.fitToScreenButton = new JToggleButton();
-        final Action fitScreenAction = new AbstractAction("适配屏幕") {
-            @Override
-            public void actionPerformed(ActionEvent ev) {
-                fitToScreenActivated.set(!fitToScreenActivated.get());
-                if (fitToScreenActivated.get()) {
-                    keepAspectRatioButton.setVisible(true);
-                    resetCanvas();
-                } else {
-                    keepAspectRatioButton.setVisible(false);
-                    resetFactors();
-                }
-                repaint();
-            }
-        };
-        fitToScreenButton.setAction(fitScreenAction);
-        fitToScreenButton.setVisible(true);
-        this.keepAspectRatioButton = new JToggleButton();
-        final Action keepAspectRatio = new AbstractAction("保持宽高比") {
-            @Override
-            public void actionPerformed(ActionEvent ev) {
-                keepAspectRatioActivated.set(!keepAspectRatioActivated.get());
-                resetCanvas();
-                repaint();
-            }
-        };
-        keepAspectRatioButton.setAction(keepAspectRatio);
-        keepAspectRatioButton.setVisible(false);
-        JButton sessionButton = new JButton();
-        sessionButton.setAction(RemoteClient.getRemoteClient().getController().createCaptureConfigurationAction());
-        JButton settingsButton = new JButton();
-        settingsButton.setAction(RemoteClient.getRemoteClient().getController().createCompressionConfigurationAction());
-        buttonPanel.add(fitToScreenButton);
-        buttonPanel.add(keepAspectRatioButton);
-        buttonPanel.add(sessionButton);
-        buttonPanel.add(settingsButton);
-        buttonPanel.setOpaque(false);
-        topPanel.add(buttonPanel, BorderLayout.SOUTH);
-        //中间画布
-        this.screenPannel = new CanvasPannel();
-        screenPannel.setBackground(Color.WHITE);
-        screenPannel.setFocusable(false);
-        screenPanelWrapper = new JScrollPane(screenPannel);
-        // 底部状态栏
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
-        JLabel statusLabel = new JLabel("0.00 bit/s    0 (-%)    0    74 M of 112 M    00:00:00", SwingConstants.LEFT);
-        statusLabel.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        bottomPanel.add(statusLabel, BorderLayout.WEST);
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(screenPanelWrapper, BorderLayout.CENTER);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-        this.add(mainPanel);
+        initCanvasPanel();
+        initMenuBar();
     }
 
     private void initFrame() {
@@ -130,21 +57,62 @@ public class RemoteScreen extends JFrame {
         });
     }
 
-    public void launch() {
-        SwingUtilities.invokeLater(() -> {
-            this.setVisible(true);
-        });
+    private void initCanvasPanel() {
+        this.screenPannel = new CanvasPannel();
+        screenPannel.setBackground(Color.WHITE);
+        screenPannel.setFocusable(false);
+        this.screenPanelWrapper = new JScrollPane(screenPannel);
+        this.add(screenPanelWrapper, BorderLayout.CENTER);
     }
 
-    public void close() {
-        SwingUtilities.invokeLater(() -> {
-            this.setVisible(false);
-            this.dispose();
+    private void initMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        // 适配屏幕菜单项
+        JCheckBoxMenuItem fitToScreenItem = new JCheckBoxMenuItem(new AbstractAction("适配屏幕") {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                fitToScreenActivated.set(!fitToScreenActivated.get());
+                if (fitToScreenActivated.get()) {
+                    resetCanvas();
+                } else {
+                    resetFactors();
+                }
+                repaint();
+            }
         });
+        // 保持宽高比菜单项
+        JCheckBoxMenuItem keepAspectRatioItem = new JCheckBoxMenuItem(new AbstractAction("保持宽高比") {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                keepAspectRatioActivated.set(!keepAspectRatioActivated.get());
+                resetCanvas();
+                repaint();
+            }
+        });
+        keepAspectRatioItem.setEnabled(false);
+        // 根据适配屏幕的状态动态控制保持宽高比的可见性
+        fitToScreenItem.addActionListener(e -> keepAspectRatioItem.setEnabled(fitToScreenActivated.get()));
+        // 会话配置
+        JMenuItem sessionConfigItem = new JMenuItem(RemoteClient.getRemoteClient().getController().createCaptureConfigurationAction());
+        // 压缩设置
+        JMenuItem compressionConfigItem = new JMenuItem(RemoteClient.getRemoteClient().getController().createCompressionConfigurationAction());
+        // 菜单分组
+        JMenu optionsMenu = new JMenu("选项");
+        optionsMenu.add(fitToScreenItem);
+        optionsMenu.add(keepAspectRatioItem);
+        optionsMenu.addSeparator();
+        optionsMenu.add(sessionConfigItem);
+        optionsMenu.add(compressionConfigItem);
+        menuBar.add(optionsMenu);
+        this.setJMenuBar(menuBar);
     }
 
-    public CanvasPannel getScreenPannel() {
-        return screenPannel;
+    public boolean getFitToScreenActivated() {
+        return fitToScreenActivated.get();
+    }
+
+    public boolean getKeepAspectRatioActivated() {
+        return keepAspectRatioActivated.get();
     }
 
     public double getxFactor() {
@@ -159,12 +127,23 @@ public class RemoteScreen extends JFrame {
         return canvas;
     }
 
-    public boolean getFitToScreenActivated() {
-        return fitToScreenActivated.get();
+    public CanvasPannel getScreenPannel() {
+        return screenPannel;
     }
 
-    public boolean getKeepAspectRatioActivated() {
-        return keepAspectRatioActivated.get();
+    public JScrollPane getScreenPanelWrapper() {
+        return screenPanelWrapper;
+    }
+
+    public void launch() {
+        SwingUtilities.invokeLater(() -> this.setVisible(true));
+    }
+
+    public void close() {
+        SwingUtilities.invokeLater(() -> {
+            this.setVisible(false);
+            this.dispose();
+        });
     }
 
     public void computeScaleFactors(int sourceWidth, int sourceHeight, boolean keepAspectRatio) {
@@ -172,7 +151,7 @@ public class RemoteScreen extends JFrame {
         canvas.setSize(canvas.getWidth() - OFFSET, canvas.getHeight() - OFFSET);
         xFactor = canvas.getWidth() / sourceWidth;
         yFactor = canvas.getHeight() / sourceHeight;
-        if (keepAspectRatio && !isImmutableWindowsSize.get() && abs(xFactor - yFactor) > 0.01) {
+        if (keepAspectRatio && abs(xFactor - yFactor) > 0.01) {
             resizeWindow(sourceWidth, sourceHeight);
         }
     }
@@ -184,21 +163,17 @@ public class RemoteScreen extends JFrame {
         if (xFactor < yFactor) {
             if ((sourceWidth * yFactor) + OFFSET < maximumWindowBounds.width) {
                 xFactor = yFactor;
-                Log.debug("Get wider");
                 this.setSize((int) (sourceWidth * xFactor) + OFFSET, this.getHeight());
             } else {
                 yFactor = xFactor;
-                Log.debug("Get lower");
                 this.setSize(this.getWidth(), (int) (sourceHeight * yFactor) + menuHeight + OFFSET);
             }
         } else {
             if ((sourceHeight * xFactor) + menuHeight + OFFSET < maximumWindowBounds.height) {
                 yFactor = xFactor;
-                Log.debug("Get higher");
                 this.setSize(this.getWidth(), (int) (sourceHeight * yFactor) + menuHeight + OFFSET);
             } else {
                 xFactor = yFactor;
-                Log.debug("Get narrower");
                 this.setSize((int) (sourceWidth * xFactor) + OFFSET, this.getHeight());
             }
         }
@@ -233,9 +208,6 @@ public class RemoteScreen extends JFrame {
             }
         }
 
-        /**
-         * Called from within the de-compressor engine thread (!)
-         */
         void onCaptureUpdated(final BufferedImage captureImage) {
             SwingUtilities.invokeLater(() -> {
                 final int captureImageWidth = captureImage.getWidth();
@@ -252,5 +224,4 @@ public class RemoteScreen extends JFrame {
             });
         }
     }
-
 }

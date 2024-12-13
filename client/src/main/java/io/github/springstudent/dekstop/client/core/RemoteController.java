@@ -144,7 +144,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
             @Override
             public void actionPerformed(ActionEvent ev) {
-                JFrame captureFrame = (JFrame) SwingUtilities.getRoot((Component) ev.getSource());
+                JFrame captureFrame = (JFrame) SwingUtilities.getRoot(RemoteClient.getRemoteClient().getRemoteScreen());
 
                 final JPanel pane = new JPanel();
                 pane.setLayout(new GridLayout(3, 2, 10, 10));
@@ -252,7 +252,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
             @Override
             public void actionPerformed(ActionEvent ev) {
-                JFrame compressionFrame = (JFrame) SwingUtilities.getRoot((Component) ev.getSource());
+                JFrame compressionFrame = (JFrame) SwingUtilities.getRoot(RemoteClient.getRemoteClient().getRemoteScreen());
 
                 final JPanel pane = new JPanel();
                 pane.setLayout(new GridLayout(4, 2, 10, 10));
