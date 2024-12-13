@@ -1,6 +1,5 @@
 package io.github.springstudent.dekstop.server.netty;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import io.github.springstudent.dekstop.common.command.*;
@@ -56,6 +55,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                 }
             }
         }else if(cmd.getType().equals(CmdType.Capture)){
+            //TODO 存在场景控制端直接关闭，此时发送的截图包无人接收，此时向被控制端发送停止抓图
             Channel controllerChannel = NettyChannelManager.getControllerChannel(ctx.channel());
             if(controllerChannel!=null){
                 controllerChannel.writeAndFlush(cmd);

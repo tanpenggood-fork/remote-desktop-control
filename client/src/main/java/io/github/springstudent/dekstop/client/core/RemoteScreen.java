@@ -1,24 +1,32 @@
 package io.github.springstudent.dekstop.client.core;
+
 import io.github.springstudent.dekstop.client.RemoteClient;
+import io.github.springstudent.dekstop.client.utils.DialogFactory;
+import io.github.springstudent.dekstop.common.bean.Gray8Bits;
+import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static javax.swing.SwingConstants.HORIZONTAL;
 
 /**
  * 远程端桌面
+ *
  * @author ZhouNing
  * @date 2024/12/9 8:42
  **/
-public class RemoteScreen extends JFrame{
+public class RemoteScreen extends JFrame {
 
     private static final int OFFSET = 6;
 
@@ -33,6 +41,9 @@ public class RemoteScreen extends JFrame{
 
     private JScrollPane screenPanelWrapper;
 
+    private JToggleButton fitToScreenButton;
+
+    private JToggleButton keepAspectRatioButton;
 
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
@@ -40,7 +51,7 @@ public class RemoteScreen extends JFrame{
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
 
-    public RemoteScreen(){
+    public RemoteScreen() {
         // 创建主窗口
         super("远程桌面");
         initFrame();
@@ -53,16 +64,44 @@ public class RemoteScreen extends JFrame{
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         //顶部菜单
-        JPanel topPanel = new JPanel(new BorderLayout()); // 使用 BorderLayout
+        JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
-        JLabel titleLabel = new JLabel("远程桌面画面", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("宋体", Font.BOLD, 12));
-        topPanel.add(titleLabel, BorderLayout.NORTH);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        JButton connectButton = new JButton("打开全屏");
-        JButton sessionButton = new JButton("画面设置");
-        JButton settingsButton = new JButton("压缩算法");
-        buttonPanel.add(connectButton);
+        this.fitToScreenButton = new JToggleButton();
+        final Action fitScreenAction = new AbstractAction("适配屏幕") {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                fitToScreenActivated.set(!fitToScreenActivated.get());
+                if (fitToScreenActivated.get()) {
+                    keepAspectRatioButton.setVisible(true);
+                    resetCanvas();
+                } else {
+                    keepAspectRatioButton.setVisible(false);
+                    resetFactors();
+                }
+                repaint();
+            }
+        };
+        fitToScreenButton.setAction(fitScreenAction);
+        fitToScreenButton.setVisible(true);
+        this.keepAspectRatioButton = new JToggleButton();
+        final Action keepAspectRatio = new AbstractAction("保持宽高比") {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                keepAspectRatioActivated.set(!keepAspectRatioActivated.get());
+                resetCanvas();
+                repaint();
+            }
+        };
+        keepAspectRatioButton.setAction(keepAspectRatio);
+        keepAspectRatioButton.setVisible(false);
+
+        JButton sessionButton = new JButton();
+        sessionButton.setAction(RemoteClient.getRemoteClient().getController().createCaptureConfigurationAction());
+        JButton settingsButton = new JButton();
+        settingsButton.setAction(RemoteClient.getRemoteClient().getController().createCompressionConfigurationAction());
+        buttonPanel.add(fitToScreenButton);
+        buttonPanel.add(keepAspectRatioButton);
         buttonPanel.add(sessionButton);
         buttonPanel.add(settingsButton);
         buttonPanel.setOpaque(false);
@@ -82,8 +121,6 @@ public class RemoteScreen extends JFrame{
         mainPanel.add(screenPannel, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
         this.add(mainPanel);
-
-
     }
 
     private void initFrame() {
@@ -99,14 +136,14 @@ public class RemoteScreen extends JFrame{
         });
     }
 
-    public void launch(){
-        SwingUtilities.invokeLater(()->{
+    public void launch() {
+        SwingUtilities.invokeLater(() -> {
             this.setVisible(true);
         });
     }
 
-    public void close(){
-        SwingUtilities.invokeLater(()->{
+    public void close() {
+        SwingUtilities.invokeLater(() -> {
             this.setVisible(false);
             this.dispose();
         });
@@ -136,7 +173,7 @@ public class RemoteScreen extends JFrame{
         return keepAspectRatioActivated.get();
     }
 
-    void computeScaleFactors(int sourceWidth, int sourceHeight, boolean keepAspectRatio) {
+    public void computeScaleFactors(int sourceWidth, int sourceHeight, boolean keepAspectRatio) {
         canvas = screenPanelWrapper.getSize();
         canvas.setSize(canvas.getWidth() - OFFSET, canvas.getHeight() - OFFSET);
         xFactor = canvas.getWidth() / sourceWidth;
@@ -174,9 +211,16 @@ public class RemoteScreen extends JFrame{
         Log.debug("%s", () -> format("Resized W:H %s:%s x:y %s:%s", this.getWidth(), this.getHeight(), xFactor, yFactor));
     }
 
+    private void resetFactors() {
+        xFactor = DEFAULT_FACTOR;
+        yFactor = DEFAULT_FACTOR;
+    }
+
+    void resetCanvas() {
+        canvas = null;
+    }
 
     static class CanvasPannel extends JPanel {
-
 
         private static final int MOUSE_CURSOR_WIDTH = 12;
         private static final int MOUSE_CURSOR_HEIGHT = 20;

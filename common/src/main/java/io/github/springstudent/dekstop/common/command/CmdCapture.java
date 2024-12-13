@@ -70,7 +70,7 @@ public class CmdCapture extends Cmd {
         encodeEnum(out, compressionMethod);
         out.writeByte(compressionConfiguration != null ? 1 : 0);
         if (compressionConfiguration != null) {
-            new CmdCompressorConfiguration(compressionConfiguration).encode(out);
+            new CmdCompressorConf(compressionConfiguration).encode(out);
         }
         out.writeInt(payload.size());
         out.writeBytes(payload.getInternal(), 0, payload.size());
@@ -81,7 +81,7 @@ public class CmdCapture extends Cmd {
         final CompressionMethod compressionMethod = decodeEnum(in, CompressionMethod.class);
         final CompressorEngineConfiguration compressionConfiguration;
         if (in.readByte() == 1) {
-            compressionConfiguration = CmdCompressorConfiguration.decode(in).getConfiguration();
+            compressionConfiguration = CmdCompressorConf.decode(in).getConfiguration();
         } else {
             compressionConfiguration = null;
         }

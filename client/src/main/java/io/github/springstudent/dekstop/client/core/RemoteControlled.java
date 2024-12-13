@@ -22,11 +22,18 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
 
     private CompressorEngine compressorEngine;
 
+    private CaptureEngineConfiguration captureEngineConfiguration;
+
+    private CompressorEngineConfiguration compressorEngineConfiguration;
+
     public RemoteControlled() {
+        captureEngineConfiguration = new CaptureEngineConfiguration();
+        compressorEngineConfiguration = new CompressorEngineConfiguration();
         captureEngine = new CaptureEngine(new RobotCaptureFactory(true));
-        captureEngine.configure(new CaptureEngineConfiguration());
+
+        captureEngine.configure(captureEngineConfiguration);
         compressorEngine = new CompressorEngine();
-        compressorEngine.configure(new CompressorEngineConfiguration());
+        compressorEngine.configure(compressorEngineConfiguration);
         captureEngine.addListener(compressorEngine);
         compressorEngine.addListener(this);
     }
@@ -35,7 +42,6 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
     public void stop() {
         captureEngine.stop();
         compressorEngine.stop();
-
     }
 
     @Override

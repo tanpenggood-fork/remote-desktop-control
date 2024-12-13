@@ -5,8 +5,6 @@ import io.github.springstudent.dekstop.common.command.CmdResCapture;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author ZhouNing
  * @date 2024/12/10 14:15

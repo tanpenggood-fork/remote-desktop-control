@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
- * 小于0x10的状态码代表需要控制端处理，大于0x10的状态吗需要被控制端处理
  * @author ZhouNing
  * @date 2024/12/12 9:17
  **/

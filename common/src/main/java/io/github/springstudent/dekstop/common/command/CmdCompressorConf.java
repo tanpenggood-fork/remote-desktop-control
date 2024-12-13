@@ -9,10 +9,10 @@ import java.io.IOException;
  * @author ZhouNing
  * @date 2024/12/12 18:05
  **/
-public class CmdCompressorConfiguration extends Cmd{
+public class CmdCompressorConf extends Cmd{
     private final CompressorEngineConfiguration configuration;
 
-    public CmdCompressorConfiguration(CompressorEngineConfiguration configuration) {
+    public CmdCompressorConf(CompressorEngineConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -38,12 +38,12 @@ public class CmdCompressorConfiguration extends Cmd{
         out.writeInt(configuration.getCachePurgeSize());
     }
 
-    public static CmdCompressorConfiguration decode(ByteBuf in) throws IOException {
+    public static CmdCompressorConf decode(ByteBuf in) throws IOException {
         final CompressionMethod method = decodeEnum(in, CompressionMethod.class);
         final boolean useCase = in.readByte() == 1;
         final int maxSize = in.readInt();
         final int purgeSize = in.readInt();
-        return new CmdCompressorConfiguration(new CompressorEngineConfiguration(method, useCase, maxSize, purgeSize));
+        return new CmdCompressorConf(new CompressorEngineConfiguration(method, useCase, maxSize, purgeSize));
     }
 
     public String toString() {

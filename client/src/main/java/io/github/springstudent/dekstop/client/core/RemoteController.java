@@ -4,21 +4,31 @@ import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Capture;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
+import io.github.springstudent.dekstop.client.utils.DialogFactory;
+import io.github.springstudent.dekstop.common.bean.CompressionMethod;
+import io.github.springstudent.dekstop.common.bean.Gray8Bits;
 import io.github.springstudent.dekstop.common.command.*;
+import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
+import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.util.AbstractMap;
+import java.util.Properties;
+import java.util.stream.Stream;
 
 import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import static javax.swing.SwingConstants.HORIZONTAL;
 
 /**
  * 控制方
@@ -32,6 +42,10 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private DeCompressorEngine deCompressorEngine;
 
+    private CaptureEngineConfiguration captureEngineConfiguration;
+
+    private CompressorEngineConfiguration compressorEngineConfiguration;
+
     private final Object prevBufferLOCK = new Object();
 
     private byte[] prevBuffer = null;
@@ -40,10 +54,13 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private int prevHeight = -1;
 
-    public RemoteController(){
+    public RemoteController() {
+        captureEngineConfiguration = new CaptureEngineConfiguration();
+        compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
         deCompressorEngine.start(8);
     }
+
     @Override
     public void stop() {
 
@@ -69,7 +86,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         if (cmd.getType().equals(CmdType.ResCapture)) {
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START) {
-                RemoteClient.getRemoteClient().getRemoteScreen().launch();
+//                RemoteClient.getRemoteClient().getRemoteScreen().launch();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
             } else if (cmdResCapture.getCode() == CmdResCapture.OFFLINE) {
@@ -79,7 +96,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             } else if (cmdResCapture.getCode() == CmdResCapture.FAIL) {
                 RemoteClient.getRemoteClient().showMessageDialog("远程控制失败", JOptionPane.ERROR_MESSAGE);
             }
-        }else if(cmd.getType().equals(CmdType.Capture)){
+        } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
         }
     }
@@ -120,5 +137,215 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             Log.error(e.getMessage());
             return image;
         }
+    }
+
+    public Action createCaptureConfigurationAction() {
+        final Action configure = new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                JFrame captureFrame = (JFrame) SwingUtilities.getRoot((Component) ev.getSource());
+
+                final JPanel pane = new JPanel();
+                pane.setLayout(new GridLayout(3, 2, 10, 10));
+
+                final JLabel tickLbl = new JLabel("");
+                tickLbl.setToolTipText("屏幕捕获间隔");
+                final JSlider tickMillisSlider = new JSlider(HORIZONTAL, 30, 1000, captureEngineConfiguration.getCaptureTick());
+                final Properties tickLabelTable = new Properties();
+                JLabel actualTick = new JLabel(format("  %dms  ", tickMillisSlider.getValue()));
+                tickLabelTable.put(30, new JLabel("最小值"));
+                tickLabelTable.put(550, actualTick);
+                tickLabelTable.put(1000, new JLabel("最大值"));
+                tickMillisSlider.setLabelTable(tickLabelTable);
+                tickMillisSlider.setMajorTickSpacing(50);
+                tickMillisSlider.setPaintTicks(true);
+                tickMillisSlider.setPaintLabels(true);
+                pane.add(tickLbl);
+                pane.add(tickMillisSlider);
+
+                final JLabel grayLevelsLbl = new JLabel("灰度值");
+                final JSlider grayLevelsSlider = new JSlider(HORIZONTAL, 0, 6, 6 - captureEngineConfiguration.getCaptureQuantization().ordinal());
+                final Properties grayLabelTable = new Properties();
+                JLabel actualLevels = new JLabel(format("  %d  ", toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
+                grayLabelTable.put(0, new JLabel("最小"));
+                grayLabelTable.put(3, actualLevels);
+                grayLabelTable.put(6, new JLabel("最大"));
+                grayLevelsSlider.setLabelTable(grayLabelTable);
+                grayLevelsSlider.setMajorTickSpacing(1);
+                grayLevelsSlider.setPaintTicks(true);
+                grayLevelsSlider.setPaintLabels(true);
+                grayLevelsSlider.setSnapToTicks(true);
+                pane.add(grayLevelsLbl).setEnabled(!captureEngineConfiguration.isCaptureColors());
+                pane.add(grayLevelsSlider).setEnabled(!captureEngineConfiguration.isCaptureColors());
+
+                final JLabel colorsLbl = new JLabel("彩色模式");
+                final JCheckBox colorsCb = new JCheckBox();
+                colorsCb.setSelected(captureEngineConfiguration.isCaptureColors());
+                pane.add(colorsLbl).setEnabled(!false);
+                pane.add(colorsCb).setEnabled(!false);
+
+                tickMillisSlider.addChangeListener(e -> {
+                    actualTick.setText(tickMillisSlider.getValue() < 1000 ? format("%dms", tickMillisSlider.getValue()) : "1s");
+                    if (!tickMillisSlider.getValueIsAdjusting()) {
+                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
+                                toGrayLevel(grayLevelsSlider.getValue()), captureEngineConfiguration.isCaptureColors()));
+                    }
+                });
+                grayLevelsSlider.addChangeListener(e -> {
+                    actualLevels.setText(format("%d", toGrayLevel(grayLevelsSlider.getValue()).getLevels()));
+                    if (!grayLevelsSlider.getValueIsAdjusting() && !captureEngineConfiguration.isCaptureColors()) {
+                        sendCaptureConfiguration(new CaptureEngineConfiguration(tickMillisSlider.getValue(),
+                                toGrayLevel(grayLevelsSlider.getValue()), false));
+                    }
+                });
+                colorsCb.addActionListener(e -> {
+                    grayLevelsLbl.setEnabled(!colorsCb.isSelected());
+                    grayLevelsSlider.setEnabled(!colorsCb.isSelected());
+                });
+
+                final boolean ok = DialogFactory.showOkCancel(captureFrame, "远程图像设置", pane, true, null);
+
+                if (ok) {
+                    final CaptureEngineConfiguration newCaptureEngineConfiguration = new CaptureEngineConfiguration(tickMillisSlider.getValue(),
+                            toGrayLevel(grayLevelsSlider.getValue()), colorsCb.isSelected());
+                    updateCaptureConfiguration(newCaptureEngineConfiguration);
+                }
+            }
+        };
+        configure.putValue(Action.NAME, "抓图设置");
+        return configure;
+    }
+
+    private void updateCaptureConfiguration(CaptureEngineConfiguration newCaptureEngineConfiguration) {
+        if (!newCaptureEngineConfiguration.equals(captureEngineConfiguration)) {
+            captureEngineConfiguration = newCaptureEngineConfiguration;
+            captureEngineConfiguration.persist();
+            sendCaptureConfiguration(captureEngineConfiguration);
+        }
+    }
+
+    private Gray8Bits toGrayLevel(int value) {
+        switch (value) {
+            case 6:
+                return Gray8Bits.X_256;
+            case 5:
+                return Gray8Bits.X_128;
+            case 4:
+                return Gray8Bits.X_64;
+            case 3:
+                return Gray8Bits.X_32;
+            case 2:
+                return Gray8Bits.X_16;
+            case 1:
+                return Gray8Bits.X_8;
+            default:
+                return Gray8Bits.X_4;
+        }
+    }
+
+    private void sendCaptureConfiguration(final CaptureEngineConfiguration captureEngineConfiguration) {
+        this.fireCmd(new CmdCaptureConf());
+    }
+
+    public Action createCompressionConfigurationAction() {
+        final Action configure = new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                JFrame compressionFrame = (JFrame) SwingUtilities.getRoot((Component) ev.getSource());
+
+                final JPanel pane = new JPanel();
+                pane.setLayout(new GridLayout(4, 2, 10, 10));
+
+                final JLabel methodLbl = new JLabel("压缩算法");
+                final JComboBox<CompressionMethod> methodCb = new JComboBox<>(Stream.of(CompressionMethod.values()).filter(e -> !e.equals(CompressionMethod.NONE)).toArray(CompressionMethod[]::new));
+                methodCb.setSelectedItem(compressorEngineConfiguration.getMethod());
+                pane.add(methodLbl);
+                pane.add(methodCb);
+
+                final JLabel useCacheLbl = new JLabel("使用缓存");
+                final JCheckBox useCacheCb = new JCheckBox();
+                useCacheCb.setSelected(compressorEngineConfiguration.useCache());
+                pane.add(useCacheLbl);
+                pane.add(useCacheCb);
+
+                final JLabel maxSizeLbl = new JLabel("最大缓存值");
+                final JTextField maxSizeTf = new JTextField(valueOf(compressorEngineConfiguration.getCacheMaxSize()));
+                pane.add(maxSizeLbl);
+                pane.add(maxSizeTf);
+
+                final JLabel purgeSizeLbl = new JLabel("缓存充值值");
+                final JTextField purgeSizeTf = new JTextField(valueOf(compressorEngineConfiguration.getCachePurgeSize()));
+                pane.add(purgeSizeLbl);
+                pane.add(purgeSizeTf);
+
+                useCacheCb.addActionListener(ev1 -> {
+                    maxSizeLbl.setEnabled(useCacheCb.isSelected());
+                    maxSizeTf.setEnabled(useCacheCb.isSelected());
+                    purgeSizeLbl.setEnabled(useCacheCb.isSelected());
+                    purgeSizeTf.setEnabled(useCacheCb.isSelected());
+                });
+
+                maxSizeLbl.setEnabled(useCacheCb.isSelected());
+                maxSizeTf.setEnabled(useCacheCb.isSelected());
+                purgeSizeLbl.setEnabled(useCacheCb.isSelected());
+                purgeSizeTf.setEnabled(useCacheCb.isSelected());
+
+                final boolean ok = DialogFactory.showOkCancel(compressionFrame, "压缩", pane, true, () -> {
+                    final String max = maxSizeTf.getText();
+                    if (max.isEmpty()) {
+                        return "缓存最大值不能为空";
+                    }
+                    final int maxValue;
+                    try {
+                        maxValue = Integer.parseInt(max);
+                    } catch (NumberFormatException ex) {
+                        return "缓存最大值只能为数字";
+                    }
+                    if (maxValue <= 0) {
+                        return "缓存最大值必须为正整数";
+                    }
+                    return validatePurgeValue(purgeSizeTf, maxValue);
+                });
+
+                if (ok) {
+                    final CompressorEngineConfiguration newCompressorEngineConfiguration = new CompressorEngineConfiguration((CompressionMethod) methodCb.getSelectedItem(),
+                            useCacheCb.isSelected(), Integer.parseInt(maxSizeTf.getText()), Integer.parseInt(purgeSizeTf.getText()));
+                    if (!newCompressorEngineConfiguration.equals(compressorEngineConfiguration)) {
+                        compressorEngineConfiguration = newCompressorEngineConfiguration;
+                        compressorEngineConfiguration.persist();
+
+                        sendCompressorConfiguration(compressorEngineConfiguration);
+                    }
+                }
+            }
+        };
+        configure.putValue(Action.NAME, "压缩设置");
+        return configure;
+    }
+
+    private String validatePurgeValue(JTextField purgeSizeTf, int maxValue) {
+        final String purge = purgeSizeTf.getText();
+        if (purge.isEmpty()) {
+            return "缓存重置值不能为空";
+        }
+        final int purgeValue;
+        try {
+            purgeValue = Integer.parseInt(purge);
+        } catch (NumberFormatException ex) {
+            return "缓存重置值必须为数字";
+        }
+        if (purgeValue <= 0) {
+            return "缓存重置值必须为正整数";
+        }
+        if (purgeValue >= maxValue) {
+            return "缓存重置值不能大于缓存最大值";
+        }
+        return null;
+    }
+
+    private void sendCompressorConfiguration(final CompressorEngineConfiguration compressorEngineConfiguration) {
+        System.out.println(compressorEngineConfiguration);
     }
 }
