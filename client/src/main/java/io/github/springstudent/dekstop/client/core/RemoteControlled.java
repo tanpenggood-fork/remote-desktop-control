@@ -13,16 +13,17 @@ import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfigu
 import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
 import io.github.springstudent.dekstop.common.log.Log;
 
-import static java.awt.event.KeyEvent.*;
-
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.awt.event.KeyEvent.*;
+
 /**
  * 被控制方
+ *
  * @author ZhouNing
  * @date 2024/12/9 8:40
  **/
@@ -94,9 +95,9 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         } else if (cmd.getType().equals(CmdType.CompressorConfig)) {
             compressorEngine.reconfigure(((CmdCompressorConf) cmd).getConfiguration());
         } else if (cmd.getType().equals(CmdType.KeyControl)) {
-            this.handleMessage((CmdMouseControl) cmd);
-        } else if (cmd.getType().equals(CmdType.MouseControl)) {
             this.handleMessage((CmdKeyControl) cmd);
+        } else if (cmd.getType().equals(CmdType.MouseControl)) {
+            this.handleMessage((CmdMouseControl) cmd);
         }
     }
 
