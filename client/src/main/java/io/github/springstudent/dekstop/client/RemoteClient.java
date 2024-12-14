@@ -70,7 +70,6 @@ public class RemoteClient extends RemoteFrame {
     @Override
     public void closeRemoteScreen() {
         controller.closeSession();
-        remoteScreen.close();
     }
 
     public RemoteScreen getRemoteScreen() {
