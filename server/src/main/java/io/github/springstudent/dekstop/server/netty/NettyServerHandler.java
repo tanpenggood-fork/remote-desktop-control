@@ -50,9 +50,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
             } else {
                 if (controlledChannel != null) {
                     if (cmdReqCapture.getCaputureOp() == CmdReqCapture.STOP_CAPTURE) {
-                        NettyChannelManager.unbindChannelBrother(false, controlledChannel);
+                        NettyChannelManager.unbindChannelBrother(CmdReqCapture.STOP_CAPTURE, controlledChannel);
                     } else if (cmdReqCapture.getCaputureOp() == CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED) {
-                        NettyChannelManager.unbindChannelBrother(true, controlledChannel);
+                        NettyChannelManager.unbindChannelBrother(CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED, controlledChannel);
                     }
                 } else {
                     ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP));

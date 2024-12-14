@@ -1,6 +1,7 @@
 package io.github.springstudent.dekstop.server.netty;
 
 import io.github.springstudent.dekstop.common.bean.Constants;
+import io.github.springstudent.dekstop.common.command.CmdReqCapture;
 import io.github.springstudent.dekstop.common.command.CmdResCapture;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
@@ -33,17 +34,16 @@ public class NettyChannelBrother {
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_));
     }
 
-    public void stopControll(){
-        stopControll(false);
-    }
 
-    public void stopControll(boolean stopByControlled) {
+    public void stopControll(byte stopType) {
         NettyUtils.updateControllFlag(controller, null);
         NettyUtils.updateControllDeviceCode(controller, null);
         NettyUtils.updateControllFlag(controlled, null);
         NettyUtils.updateControllDeviceCode(controlled, null);
-        if (stopByControlled) {
+        if (stopType == CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED) {
             controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_BYCONTROLLED));
+        } else if (stopType == CmdReqCapture.STOP_CAPTURE_CHANNEL_INACTIVE) {
+            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_CHANNELINACTIVE));
         } else {
             controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
         }

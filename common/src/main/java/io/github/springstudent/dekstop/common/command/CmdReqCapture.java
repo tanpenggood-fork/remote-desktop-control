@@ -17,6 +17,8 @@ public class CmdReqCapture extends Cmd {
 
     public static final byte STOP_CAPTURE_BY_CONTROLLED = 0x02;
 
+    public static final byte STOP_CAPTURE_CHANNEL_INACTIVE = 0x03;
+
     private String deviceCode;
 
     private byte caputureOp;

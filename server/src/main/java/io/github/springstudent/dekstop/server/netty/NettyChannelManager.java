@@ -3,6 +3,7 @@ package io.github.springstudent.dekstop.server.netty;
 
 import cn.hutool.core.util.StrUtil;
 import io.github.springstudent.dekstop.common.bean.Constants;
+import io.github.springstudent.dekstop.common.command.CmdReqCapture;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.channel.Channel;
 
@@ -38,7 +39,7 @@ public class NettyChannelManager {
                 channelBrother = channelBrotherMap.remove(NettyUtils.getControllDeviceCode(channel));
             }
             if (channelBrother != null) {
-                channelBrother.stopControll();
+                channelBrother.stopControll(CmdReqCapture.STOP_CAPTURE_CHANNEL_INACTIVE);
             }
         }
     }
@@ -50,10 +51,10 @@ public class NettyChannelManager {
 
     }
 
-    public static NettyChannelBrother unbindChannelBrother(boolean stopByControlled, Channel controlled) {
+    public static NettyChannelBrother unbindChannelBrother(byte stopType, Channel controlled) {
         NettyChannelBrother channelBrother = channelBrotherMap.get(NettyUtils.getDeviceCode(controlled));
         if (channelBrother != null) {
-            channelBrother.stopControll(stopByControlled);
+            channelBrother.stopControll(stopType);
             channelBrotherMap.remove(NettyUtils.getDeviceCode(controlled));
         }
         return channelBrother;
