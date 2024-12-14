@@ -31,12 +31,12 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         RemoteClient.getRemoteClient().updateConnectionStatus(false);
+        RemoteClient.getRemoteClient().setControllChannel(null);
         RemoteClient.getRemoteClient().connectServer();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        RemoteClient.getRemoteClient().getController().setChannel(ctx.channel());
-        RemoteClient.getRemoteClient().getControlled().setChannel(ctx.channel());
+        RemoteClient.getRemoteClient().setControllChannel(ctx.channel());
     }
 }

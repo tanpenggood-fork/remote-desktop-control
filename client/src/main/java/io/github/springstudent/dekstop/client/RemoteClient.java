@@ -11,6 +11,7 @@ import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -124,6 +125,11 @@ public class RemoteClient extends RemoteFrame {
     public void handleCmd(Cmd cmd) {
         controller.handleCmd(cmd);
         controlled.handleCmd(cmd);
+    }
+
+    public void setControllChannel(Channel channel){
+        controller.setChannel(channel);
+        controlled.setChannel(channel);
     }
 
 
