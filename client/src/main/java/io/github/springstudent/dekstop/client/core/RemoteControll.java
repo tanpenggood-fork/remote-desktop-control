@@ -27,6 +27,7 @@ public abstract class RemoteControll {
     protected void fireCmd(Cmd cmd) {
         if (channel != null && channel.isActive()) {
             channel.writeAndFlush(cmd);
+            System.out.println(channel.isActive());
         } else {
             Log.error("client fireCmd error,please check network connect");
         }
