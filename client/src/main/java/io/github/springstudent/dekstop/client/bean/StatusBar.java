@@ -7,6 +7,7 @@ import io.github.springstudent.dekstop.client.monitor.Counter;
 import javax.swing.*;
 import java.awt.*;
 import java.util.TimerTask;
+
 import static java.lang.String.format;
 import static javax.swing.BoxLayout.LINE_AXIS;
 import static javax.swing.SwingConstants.*;
@@ -76,7 +77,7 @@ public class StatusBar extends JPanel {
         lbl.setSize(dimension);
         lbl.setPreferredSize(dimension);
         BigBrother.get().registerRamInfo(new MemoryCounter(lbl));
-        lbl.setToolTipText("内存");
+        lbl.setToolTipText("内存信息");
         add(lbl);
     }
 
@@ -85,7 +86,7 @@ public class StatusBar extends JPanel {
         sessionDuration.setHorizontalAlignment(RIGHT);
         sessionDuration.setSize(dimension);
         sessionDuration.setPreferredSize(dimension);
-        sessionDuration.setToolTipText("连接时长");
+        sessionDuration.setToolTipText("会话时长");
         add(sessionDuration);
     }
 

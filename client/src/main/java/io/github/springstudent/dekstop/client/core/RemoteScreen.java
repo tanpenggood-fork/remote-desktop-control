@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.im.InputContext;
 import java.awt.image.BufferedImage;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,6 +40,8 @@ public class RemoteScreen extends JFrame {
     private CanvasPannel screenPannel;
 
     private JScrollPane screenPanelWrapper;
+
+    private Timer sessionTimer;
 
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
@@ -256,10 +259,20 @@ public class RemoteScreen extends JFrame {
     }
 
     public void launch() {
+        long sessionStartTime = Instant.now().getEpochSecond();
+        sessionTimer = new Timer(1000, e -> {
+            final long seconds = Instant.now().getEpochSecond() - sessionStartTime;
+            statusBar.setSessionDuration(format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
+        });
+        sessionTimer.start();
         SwingUtilities.invokeLater(() -> this.setVisible(true));
+
     }
 
     public void close() {
+        if (sessionTimer != null) {
+            sessionTimer.stop();
+        }
         SwingUtilities.invokeLater(() -> {
             this.setVisible(false);
             this.dispose();
