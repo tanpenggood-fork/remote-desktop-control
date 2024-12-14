@@ -43,9 +43,9 @@ public class NettyChannelBrother {
         NettyUtils.updateControllFlag(controlled, null);
         NettyUtils.updateControllDeviceCode(controlled, null);
         if (stopByControlled) {
-            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
-        } else {
             controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_BYCONTROLLED));
+        } else {
+            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
         }
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
     }
