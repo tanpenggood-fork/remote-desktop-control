@@ -169,7 +169,6 @@ public abstract class RemoteFrame extends JFrame {
         JOptionPane.showMessageDialog(this, msg, "提示", messageType);
     }
 
-
     public abstract void openRemoteScreen(String remoteName);
 
     public abstract void closeRemoteScreen();

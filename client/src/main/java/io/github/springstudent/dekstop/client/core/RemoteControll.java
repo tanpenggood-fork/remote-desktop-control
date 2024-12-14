@@ -1,9 +1,12 @@
 package io.github.springstudent.dekstop.client.core;
 
 
+import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.netty.channel.Channel;
+
+import javax.swing.*;
 
 /**
  * @author ZhouNing
@@ -27,6 +30,12 @@ public abstract class RemoteControll {
         } else {
             Log.error("client fireCmd error,please check network connect");
         }
+    }
+
+    protected void showMessageDialog(Object msg, int messageType) {
+        SwingUtilities.invokeLater(() ->
+                RemoteClient.getRemoteClient().showMessageDialog(msg, messageType)
+        );
     }
 
     public abstract void handleCmd(Cmd cmd);
