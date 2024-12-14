@@ -83,13 +83,13 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
         deCompressorEngine.start(8);
-        receivedBitCounter = new BitCounter("receivedBits", "网络宽带");
+        receivedBitCounter = new BitCounter("receivedBits", "网络宽带使用量");
         receivedBitCounter.start(1000);
-        receivedTileCounter = new TileCounter("receivedTiles", "收到的像素块数量");
+        receivedTileCounter = new TileCounter("receivedTiles", "收到的块数量(缓存命中率)");
         receivedTileCounter.start(1000);
-        skippedTileCounter = new SkippedTileCounter("skippedTiles", "跳过的像素块数量");
+        skippedTileCounter = new SkippedTileCounter("skippedTiles", "跳过块的数量");
         skippedTileCounter.start(1000);
-        mergedTileCounter = new MergedTileCounter("mergedTiles", "合并像素块数");
+        mergedTileCounter = new MergedTileCounter("mergedTiles", "合并的块数量");
         mergedTileCounter.start(1000);
         captureCompressionCounter = new CaptureCompressionCounter("captureCompression", "压缩比");
         captureCompressionCounter.start(1000);
