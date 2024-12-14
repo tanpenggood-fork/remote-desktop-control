@@ -1,6 +1,5 @@
 package io.github.springstudent.dekstop.client;
 
-import cn.hutool.core.util.StrUtil;
 import io.github.springstudent.dekstop.client.core.RemoteControlled;
 import io.github.springstudent.dekstop.client.core.RemoteController;
 import io.github.springstudent.dekstop.client.core.RemoteFrame;
@@ -50,7 +49,6 @@ public class RemoteClient extends RemoteFrame {
         this.controlled = new RemoteControlled();
         this.controller = new RemoteController();
         this.remoteScreen = new RemoteScreen();
-        this.remoteScreen.addListener(controller);
         this.connectServer();
     }
 

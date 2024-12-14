@@ -6,6 +6,7 @@ import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
 import io.github.springstudent.dekstop.client.concurrent.DefaultThreadFactoryEx;
 import io.github.springstudent.dekstop.client.concurrent.Executable;
+import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -22,9 +23,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Stream;
@@ -65,6 +64,18 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private final ThreadPoolExecutor executor;
 
+    private BitCounter receivedBitCounter;
+
+    private TileCounter receivedTileCounter;
+
+    private SkippedTileCounter skippedTileCounter;
+
+    private MergedTileCounter mergedTileCounter;
+
+    private CaptureCompressionCounter captureCompressionCounter;
+
+    private ArrayList<Counter<?>> counters;
+
     public RemoteController() {
         executor = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new LinkedBlockingQueue<>());
         executor.setThreadFactory(new DefaultThreadFactoryEx("controller-executor"));
@@ -72,6 +83,17 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
         deCompressorEngine.start(8);
+        receivedBitCounter = new BitCounter("receivedBits", "网络宽带");
+        receivedBitCounter.start(1000);
+        receivedTileCounter = new TileCounter("receivedTiles", "收到的像素块数量");
+        receivedTileCounter.start(1000);
+        skippedTileCounter = new SkippedTileCounter("skippedTiles", "跳过的像素块数量");
+        skippedTileCounter.start(1000);
+        mergedTileCounter = new MergedTileCounter("mergedTiles", "合并像素块数");
+        mergedTileCounter.start(1000);
+        captureCompressionCounter = new CaptureCompressionCounter("captureCompression", "压缩比");
+        captureCompressionCounter.start(1000);
+        counters = new ArrayList<>(Arrays.asList(receivedBitCounter, receivedTileCounter, skippedTileCounter, mergedTileCounter, captureCompressionCounter));
     }
 
     @Override
@@ -93,6 +115,9 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.STOP_CAPTURE));
     }
 
+    public ArrayList<Counter<?>> getCounters() {
+        return counters;
+    }
 
     @Override
     public void handleCmd(Cmd cmd) {
@@ -109,7 +134,12 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             }
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
+            countReceivedBit(cmd);
         }
+    }
+
+    private void countReceivedBit(Cmd cmd) {
+        receivedBitCounter.add(8d * cmd.getWireSize());
     }
 
     @Override
@@ -135,7 +165,10 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         } else {
             remoteScreen.getScreenPannel().onCaptureUpdated(image.getKey());
         }
-
+        receivedTileCounter.add(capture.getDirtyTileCount(), cacheHits);
+        skippedTileCounter.add(capture.getSkipped());
+        mergedTileCounter.add(capture.getMerged());
+        captureCompressionCounter.add(capture.getDirtyTileCount(), compressionRatio);
     }
 
     private BufferedImage scaleImage(BufferedImage image, int width, int height) {

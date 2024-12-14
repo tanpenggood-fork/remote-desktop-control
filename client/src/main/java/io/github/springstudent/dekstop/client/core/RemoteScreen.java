@@ -2,12 +2,16 @@ package io.github.springstudent.dekstop.client.core;
 
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Listeners;
+import io.github.springstudent.dekstop.client.bean.StatusBar;
+import io.github.springstudent.dekstop.client.monitor.Counter;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.im.InputContext;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
@@ -23,10 +27,13 @@ public class RemoteScreen extends JFrame {
 
     private transient Listeners<RemoteScreenListener> listeners = new Listeners();
 
+    private ArrayList<Counter<?>> counters = new ArrayList<>();
+
     private static final int DEFAULT_FACTOR = 1;
     private double xFactor = DEFAULT_FACTOR;
     private double yFactor = DEFAULT_FACTOR;
 
+    private StatusBar statusBar;
     private Dimension canvas;
 
     private CanvasPannel screenPannel;
@@ -41,10 +48,13 @@ public class RemoteScreen extends JFrame {
 
     public RemoteScreen() {
         super("远程桌面");
+        listeners.add(RemoteClient.getRemoteClient().getController());
+        counters.addAll(RemoteClient.getRemoteClient().getController().getCounters());
         initFrame();
         initCanvasPanel();
         initMenuBar();
         initListeners();
+        initStatusBar();
     }
 
 
@@ -118,6 +128,32 @@ public class RemoteScreen extends JFrame {
         addMinMaximizedListener();
     }
 
+    private void initStatusBar() {
+        final StatusBar statusBar = new StatusBar();
+        final Component horizontalStrut = Box.createHorizontalStrut(20);
+        statusBar.add(horizontalStrut);
+        for (Counter<?> counter : counters) {
+            statusBar.addSeparator();
+            statusBar.addCounter(counter, counter.getWidth());
+        }
+        statusBar.addSeparator();
+        statusBar.addRamInfo();
+        statusBar.addSeparator();
+        statusBar.addConnectionDuration();
+        statusBar.add(horizontalStrut);
+        statusBar.add(Box.createHorizontalStrut(10));
+        add(statusBar, BorderLayout.SOUTH);
+        this.statusBar = statusBar;
+        updateInputLocale();
+        new Timer(5000, e -> updateInputLocale()).start();
+    }
+
+    private void updateInputLocale() {
+        String currentKeyboardLayout = InputContext.getInstance().getLocale().toString();
+        if (!currentKeyboardLayout.equals(statusBar.getKeyboardLayout())) {
+            statusBar.setKeyboardLayout(currentKeyboardLayout);
+        }
+    }
 
     private void addMouseListeners() {
         screenPannel.addMouseListener(new MouseAdapter() {
@@ -165,6 +201,10 @@ public class RemoteScreen extends JFrame {
 
     public void addListener(RemoteScreenListener listener) {
         listeners.add(listener);
+    }
+
+    public void addCounts(ArrayList<Counter<?>> list) {
+        counters.addAll(list);
     }
 
     private void addResizeListener() {
