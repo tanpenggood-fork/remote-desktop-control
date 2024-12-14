@@ -16,7 +16,7 @@ import io.github.springstudent.dekstop.client.utils.SystemUtilities;
 
 public class StatusBar extends JPanel {
 
-    private static final int HEIGHT = 5;
+    private static final int HEIGHT = 20;
     private final JLabel message = new JLabel();
     private final JLabel sessionDuration = new JLabel("00:00:00");
     private final JLabel keyboardLayout = new JLabel();
