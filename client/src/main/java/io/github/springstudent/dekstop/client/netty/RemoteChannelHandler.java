@@ -18,7 +18,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Cmd cmd) throws Exception {
-        Log.debug(format("client recieved msg=%s", cmd));
+        Log.info(format("client recieved msg=%s", cmd));
         if (cmd.getType().equals(CmdType.ResCliInfo)) {
             CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
             RemoteClient.getRemoteClient().setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
