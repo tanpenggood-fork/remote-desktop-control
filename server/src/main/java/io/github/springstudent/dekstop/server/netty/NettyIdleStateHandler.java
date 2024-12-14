@@ -22,7 +22,7 @@ public class NettyIdleStateHandler extends IdleStateHandler {
 
     @Override
     protected void channelIdle(ChannelHandlerContext ctx, IdleStateEvent evt) throws Exception {
-        long heartBeatTime = Constants.HEARTBEAT_DURATION_SECONDS * 1000 * 3;
+        long heartBeatTime = Constants.HEARTBEAT_DURATION_SECONDS * 1000 * 5;
         Long lastReadTime = NettyUtils.getReaderTime(ctx.channel());
         if (lastReadTime != null && System.currentTimeMillis() - lastReadTime > heartBeatTime) {
             log.warn("server close channel,client heartbeat timeout");
