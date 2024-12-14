@@ -2,6 +2,7 @@ package io.github.springstudent.dekstop.client.core;
 
 
 import io.github.springstudent.dekstop.common.command.Cmd;
+import io.github.springstudent.dekstop.common.log.Log;
 import io.netty.channel.Channel;
 
 /**
@@ -24,7 +25,7 @@ public abstract class RemoteControll {
         if (channel != null && channel.isActive()) {
             channel.writeAndFlush(cmd);
         } else {
-
+            Log.error("client fireCmd error,please check network connect");
         }
     }
 

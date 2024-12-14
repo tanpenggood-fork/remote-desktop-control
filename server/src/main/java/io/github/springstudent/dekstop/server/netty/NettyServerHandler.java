@@ -23,7 +23,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
     @SuppressWarnings("unchecked")
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Cmd cmd) throws Exception {
-        System.out.println(cmd);
+        log.info("server recived cmd ={}", cmd);
         NettyUtils.updateReaderTime(ctx.channel(), System.currentTimeMillis());
         if (cmd.getType().equals(CmdType.ReqPing)) {
             ctx.writeAndFlush(new CmdResPong()).addListeners((ChannelFutureListener) future -> {

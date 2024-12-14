@@ -7,6 +7,7 @@ import io.github.springstudent.dekstop.client.core.RemoteScreen;
 import io.github.springstudent.dekstop.client.netty.RemoteChannelHandler;
 import io.github.springstudent.dekstop.client.netty.RemoteStateIdleHandler;
 import io.github.springstudent.dekstop.common.command.Cmd;
+import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
@@ -15,11 +16,11 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.concurrent.TimeUnit;
+
+import static java.lang.String.format;
 
 /**
  * @author ZhouNing
@@ -28,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 public class RemoteClient extends RemoteFrame {
     private static RemoteClient remoteClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteClient.class);
 
     private String serverIp;
 
@@ -98,6 +98,20 @@ public class RemoteClient extends RemoteFrame {
         connect(bootstrap, 0);
     }
 
+    private void connect(Bootstrap bootstrap, int retry) {
+        bootstrap.connect(serverIp, serverPort).addListener(future -> {
+            if (future.isSuccess()) {
+                Log.info("connect to remote server success");
+                this.connectStatus = true;
+            } else {
+                this.connectStatus = false;
+                Integer order = retry + 1;
+                Log.info(format("reconnect to remote server serverIp=%s ,serverPort=%d,retry times =%d", serverIp, serverPort, order));
+                bootstrap.config().group().schedule(() -> connect(bootstrap, order), 5, TimeUnit
+                        .SECONDS);
+            }
+        });
+    }
 
     public RemoteController getController() {
         return controller;
@@ -112,20 +126,6 @@ public class RemoteClient extends RemoteFrame {
         controlled.handleCmd(cmd);
     }
 
-    private void connect(Bootstrap bootstrap, int retry) {
-        bootstrap.connect(serverIp, serverPort).addListener(future -> {
-            if (future.isSuccess()) {
-                logger.info("connect to remote server success");
-                this.connectStatus = true;
-            } else {
-                this.connectStatus = false;
-                Integer order = retry + 1;
-                logger.info("reconnect to remote server serverIp={},serverPort={},retry times ={}", serverIp, serverPort, order);
-                bootstrap.config().group().schedule(() -> connect(bootstrap, order), 5, TimeUnit
-                        .SECONDS);
-            }
-        });
-    }
 
     public static RemoteClient getRemoteClient() {
         return remoteClient;

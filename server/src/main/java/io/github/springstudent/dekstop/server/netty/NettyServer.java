@@ -45,7 +45,7 @@ public class NettyServer implements InitializingBean, DisposableBean {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, true)
-                .option(ChannelOption.TCP_NODELAY,true)
+                .option(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -55,17 +55,17 @@ public class NettyServer implements InitializingBean, DisposableBean {
                         socketChannel.pipeline().addLast(new NettyServerHandler());
                     }
                 });
-        ChannelFuture channelFuture = bootstrap.bind(new InetSocketAddress(serverIp,serverPort));
+        ChannelFuture channelFuture = bootstrap.bind(new InetSocketAddress(serverIp, serverPort));
         channelFuture.syncUninterruptibly();
         this.channel = channelFuture.channel();
-        logger.info("start netty server success,host={},port={}", serverIp, serverPort);
+        logger.info("server start success,host={},port={}", serverIp, serverPort);
     }
 
     @Override
     public void destroy() throws Exception {
         if (channel != null && channel.isActive()) {
             channel.close();
-            logger.info("stop netty server success");
+            logger.info("server  stop success");
         }
     }
 
