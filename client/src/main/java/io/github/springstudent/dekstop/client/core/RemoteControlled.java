@@ -76,7 +76,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
     }
 
     public void closeSession(String deviceCode) {
-        fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.STOP_CAPTURE));
+        fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED));
     }
 
     @Override

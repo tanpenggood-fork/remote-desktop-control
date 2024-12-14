@@ -11,9 +11,11 @@ import java.nio.charset.StandardCharsets;
  **/
 public class CmdReqCapture extends Cmd {
 
-    public static final byte START_CAPTURE = 0x01;
+    public static final byte START_CAPTURE = 0x00;
 
-    public static final byte STOP_CAPTURE = 0x00;
+    public static final byte STOP_CAPTURE = 0x01;
+
+    public static final byte STOP_CAPTURE_BY_CONTROLLED = 0x02;
 
     private String deviceCode;
 

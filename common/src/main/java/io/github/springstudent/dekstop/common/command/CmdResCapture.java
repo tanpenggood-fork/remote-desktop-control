@@ -14,8 +14,9 @@ public class CmdResCapture extends Cmd {
      */
     public static final byte START = 0x00;
     public static final byte STOP = 0x01;
-    public static final byte OFFLINE = 0x02;
-    public static final byte CONTROL = 0x03;
+    public static final byte STOP_BYCONTROLLED = 0x02;
+    public static final byte OFFLINE = 0x03;
+    public static final byte CONTROL = 0x04;
     /**
      * 被控制端响应状态码
      */

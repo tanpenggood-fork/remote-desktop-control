@@ -50,10 +50,10 @@ public class NettyChannelManager {
 
     }
 
-    public static NettyChannelBrother unbindChannelBrother(Channel controller, Channel controlled) {
+    public static NettyChannelBrother unbindChannelBrother(boolean stopByControlled, Channel controlled) {
         NettyChannelBrother channelBrother = channelBrotherMap.get(NettyUtils.getDeviceCode(controlled));
         if (channelBrother != null) {
-            channelBrother.stopControll();
+            channelBrother.stopControll(stopByControlled);
             channelBrotherMap.remove(NettyUtils.getDeviceCode(controlled));
         }
         return channelBrother;

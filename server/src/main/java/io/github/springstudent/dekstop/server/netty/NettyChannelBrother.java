@@ -33,12 +33,20 @@ public class NettyChannelBrother {
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_));
     }
 
-    public void stopControll() {
+    public void stopControll(){
+        stopControll(false);
+    }
+
+    public void stopControll(boolean stopByControlled) {
         NettyUtils.updateControllFlag(controller, null);
         NettyUtils.updateControllDeviceCode(controller, null);
         NettyUtils.updateControllFlag(controlled, null);
         NettyUtils.updateControllDeviceCode(controlled, null);
-        controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
+        if (stopByControlled) {
+            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
+        } else {
+            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_BYCONTROLLED));
+        }
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
     }
 
