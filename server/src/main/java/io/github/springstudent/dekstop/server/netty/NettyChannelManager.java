@@ -31,10 +31,14 @@ public class NettyChannelManager {
         String controllFlag = NettyUtils.getControllFlag(channel);
         deviceCodeChannelMap.remove(NettyUtils.getDeviceCode(channel));
         if (StrUtil.isNotEmpty(controllFlag)) {
+            NettyChannelBrother channelBrother = null;
             if (controllFlag.equals(Constants.CONTROLLED)) {
-                channelBrotherMap.remove(NettyUtils.getDeviceCode(channel));
+                channelBrother = channelBrotherMap.remove(NettyUtils.getDeviceCode(channel));
             } else if (controllFlag.equals(Constants.CONTROLLER)) {
-                channelBrotherMap.remove(NettyUtils.getControllDeviceCode(channel));
+                channelBrother = channelBrotherMap.remove(NettyUtils.getControllDeviceCode(channel));
+            }
+            if (channelBrother != null) {
+                channelBrother.stopControll();
             }
         }
     }
