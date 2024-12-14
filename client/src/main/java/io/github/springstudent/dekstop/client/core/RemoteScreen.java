@@ -149,6 +149,11 @@ public class RemoteScreen extends JFrame {
         this.statusBar = statusBar;
         updateInputLocale();
         new Timer(5000, e -> updateInputLocale()).start();
+        long sessionStartTime = Instant.now().getEpochSecond();
+        sessionTimer = new Timer(1000, e -> {
+            final long seconds = Instant.now().getEpochSecond() - sessionStartTime;
+            statusBar.setSessionDuration(format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
+        });
     }
 
     private void updateInputLocale() {
@@ -259,11 +264,7 @@ public class RemoteScreen extends JFrame {
     }
 
     public void launch() {
-        long sessionStartTime = Instant.now().getEpochSecond();
-        sessionTimer = new Timer(1000, e -> {
-            final long seconds = Instant.now().getEpochSecond() - sessionStartTime;
-            statusBar.setSessionDuration(format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
-        });
+
         sessionTimer.start();
         SwingUtilities.invokeLater(() -> this.setVisible(true));
 
