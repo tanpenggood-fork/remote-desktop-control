@@ -37,7 +37,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         RemoteClient.getRemoteClient().showMessageDialog("连接异常", JOptionPane.ERROR_MESSAGE);
-        RemoteClient.getRemoteClient().getRemoteScreen().dispose();
+        RemoteClient.getRemoteClient().getRemoteScreen().close();
         RemoteClient.getRemoteClient().updateConnectionStatus(false);
         RemoteClient.getRemoteClient().setControllChannel(null);
         RemoteClient.getRemoteClient().connectServer();
