@@ -2,10 +2,7 @@ package io.github.springstudent.dekstop.client.core;
 
 
 import io.github.springstudent.dekstop.common.command.Cmd;
-import io.github.springstudent.dekstop.common.command.CmdType;
 import io.netty.channel.Channel;
-
-import java.util.List;
 
 /**
  * @author ZhouNing
