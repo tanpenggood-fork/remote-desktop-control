@@ -279,13 +279,13 @@ public class RemoteScreen extends JFrame {
         });
     }
 
-    public void computeScaleFactors(int sourceWidth, int sourceHeight) {
+    public void computeScaleFactors(int sourceWidth, int sourceHeight,boolean keepAspectRatio) {
         Log.debug(format("ComputeScaleFactors for w: %d h: %d", sourceWidth, sourceHeight));
         canvas = screenPanelWrapper.getSize();
         canvas.setSize(canvas.getWidth() - OFFSET, canvas.getHeight() - OFFSET);
         xFactor = canvas.getWidth() / sourceWidth;
         yFactor = canvas.getHeight() / sourceHeight;
-        if (keepAspectRatioActivated.get() && abs(xFactor - yFactor) > 0.01) {
+        if (keepAspectRatio && abs(xFactor - yFactor) > 0.01) {
             resizeWindow(sourceWidth, sourceHeight);
         }
     }
