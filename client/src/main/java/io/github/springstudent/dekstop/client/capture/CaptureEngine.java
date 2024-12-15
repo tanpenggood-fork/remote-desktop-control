@@ -79,6 +79,7 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
                 CaptureEngine.this.mainLoop();
             }
         }, "CaptureEngine");
+        thread.start();
     }
 
     public void stop() {
