@@ -34,7 +34,7 @@ public final class ScreenUtilities {
     static {
         NUMBER_OF_SCREENS = countScreens();
         DEFAULT_SIZE = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-        COMBINED_SCREEN_SIZE = new Rectangle(getCombinedScreenSize());
+        COMBINED_SCREEN_SIZE = getCombinedScreenSize();
         sharedScreenSize = shareAllScreens ? COMBINED_SCREEN_SIZE : DEFAULT_SIZE;
         rgb = new int[sharedScreenSize.height * sharedScreenSize.width];
         gray = new byte[rgb.length];
@@ -86,12 +86,7 @@ public final class ScreenUtilities {
         BufferedImage image = ROBOT.createScreenCapture(bounds);
         final int imageHeight = min(image.getHeight(), bounds.height);
         final int imageWidth = min(image.getWidth(), bounds.width);
-        int[] pixels = new int[imageHeight * imageWidth];
-        return image.getRGB(0, 0, imageWidth, imageHeight, pixels, 0, imageWidth);
-    }
-
-    public static byte[] captureGray(Rectangle bounds, Gray8Bits quantization) {
-        return rgbToGray8(quantization, captureRGB(bounds));
+        return image.getRGB(0, 0, imageWidth, imageHeight, null, 0, imageWidth);
     }
 
     private static byte[] rgbToGray8(Gray8Bits quantization, int[] rgb) {

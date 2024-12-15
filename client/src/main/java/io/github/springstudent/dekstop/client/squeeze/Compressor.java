@@ -16,7 +16,7 @@ public final class Compressor {
     /**
      * NONE. (testing only)
      */
-     private static final Compressor NULL_COMPRESSOR = new Compressor(CompressionMethod.NONE, new NullRunLengthEncoder(), new NullZipper());
+    private static final Compressor NULL_COMPRESSOR = new Compressor(CompressionMethod.NONE, new NullRunLengthEncoder(), new NullZipper());
 
     /**
      * ZIP (with regular run-length-encoding).
@@ -47,8 +47,8 @@ public final class Compressor {
                 return ZIP_COMPRESSOR;
             case XZ:
                 return XZ_COMPRESSOR;
-			case NONE:
-				return NULL_COMPRESSOR;
+            case NONE:
+                return NULL_COMPRESSOR;
             default:
                 throw new IllegalArgumentException("Unsupported compressor configuration [" + method + "]!");
         }
@@ -144,8 +144,8 @@ public final class Compressor {
             Log.debug("Clear de-compressor cache [tile:" + cId + "]");
             cache.clear();
         }
-        final int cSkipped = in.readByte() & 0xFF;
-        final int cMerged = in.readByte() & 0xFF;
+        final int cSkipped = in.readUnsignedByte();
+        final int cMerged = in.readUnsignedByte();
         final Dimension captureDimension = new Dimension(in.readShort(), in.readShort());
         final Dimension tileDimension = new Dimension(in.readShort(), in.readShort());
         final CaptureTile.XYWH[] xywh = CaptureTile.getXYWH(captureDimension.width, captureDimension.height, tileDimension.width, tileDimension.height);

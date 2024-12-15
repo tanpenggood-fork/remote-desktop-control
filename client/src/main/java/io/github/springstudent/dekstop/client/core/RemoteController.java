@@ -161,7 +161,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         if (remoteScreen.getFitToScreenActivated()) {
             if (remoteScreen.getCanvas() == null) {
                 Log.debug(format("ComputeScaleFactors for w: %s h: %s", prevWidth, prevHeight));
-                remoteScreen.computeScaleFactors(prevWidth, prevHeight, remoteScreen.getKeepAspectRatioActivated());
+                remoteScreen.computeScaleFactors(prevWidth, prevHeight);
             }
             // required as the canvas might have been reset if keepAspectRatio caused a resizing of the window
             final Dimension canvasDimension = remoteScreen.getCanvas();

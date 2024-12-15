@@ -102,8 +102,8 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
     }
 
     @Override
-    public void onCompressed(Capture capture, CompressionMethod compressionMethod, CompressorEngineConfiguration compressionConfiguration, MemByteBuffer compressed) {
-        fireCmd(new CmdCapture(capture.getId(), compressionMethod, compressionConfiguration, compressed));
+    public void onCompressed(int captureId, CompressionMethod compressionMethod, CompressorEngineConfiguration compressionConfiguration, MemByteBuffer compressed) {
+        fireCmd(new CmdCapture(captureId, compressionMethod, compressionConfiguration, compressed));
     }
 
     @Override
