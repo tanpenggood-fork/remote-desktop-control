@@ -10,6 +10,11 @@ public class Constants {
      */
     public static final int HEARTBEAT_DURATION_SECONDS = 3;
 
+    /**
+     * 客户端心跳超时时长
+     */
+    public static final int CLIENT_SESSION_TIMEOUT_MILLS = Constants.HEARTBEAT_DURATION_SECONDS * 1000 * 10;
+
     public static final String CONTROLLER = "CONTROLLER";
 
     public static final String CONTROLLED = "CONTROLLED";
