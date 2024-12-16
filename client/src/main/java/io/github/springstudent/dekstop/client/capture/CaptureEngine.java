@@ -10,7 +10,6 @@ import io.github.springstudent.dekstop.common.utils.UnitUtilities;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.min;
@@ -73,10 +72,15 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
     }
 
     public void start() {
+        Log.debug("CaptureEngine start");
         this.thread = new Thread(new RunnableEx() {
             @Override
             protected void doRun() {
-                CaptureEngine.this.mainLoop();
+                try {
+                    CaptureEngine.this.mainLoop();
+                } catch (InterruptedException e) {
+                    thread.interrupt();
+                }
             }
         }, "CaptureEngine");
         thread.start();
@@ -87,7 +91,7 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
         thread.interrupt();
     }
 
-    private void mainLoop() {
+    private void mainLoop() throws InterruptedException {
         Gray8Bits quantization = null;
         boolean captureColors = false;
         int tick = -1;
@@ -138,15 +142,11 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
             skipped = syncOnTick(start, captureCount, captureId, tick);
             captureCount += skipped;
             captureId += skipped;
-            if (skipped > 0) {
-                tick +=10;
-                Log.info("Increased capture tick to " + tick);
-            }
         }
         Log.info("The capture engine has been stopped!");
     }
 
-    private static int syncOnTick(final long start, final int captureCount, final int captureId, final long tick) {
+    private static int syncOnTick(final long start, final int captureCount, final int captureId, final long tick) throws InterruptedException {
         int delayedCaptureCount = 0;
         while (true) {
             final long captureMaxEnd = start + (captureCount + delayedCaptureCount) * tick;
@@ -155,11 +155,7 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
                 ++delayedCaptureCount;
                 Log.warn(format("Skipping capture (%d) %s", captureId + delayedCaptureCount, UnitUtilities.toElapsedTime(-capturePause)));
             } else if (capturePause > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(capturePause);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                Thread.sleep(capturePause);
                 return delayedCaptureCount;
             }
         }
