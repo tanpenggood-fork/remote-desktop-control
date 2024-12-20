@@ -28,6 +28,10 @@ public abstract class RemoteControll implements ClipboardListener {
 
     private ClipboardPoller clipboardPoller;
 
+    private String remoteClipboardText = "";
+
+    private BufferedImage remoteClipboardImg = null;
+
     public RemoteControll() {
         clipboardPoller = new ClipboardPoller();
         clipboardPoller.addListener(this);
@@ -59,31 +63,39 @@ public abstract class RemoteControll implements ClipboardListener {
 
     public abstract String getType();
 
-    public void start(){
+    public void start() {
         clipboardPoller.start();
     }
 
-    public void stop(){
+    public void stop() {
         clipboardPoller.stop();
     }
 
+
     @Override
     public void clipboardText(String text) {
-        new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
+        if (!remoteClipboardText.equals(text)) {
+            new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
+        }
     }
 
     @Override
     public void clipboardImg(BufferedImage img) {
-        new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
+        if (remoteClipboardImg != img) {
+            new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
+        }
+
     }
 
     protected final void setClipboard(Cmd cmd) {
         if (cmd.getType().equals(CmdType.ClipboardText)) {
             CmdClipboardText cmdClipboardText = (CmdClipboardText) cmd;
+            this.remoteClipboardText = cmdClipboardText.getPayload();
             StringSelection stringSelection = new StringSelection(cmdClipboardText.getPayload());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
         } else if (cmd.getType().equals(CmdType.ClipboardImg)) {
             CmdClipboardImg cmdClipboardImg = (CmdClipboardImg) cmd;
+            this.remoteClipboardImg = cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor)), null);
         }
     }
