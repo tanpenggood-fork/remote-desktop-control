@@ -71,9 +71,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                 controlledChannel.writeAndFlush(cmd);
             }
         } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
-            Channel destChannel = NettyChannelManager.getChannel(NettyUtils.getControllDeviceCode(ctx.channel()));
-            if (destChannel != null) {
-                destChannel.writeAndFlush(cmd);
+            String controllDeviceCode = NettyUtils.getControllDeviceCode(ctx.channel());
+            if (StrUtil.isNotEmpty(controllDeviceCode)) {
+                Channel destChannel = NettyChannelManager.getChannel(controllDeviceCode);
+                if (destChannel != null) {
+                    destChannel.writeAndFlush(cmd);
+                }
             }
         }
     }
