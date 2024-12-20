@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
  **/
 public class CmdClipboardText extends Cmd {
     private String payload;
-
     private String controllType;
 
     public CmdClipboardText(String payload, String controllType) {
@@ -26,7 +25,9 @@ public class CmdClipboardText extends Cmd {
 
     @Override
     public int getWireSize() {
-        return 8 + payload.length() + controllType.length();
+        // 修改为根据UTF-8字符集来计算字节数
+        return 4 + payload.getBytes(StandardCharsets.UTF_8).length +
+                4 + controllType.getBytes(StandardCharsets.UTF_8).length;
     }
 
     @Override
@@ -40,17 +41,23 @@ public class CmdClipboardText extends Cmd {
 
     @Override
     public void encode(ByteBuf out) throws IOException {
-        out.writeInt(payload.length());
-        out.writeCharSequence(payload, StandardCharsets.UTF_8);
-        out.writeInt(controllType.length());
-        out.writeCharSequence(controllType, StandardCharsets.UTF_8);
+        byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
+        out.writeInt(payloadBytes.length);
+        out.writeBytes(payloadBytes);
+        byte[] controllTypeBytes = controllType.getBytes(StandardCharsets.UTF_8);
+        out.writeInt(controllTypeBytes.length);
+        out.writeBytes(controllTypeBytes);
     }
 
     public static CmdClipboardText decode(ByteBuf in) {
         int payloadLength = in.readInt();
-        String payload = in.readCharSequence(payloadLength, StandardCharsets.UTF_8).toString();
+        byte[] payloadBytes = new byte[payloadLength];
+        in.readBytes(payloadBytes);
+        String payload = new String(payloadBytes, StandardCharsets.UTF_8);
         int controllTypeLength = in.readInt();
-        String controllType = in.readCharSequence(controllTypeLength, StandardCharsets.UTF_8).toString();
+        byte[] controllTypeBytes = new byte[controllTypeLength];
+        in.readBytes(controllTypeBytes);
+        String controllType = new String(controllTypeBytes, StandardCharsets.UTF_8);
         return new CmdClipboardText(payload, controllType);
     }
 }
