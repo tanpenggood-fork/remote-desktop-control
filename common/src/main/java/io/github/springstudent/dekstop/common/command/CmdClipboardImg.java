@@ -17,18 +17,9 @@ public class CmdClipboardImg extends Cmd {
 
     private String controllType;
 
-    private int size;
-
     public CmdClipboardImg(TransferableImage payload, String controllType) {
         this.payload = new TransferableImage(payload.getTransferData(DataFlavor.imageFlavor));
         this.controllType = controllType;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
-            objectOutputStream.writeObject(payload);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.size = byteArrayOutputStream.size();
     }
 
 
@@ -43,7 +34,7 @@ public class CmdClipboardImg extends Cmd {
 
     @Override
     public int getWireSize() {
-        return 8 + controllType.length() + size;
+        return 8 + controllType.length() + payload.getTransferData(DataFlavor.imageFlavor).getData().getDataBuffer().getSize() * 4;
     }
 
     @Override

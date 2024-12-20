@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
  * @date 2024/12/19 19:34
  **/
 public class CmdClipboardText extends Cmd {
-    private final String payload;
+    private String payload;
 
     private String controllType;
 
