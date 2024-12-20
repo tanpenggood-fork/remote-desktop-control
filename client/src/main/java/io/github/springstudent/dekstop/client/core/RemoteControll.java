@@ -4,7 +4,6 @@ package io.github.springstudent.dekstop.client.core;
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.clipboard.ClipboardListener;
 import io.github.springstudent.dekstop.client.clipboard.ClipboardPoller;
-import io.github.springstudent.dekstop.client.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.bean.TransferableImage;
 import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.command.CmdClipboardImg;
@@ -18,7 +17,6 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * @author ZhouNing
@@ -29,10 +27,6 @@ public abstract class RemoteControll implements ClipboardListener {
     protected Channel channel;
 
     private ClipboardPoller clipboardPoller;
-
-    private String remoteClipboardText = "";
-
-    private BufferedImage remoteClipboardImg = null;
 
     public RemoteControll() {
         clipboardPoller = new ClipboardPoller();
@@ -76,21 +70,12 @@ public abstract class RemoteControll implements ClipboardListener {
 
     @Override
     public void clipboardText(String text) {
-        if (remoteClipboardText == null || !text.equals(remoteClipboardText)) {
-            new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
-        }
+        new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
     }
 
     @Override
     public void clipboardImg(BufferedImage img) {
-        try {
-            if (remoteClipboardImg == null || !FileUtilities.bufferedImgMd5(img).equals(FileUtilities.bufferedImgMd5(remoteClipboardImg))) {
-                new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
-            }
-        } catch (IOException e) {
-            Log.error("client calc img md5 error", e);
-        }
-
+        new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
     }
 
     protected final void setClipboard(Cmd cmd) {
@@ -98,16 +83,15 @@ public abstract class RemoteControll implements ClipboardListener {
             synchronized (ClipboardPoller.class) {
                 if (cmd.getType().equals(CmdType.ClipboardText)) {
                     CmdClipboardText cmdClipboardText = (CmdClipboardText) cmd;
-                    this.remoteClipboardText = cmdClipboardText.getPayload();
                     StringSelection stringSelection = new StringSelection(cmdClipboardText.getPayload());
+                    clipboardPoller.setLastText(cmdClipboardText.getPayload());
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
                 } else if (cmd.getType().equals(CmdType.ClipboardImg)) {
                     CmdClipboardImg cmdClipboardImg = (CmdClipboardImg) cmd;
-                    this.remoteClipboardImg = cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor);
+                    clipboardPoller.setLastImage(cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor));
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor)), null);
                 }
             }
-
         });
 
     }

@@ -20,9 +20,9 @@ public class ClipboardPoller {
 
     private Listeners<ClipboardListener> listeners = new Listeners<>();
 
-    private String lastText = "";
-    private BufferedImage lastImage = null;
-    private List<File> lastFiles = null;
+    private volatile String lastText = "";
+    private volatile BufferedImage lastImage = null;
+    private volatile List<File> lastFiles = null;
 
     private Thread pollerThread;
 
@@ -88,6 +88,14 @@ public class ClipboardPoller {
             }
         }
 
+    }
+
+    public void setLastText(String lastText) {
+        this.lastText = lastText;
+    }
+
+    public void setLastImage(BufferedImage lastImage) {
+        this.lastImage = lastImage;
     }
 
     private void fireClipboardText(String text) {
