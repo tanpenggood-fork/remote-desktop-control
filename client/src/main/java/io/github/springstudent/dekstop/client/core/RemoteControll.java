@@ -4,6 +4,7 @@ package io.github.springstudent.dekstop.client.core;
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.clipboard.ClipboardListener;
 import io.github.springstudent.dekstop.client.clipboard.ClipboardPoller;
+import io.github.springstudent.dekstop.client.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.bean.TransferableImage;
 import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.command.CmdClipboardImg;
@@ -17,6 +18,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * @author ZhouNing
@@ -74,15 +76,19 @@ public abstract class RemoteControll implements ClipboardListener {
 
     @Override
     public void clipboardText(String text) {
-        if (!remoteClipboardText.equals(text)) {
+        if (!text.equals(remoteClipboardText)) {
             new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
         }
     }
 
     @Override
     public void clipboardImg(BufferedImage img) {
-        if (remoteClipboardImg != img) {
-            new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
+        try {
+            if (!FileUtilities.bufferedImgMd5(img).equals(FileUtilities.bufferedImgMd5(remoteClipboardImg))) {
+                new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
+            }
+        } catch (IOException e) {
+            Log.error("client calc img md5 erro", e);
         }
 
     }

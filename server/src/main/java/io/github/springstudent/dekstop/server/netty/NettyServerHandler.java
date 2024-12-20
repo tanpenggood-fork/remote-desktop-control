@@ -23,6 +23,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
     @SuppressWarnings("unchecked")
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Cmd cmd) throws Exception {
+        if (cmd == null) {
+            return;
+        }
         log.info("server recived cmd ={}", cmd);
         NettyUtils.updateReaderTime(ctx.channel(), System.currentTimeMillis());
         if (cmd.getType().equals(CmdType.ReqPing)) {
@@ -66,9 +69,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                 ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
             }
         } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig) || cmd.getType().equals(CmdType.KeyControl) || cmd.getType().equals(CmdType.MouseControl)) {
-            Channel controlledChannel = NettyChannelManager.getControlledChannel(ctx.channel());
-            if (controlledChannel != null) {
-                controlledChannel.writeAndFlush(cmd);
+            if(StrUtil.isNotEmpty(NettyUtils.getControllFlag(ctx.channel()))){
+                Channel controlledChannel = NettyChannelManager.getControlledChannel(ctx.channel());
+                if (controlledChannel != null) {
+                    controlledChannel.writeAndFlush(cmd);
+                }
             }
         } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
             String controllDeviceCode = NettyUtils.getControllDeviceCode(ctx.channel());

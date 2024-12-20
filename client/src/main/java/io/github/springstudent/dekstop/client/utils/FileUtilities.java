@@ -1,5 +1,10 @@
 package io.github.springstudent.dekstop.client.utils;
 
+import cn.hutool.crypto.digest.DigestUtil;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,5 +47,12 @@ public final class FileUtilities {
         return path.replace('\\', File.separatorChar);
     }
 
-
+    public static String bufferedImgMd5(BufferedImage bufferedImage) throws IOException {
+        // 将BufferedImage转换为字节数组
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+        String md5 = DigestUtil.md5Hex(imageBytes);
+        return md5;
+    }
 }

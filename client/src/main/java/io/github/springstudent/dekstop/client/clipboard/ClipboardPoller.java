@@ -1,6 +1,7 @@
 package io.github.springstudent.dekstop.client.clipboard;
 
 import io.github.springstudent.dekstop.client.bean.Listeners;
+import io.github.springstudent.dekstop.client.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.log.Log;
 
 import java.awt.*;
@@ -53,7 +54,7 @@ public class ClipboardPoller {
     }
 
 
-    private void checkClipboard() throws InterruptedException{
+    private void checkClipboard() throws InterruptedException {
         while (true) {
             try {
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -67,19 +68,17 @@ public class ClipboardPoller {
                 }
                 if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
                     BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-                    if (currentImage != lastImage) {
-                        Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
-                        lastImage = currentImage;
-                        fireClipboardImg(currentImage);
+                    if (currentImage != null) {
+                        if (lastImage == null || !FileUtilities.bufferedImgMd5(currentImage).equals(FileUtilities.bufferedImgMd5(lastImage))) {
+                            Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
+                            lastImage = currentImage;
+                            fireClipboardImg(currentImage);
+                        }
                     }
                 }
                 if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
                     List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                     if (currentFiles != null && !currentFiles.equals(lastFiles)) {
-                        Log.info("Clipboard contains new files:");
-                        for (File file : currentFiles) {
-                            System.out.println(file.getAbsolutePath());
-                        }
                         lastFiles = currentFiles;
                     }
                 }

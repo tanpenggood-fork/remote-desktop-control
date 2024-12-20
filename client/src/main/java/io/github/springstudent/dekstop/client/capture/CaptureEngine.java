@@ -1,6 +1,9 @@
 package io.github.springstudent.dekstop.client.capture;
 
-import io.github.springstudent.dekstop.client.bean.*;
+import io.github.springstudent.dekstop.client.bean.Capture;
+import io.github.springstudent.dekstop.client.bean.CaptureTile;
+import io.github.springstudent.dekstop.client.bean.Listeners;
+import io.github.springstudent.dekstop.client.bean.Position;
 import io.github.springstudent.dekstop.client.concurrent.RunnableEx;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
@@ -42,8 +45,8 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
     public CaptureEngine(CaptureFactory captureFactory) {
         this.captureFactory = captureFactory;
         this.captureDimension = captureFactory.getDimension();
-        final int x = (captureDimension.width + TILE_DIMENSION.width -1) / TILE_DIMENSION.width;
-        final int y = (captureDimension.height + TILE_DIMENSION.height -1) / TILE_DIMENSION.height;
+        final int x = (captureDimension.width + TILE_DIMENSION.width - 1) / TILE_DIMENSION.width;
+        final int y = (captureDimension.height + TILE_DIMENSION.height - 1) / TILE_DIMENSION.height;
         this.previousCapture = new long[x * y];
         resetPreviousCapture();
 
@@ -88,6 +91,9 @@ public class CaptureEngine implements ReConfigurable<CaptureEngineConfiguration>
 
     public void stop() {
         Log.debug("CaptureEngine stop");
+        if (thread == null) {
+            return;
+        }
         thread.interrupt();
     }
 

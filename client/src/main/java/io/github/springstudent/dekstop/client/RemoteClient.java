@@ -131,6 +131,15 @@ public class RemoteClient extends RemoteFrame {
         controlled.setChannel(channel);
     }
 
+    public void stopClient(){
+        showMessageDialog("连接异常", JOptionPane.ERROR_MESSAGE);
+        remoteScreen.close();
+        controller.stop();
+        controlled.stop();
+        updateConnectionStatus(false);
+        setControllChannel(null);
+        connectServer();
+    }
 
     public static RemoteClient getRemoteClient() {
         return remoteClient;

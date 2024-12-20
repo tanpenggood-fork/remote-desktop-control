@@ -100,7 +100,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     @Override
     public void stop() {
         super.stop();
-        RemoteClient.getRemoteClient().getRemoteScreen().dispose();
     }
 
     @Override

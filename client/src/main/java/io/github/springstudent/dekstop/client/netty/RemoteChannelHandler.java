@@ -8,8 +8,6 @@ import io.github.springstudent.dekstop.common.log.Log;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-import javax.swing.*;
-
 import static java.lang.String.format;
 
 /**
@@ -28,7 +26,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
                 RemoteClient.getRemoteClient().updateConnectionStatus(true);
             }
             RemoteClient.getRemoteClient().handleCmd(cmd);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.info("client channelRead0 errro");
             e.printStackTrace();
         }
@@ -36,12 +34,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        RemoteClient.getRemoteClient().showMessageDialog("连接异常", JOptionPane.ERROR_MESSAGE);
-        RemoteClient.getRemoteClient().getController().stop();
-        RemoteClient.getRemoteClient().getControlled().stop();
-        RemoteClient.getRemoteClient().updateConnectionStatus(false);
-        RemoteClient.getRemoteClient().setControllChannel(null);
-        RemoteClient.getRemoteClient().connectServer();
+        RemoteClient.getRemoteClient().stopClient();
     }
 
     @Override

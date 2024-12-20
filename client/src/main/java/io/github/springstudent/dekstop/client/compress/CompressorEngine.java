@@ -5,7 +5,10 @@ import io.github.springstudent.dekstop.client.bean.Listeners;
 import io.github.springstudent.dekstop.client.capture.CaptureEngineListener;
 import io.github.springstudent.dekstop.client.concurrent.DefaultThreadFactoryEx;
 import io.github.springstudent.dekstop.client.concurrent.Executable;
-import io.github.springstudent.dekstop.client.squeeze.*;
+import io.github.springstudent.dekstop.client.squeeze.Compressor;
+import io.github.springstudent.dekstop.client.squeeze.NullTileCache;
+import io.github.springstudent.dekstop.client.squeeze.RegularTileCache;
+import io.github.springstudent.dekstop.client.squeeze.TileCache;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.MemByteBuffer;
 import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
@@ -118,6 +121,9 @@ public class CompressorEngine implements ReConfigurable<CompressorEngineConfigur
 
     public void stop() {
         Log.debug("CompressorEngine stop");
+        if (executor == null) {
+            return;
+        }
         executor.shutdown();
     }
 
