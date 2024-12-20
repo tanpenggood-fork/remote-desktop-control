@@ -70,6 +70,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
             if (controlledChannel != null) {
                 controlledChannel.writeAndFlush(cmd);
             }
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
+            Channel destChannel = NettyChannelManager.getChannel(NettyUtils.getControllDeviceCode(ctx.channel()));
+            if (destChannel != null) {
+                destChannel.writeAndFlush(cmd);
+            }
         }
     }
 

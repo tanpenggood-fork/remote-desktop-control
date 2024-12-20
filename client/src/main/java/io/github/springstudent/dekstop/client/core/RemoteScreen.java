@@ -279,7 +279,7 @@ public class RemoteScreen extends JFrame {
         });
     }
 
-    public void computeScaleFactors(int sourceWidth, int sourceHeight,boolean keepAspectRatio) {
+    public void computeScaleFactors(int sourceWidth, int sourceHeight, boolean keepAspectRatio) {
         Log.debug(format("ComputeScaleFactors for w: %d h: %d", sourceWidth, sourceHeight));
         canvas = screenPanelWrapper.getSize();
         canvas.setSize(canvas.getWidth() - OFFSET, canvas.getHeight() - OFFSET);
@@ -291,7 +291,8 @@ public class RemoteScreen extends JFrame {
     }
 
     private void resizeWindow(int sourceWidth, int sourceHeight) {
-        Log.debug("%s", () -> format("Resize  W:H %d:%d x:y %f:%f", this.getWidth(), this.getHeight(), xFactor, yFactor));        int menuHeight = this.getHeight() - canvas.height;
+        Log.debug("%s", () -> format("Resize  W:H %d:%d x:y %f:%f", this.getWidth(), this.getHeight(), xFactor, yFactor));
+        int menuHeight = this.getHeight() - canvas.height;
         final Rectangle maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         if (xFactor < yFactor) {
             if ((sourceWidth * yFactor) + OFFSET < maximumWindowBounds.width) {

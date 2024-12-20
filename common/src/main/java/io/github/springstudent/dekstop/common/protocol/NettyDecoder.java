@@ -58,6 +58,10 @@ public class NettyDecoder extends ByteToMessageDecoder {
             case MouseControl:
                 list.add(CmdMouseControl.decode(byteBuf));
                 break;
+            case ClipboardText:
+                list.add(CmdClipboardText.decode(byteBuf));
+            case ClipboardImg:
+                list.add(CmdClipboardImg.decode(byteBuf));
             default:
                 throw new IllegalArgumentException(format("unknown cmdType=%s", cmdType));
         }

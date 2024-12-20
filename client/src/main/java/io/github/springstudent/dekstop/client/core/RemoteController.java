@@ -9,6 +9,7 @@ import io.github.springstudent.dekstop.client.concurrent.Executable;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
+import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
 import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
@@ -98,12 +99,12 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void stop() {
-
+        super.stop();
     }
 
     @Override
     public void start() {
-
+        super.start();
     }
 
     public void openSession(String deviceCode) {
@@ -125,13 +126,17 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START) {
                 RemoteClient.getRemoteClient().getRemoteScreen().launch();
+                start();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
+                stop();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_BYCONTROLLED) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
+                stop();
                 showMessageDialog("被控制端断开了连接", JOptionPane.ERROR_MESSAGE);
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP_CHANNELINACTIVE) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
+                stop();
                 showMessageDialog("被控制端不在线", JOptionPane.ERROR_MESSAGE);
             } else if (cmdResCapture.getCode() == CmdResCapture.OFFLINE) {
                 showMessageDialog("被控制端不在线", JOptionPane.ERROR_MESSAGE);
@@ -141,7 +146,14 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
             countReceivedBit(cmd);
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
+            setClipboard(cmd);
         }
+    }
+
+    @Override
+    public String getType() {
+        return Constants.CONTROLLER;
     }
 
     private void countReceivedBit(Cmd cmd) {

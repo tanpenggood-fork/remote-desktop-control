@@ -9,11 +9,12 @@ public enum CmdType {
     ResCliInfo,
     ResCapture,
     ResPong,
-
     Capture,
     CompressorConfig,
     CaptureConfig,
-
     KeyControl,
-    MouseControl;
+    MouseControl,
+    ClipboardText,
+    ClipboardImg;
+
 }
