@@ -76,7 +76,7 @@ public abstract class RemoteControll implements ClipboardListener {
 
     @Override
     public void clipboardText(String text) {
-        if (!text.equals(remoteClipboardText)) {
+        if (remoteClipboardText == null || !text.equals(remoteClipboardText)) {
             new Thread(() -> this.fireCmd(new CmdClipboardText(text, getType()))).start();
         }
     }
@@ -84,11 +84,11 @@ public abstract class RemoteControll implements ClipboardListener {
     @Override
     public void clipboardImg(BufferedImage img) {
         try {
-            if (!FileUtilities.bufferedImgMd5(img).equals(FileUtilities.bufferedImgMd5(remoteClipboardImg))) {
+            if (remoteClipboardImg == null || !FileUtilities.bufferedImgMd5(img).equals(FileUtilities.bufferedImgMd5(remoteClipboardImg))) {
                 new Thread(() -> this.fireCmd(new CmdClipboardImg(new TransferableImage(img), getType()))).start();
             }
         } catch (IOException e) {
-            Log.error("client calc img md5 erro", e);
+            Log.error("client calc img md5 error", e);
         }
 
     }

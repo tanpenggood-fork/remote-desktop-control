@@ -48,6 +48,7 @@ public final class FileUtilities {
     }
 
     public static String bufferedImgMd5(BufferedImage bufferedImage) throws IOException {
+
         // 将BufferedImage转换为字节数组
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", byteArrayOutputStream);

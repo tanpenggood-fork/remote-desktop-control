@@ -65,8 +65,7 @@ public class ClipboardPoller {
                         lastText = currentText;
                         fireClipboardText(currentText);
                     }
-                }
-                if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
+                }else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
                     BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
                     if (currentImage != null) {
                         if (lastImage == null || !FileUtilities.bufferedImgMd5(currentImage).equals(FileUtilities.bufferedImgMd5(lastImage))) {
@@ -75,8 +74,7 @@ public class ClipboardPoller {
                             fireClipboardImg(currentImage);
                         }
                     }
-                }
-                if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+                }else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
                     List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                     if (currentFiles != null && !currentFiles.equals(lastFiles)) {
                         lastFiles = currentFiles;
