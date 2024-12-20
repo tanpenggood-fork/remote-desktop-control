@@ -56,34 +56,36 @@ public class ClipboardPoller {
 
     private void checkClipboard() throws InterruptedException {
         while (true) {
-            try {
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-                    String currentText = (String) clipboard.getData(DataFlavor.stringFlavor);
-                    if (!currentText.equals(lastText)) {
-                        Log.info("Clipboard contains new text: " + currentText);
-                        lastText = currentText;
-                        fireClipboardText(currentText);
-                    }
-                }else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
-                    BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-                    if (currentImage != null) {
-                        if (lastImage == null || !FileUtilities.bufferedImgMd5(currentImage).equals(FileUtilities.bufferedImgMd5(lastImage))) {
-                            Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
-                            lastImage = currentImage;
-                            fireClipboardImg(currentImage);
+            synchronized (ClipboardPoller.class) {
+                try {
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                        String currentText = (String) clipboard.getData(DataFlavor.stringFlavor);
+                        if (!currentText.equals(lastText)) {
+                            Log.info("Clipboard contains new text: " + currentText);
+                            lastText = currentText;
+                            fireClipboardText(currentText);
+                        }
+                    } else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
+                        BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
+                        if (currentImage != null) {
+                            if (lastImage == null || !FileUtilities.bufferedImgMd5(currentImage).equals(FileUtilities.bufferedImgMd5(lastImage))) {
+                                Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
+                                lastImage = currentImage;
+                                fireClipboardImg(currentImage);
+                            }
+                        }
+                    } else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+                        List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                        if (currentFiles != null && !currentFiles.equals(lastFiles)) {
+                            lastFiles = currentFiles;
                         }
                     }
-                }else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
-                    List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                    if (currentFiles != null && !currentFiles.equals(lastFiles)) {
-                        lastFiles = currentFiles;
-                    }
+                } catch (Exception e) {
+                    Log.error("client checkClipboard occur error", e);
                 }
-            } catch (Exception e) {
-                Log.error("client checkClipboard occur error", e);
+                TimeUnit.MILLISECONDS.sleep(1000);
             }
-            TimeUnit.MILLISECONDS.sleep(1000);
         }
 
     }

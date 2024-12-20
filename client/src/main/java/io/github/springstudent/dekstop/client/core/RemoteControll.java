@@ -94,15 +94,21 @@ public abstract class RemoteControll implements ClipboardListener {
     }
 
     protected final void setClipboard(Cmd cmd) {
-        if (cmd.getType().equals(CmdType.ClipboardText)) {
-            CmdClipboardText cmdClipboardText = (CmdClipboardText) cmd;
-            this.remoteClipboardText = cmdClipboardText.getPayload();
-            StringSelection stringSelection = new StringSelection(cmdClipboardText.getPayload());
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-        } else if (cmd.getType().equals(CmdType.ClipboardImg)) {
-            CmdClipboardImg cmdClipboardImg = (CmdClipboardImg) cmd;
-            this.remoteClipboardImg = cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor)), null);
-        }
+        SwingUtilities.invokeLater(() -> {
+            synchronized (ClipboardPoller.class) {
+                if (cmd.getType().equals(CmdType.ClipboardText)) {
+                    CmdClipboardText cmdClipboardText = (CmdClipboardText) cmd;
+                    this.remoteClipboardText = cmdClipboardText.getPayload();
+                    StringSelection stringSelection = new StringSelection(cmdClipboardText.getPayload());
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+                } else if (cmd.getType().equals(CmdType.ClipboardImg)) {
+                    CmdClipboardImg cmdClipboardImg = (CmdClipboardImg) cmd;
+                    this.remoteClipboardImg = cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableImage(cmdClipboardImg.getGraphic().getTransferData(DataFlavor.imageFlavor)), null);
+                }
+            }
+
+        });
+
     }
 }
