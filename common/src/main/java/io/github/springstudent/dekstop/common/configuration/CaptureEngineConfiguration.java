@@ -29,9 +29,9 @@ public class CaptureEngineConfiguration extends Configuration {
      */
     public CaptureEngineConfiguration() {
         final Preferences prefs = Preferences.getPreferences();
-        captureTick = prefs.getIntPreference(PREF_CAPTURE_TICK, 200);
+        captureTick = prefs.getIntPreference(PREF_CAPTURE_TICK, 50);
         captureQuantization = prefs.getEnumPreference(PREF_CAPTURE_QUANTIZATION, Gray8Bits.X_128, Gray8Bits.values());
-        captureColors = prefs.getBooleanPreference(PREF_CAPTURE_COLORS, false);
+        captureColors = prefs.getBooleanPreference(PREF_CAPTURE_COLORS, true);
     }
 
     public CaptureEngineConfiguration(int captureTick, Gray8Bits captureQuantization, boolean captureColor) {
