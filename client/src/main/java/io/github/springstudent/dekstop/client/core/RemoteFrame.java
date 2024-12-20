@@ -18,9 +18,7 @@ public abstract class RemoteFrame extends JFrame {
     private JTextField passwordField;
     private JTextField remoteDeviceField;
     private JButton connectButton;
-
     private JLabel controlledLabel;
-
     private JLabel closeSessionLabel;
 
     public RemoteFrame() {
