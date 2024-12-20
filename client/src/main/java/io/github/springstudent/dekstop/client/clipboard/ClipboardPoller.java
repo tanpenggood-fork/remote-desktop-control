@@ -32,18 +32,12 @@ public class ClipboardPoller {
     public void start() {
         Log.info("client start clipboard poller");
         pollerThread = new Thread(() -> {
-            while (true) {
-                try {
-                    checkClipboard();
-                } catch (Exception e) {
-                    Log.error(e.getMessage(), e);
-                }
-                try {
-                    TimeUnit.MILLISECONDS.sleep(1000);
-                } catch (InterruptedException e) {
-                    pollerThread.interrupt();
-                }
+            try {
+                checkClipboard();
+            } catch (InterruptedException e) {
+                pollerThread.interrupt();
             }
+
         });
         pollerThread.setDaemon(true);
         pollerThread.setName("clipboard-poller");
@@ -59,33 +53,40 @@ public class ClipboardPoller {
     }
 
 
-    private void checkClipboard() throws Exception {
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-            String currentText = (String) clipboard.getData(DataFlavor.stringFlavor);
-            if (!currentText.equals(lastText)) {
-                Log.info("Clipboard contains new text: " + currentText);
-                lastText = currentText;
-                fireClipboardText(currentText);
-            }
-        }
-        if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
-            BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-            if (currentImage != lastImage) {
-                Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
-                lastImage = currentImage;
-                fireClipboardImg(currentImage);
-            }
-        }
-        if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
-            List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-            if (currentFiles != null && !currentFiles.equals(lastFiles)) {
-                Log.info("Clipboard contains new files:");
-                for (File file : currentFiles) {
-                    System.out.println(file.getAbsolutePath());
+    private void checkClipboard() throws InterruptedException{
+        while (true) {
+            try {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                    String currentText = (String) clipboard.getData(DataFlavor.stringFlavor);
+                    if (!currentText.equals(lastText)) {
+                        Log.info("Clipboard contains new text: " + currentText);
+                        lastText = currentText;
+                        fireClipboardText(currentText);
+                    }
                 }
-                lastFiles = currentFiles;
+                if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
+                    BufferedImage currentImage = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
+                    if (currentImage != lastImage) {
+                        Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
+                        lastImage = currentImage;
+                        fireClipboardImg(currentImage);
+                    }
+                }
+                if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+                    List<File> currentFiles = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                    if (currentFiles != null && !currentFiles.equals(lastFiles)) {
+                        Log.info("Clipboard contains new files:");
+                        for (File file : currentFiles) {
+                            System.out.println(file.getAbsolutePath());
+                        }
+                        lastFiles = currentFiles;
+                    }
+                }
+            } catch (Exception e) {
+                Log.error("client checkClipboard occur error", e);
             }
+            TimeUnit.MILLISECONDS.sleep(1000);
         }
 
     }
