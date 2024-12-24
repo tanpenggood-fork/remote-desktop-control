@@ -376,14 +376,14 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onMouseMove(final int xs, final int ys) {
-        RemoteController.this.fireCmd(new CmdMouseControl(xs, ys));
+        fireCmd(new CmdMouseControl(xs, ys));
     }
 
     @Override
     public void onMousePressed(final int xs, final int ys, final int button) {
         int xbutton = getActingMouseButton(button);
         if (xbutton != CmdMouseControl.UNDEFINED) {
-            RemoteController.this.fireCmd(new CmdMouseControl(xs, ys, CmdMouseControl.ButtonState.PRESSED, xbutton));
+            fireCmd(new CmdMouseControl(xs, ys, CmdMouseControl.ButtonState.PRESSED, xbutton));
         }
     }
 
@@ -391,7 +391,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     public void onMouseReleased(final int x, final int y, final int button) {
         int xbutton = getActingMouseButton(button);
         if (xbutton != CmdMouseControl.UNDEFINED) {
-            RemoteController.this.fireCmd(new CmdMouseControl(x, y, CmdMouseControl.ButtonState.RELEASED, xbutton));
+            fireCmd(new CmdMouseControl(x, y, CmdMouseControl.ButtonState.RELEASED, xbutton));
         }
     }
 
@@ -410,7 +410,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onMouseWheeled(final int x, final int y, final int rotations) {
-        RemoteController.this.fireCmd(new CmdMouseControl(x, y, rotations));
+        fireCmd(new CmdMouseControl(x, y, rotations));
     }
 
 
@@ -419,7 +419,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     @Override
     public void onKeyPressed(final int keyCode, final char keyChar) {
         pressedKeys.put(keyCode, keyChar);
-        RemoteController.this.fireCmd(new CmdKeyControl(PRESSED, keyCode, keyChar));
+        fireCmd(new CmdKeyControl(PRESSED, keyCode, keyChar));
     }
 
     /**
