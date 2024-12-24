@@ -4,8 +4,6 @@ import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Capture;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
-import io.github.springstudent.dekstop.client.concurrent.DefaultThreadFactoryEx;
-import io.github.springstudent.dekstop.client.concurrent.Executable;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
@@ -25,8 +23,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Stream;
 
 import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.PRESSED;
@@ -36,7 +32,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.swing.SwingConstants.HORIZONTAL;
 
 /**
@@ -63,8 +58,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private int prevHeight = -1;
 
-    private final ThreadPoolExecutor executor;
-
     private BitCounter receivedBitCounter;
 
     private TileCounter receivedTileCounter;
@@ -78,8 +71,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     private ArrayList<Counter<?>> counters;
 
     public RemoteController() {
-        executor = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new LinkedBlockingQueue<>());
-        executor.setThreadFactory(new DefaultThreadFactoryEx("controller-executor"));
         captureEngineConfiguration = new CaptureEngineConfiguration();
         compressorEngineConfiguration = new CompressorEngineConfiguration();
         deCompressorEngine = new DeCompressorEngine(this);
@@ -385,38 +376,23 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onMouseMove(final int xs, final int ys) {
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                RemoteController.this.fireCmd(new CmdMouseControl(xs, ys));
-            }
-        });
+        RemoteController.this.fireCmd(new CmdMouseControl(xs, ys));
     }
 
     @Override
     public void onMousePressed(final int xs, final int ys, final int button) {
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                int xbutton = getActingMouseButton(button);
-                if (xbutton != CmdMouseControl.UNDEFINED) {
-                    RemoteController.this.fireCmd(new CmdMouseControl(xs, ys, CmdMouseControl.ButtonState.PRESSED, xbutton));
-                }
-            }
-        });
+        int xbutton = getActingMouseButton(button);
+        if (xbutton != CmdMouseControl.UNDEFINED) {
+            RemoteController.this.fireCmd(new CmdMouseControl(xs, ys, CmdMouseControl.ButtonState.PRESSED, xbutton));
+        }
     }
 
     @Override
     public void onMouseReleased(final int x, final int y, final int button) {
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                int xbutton = getActingMouseButton(button);
-                if (xbutton != CmdMouseControl.UNDEFINED) {
-                    RemoteController.this.fireCmd(new CmdMouseControl(x, y, CmdMouseControl.ButtonState.RELEASED, xbutton));
-                }
-            }
-        });
+        int xbutton = getActingMouseButton(button);
+        if (xbutton != CmdMouseControl.UNDEFINED) {
+            RemoteController.this.fireCmd(new CmdMouseControl(x, y, CmdMouseControl.ButtonState.RELEASED, xbutton));
+        }
     }
 
     private int getActingMouseButton(final int button) {
@@ -434,12 +410,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onMouseWheeled(final int x, final int y, final int rotations) {
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                RemoteController.this.fireCmd(new CmdMouseControl(x, y, rotations));
-            }
-        });
+        RemoteController.this.fireCmd(new CmdMouseControl(x, y, rotations));
     }
 
 
@@ -447,13 +418,8 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void onKeyPressed(final int keyCode, final char keyChar) {
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                pressedKeys.put(keyCode, keyChar);
-                RemoteController.this.fireCmd(new CmdKeyControl(PRESSED, keyCode, keyChar));
-            }
-        });
+        pressedKeys.put(keyCode, keyChar);
+        RemoteController.this.fireCmd(new CmdKeyControl(PRESSED, keyCode, keyChar));
     }
 
     /**
@@ -470,12 +436,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             Log.warn(format("Not releasing unpressed keyCode %s keyChar '%s'", keyCode, keyChar));
             return;
         }
-        executor.execute(new Executable(executor) {
-            @Override
-            protected void execute() {
-                pressedKeys.remove(keyCode);
-                fireCmd(new CmdKeyControl(RELEASED, keyCode, keyChar));
-            }
-        });
+        pressedKeys.remove(keyCode);
+        fireCmd(new CmdKeyControl(RELEASED, keyCode, keyChar));
     }
 }
