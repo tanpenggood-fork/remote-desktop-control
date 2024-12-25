@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README_zh.md)
+
 ### Remote Desktop Application
 
 This project is a **Java** and **Netty** based remote desktop control application. Through this application, users can connect and control remote devices in real-time. It is based on the client-server-client version of the core code from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks to the Dayon project author.

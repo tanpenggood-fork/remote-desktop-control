@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README_zh.md)
+
 ### 远程桌面应用程序
 
 该项目是一个使用 **Java** 和 **Netty**
