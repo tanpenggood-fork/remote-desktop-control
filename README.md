@@ -1,65 +1,56 @@
-### 远程桌面应用程序
+### Remote Desktop Application
 
-该项目是一个使用 **Java** 和 **Netty**
-开发的远程桌面控制应用程序。通过该应用程序，用户可以实时连接并控制远程设备。是基于https://github.com/RetGal/Dayon
-核心代码实现的client-server-client版本，在这里再次感谢Dayon作者的项目。
+This project is a **Java** and **Netty** based remote desktop control application. Through this application, users can connect and control remote devices in real-time. It is based on the client-server-client version of the core code from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks to the Dayon project author.
 
-### 功能
+### Features
 
-1. **实时远程桌面控制**
-    * 以最低的延迟远程控制另一台设备。
+1. **Real-time Remote Desktop Control**
+    * Remotely control another device with minimal latency.
 
-3. **可定制设置**
-    * 配置屏幕捕获间隔，启用/禁用彩色模式以优化性能。
+2. **Customizable Settings**
+    * Configure screen capture intervals and enable/disable color mode to optimize performance.
 
-4. **跨平台支持**
-    * 使用 Java 开发，可兼容大多数操作系统。
+3. **Cross-platform Support**
+    * Developed using Java, compatible with most operating systems.
 
-## 截图
+## Screenshots
 
-### 主控制面板
+### Main Control Panel
 
 ![remote-desktop-control](z_launcher.png)
 
-### 远程连接已建立
+### Remote Connection Established
 
 ![remote-desktop-control](z_screen.png)
 
-### 设置菜单
+### Settings Menu
 
 ![remote-desktop-control](z_screen_setting.png)
 
-### 运行环境
+### Environment
 
-* Java 8 或更高版本
-* 用于依赖管理的 Maven
+* Java 8 or higher
+* Maven for dependency management
 
-### 构建与运行
+### Build and Run
 
-1. 克隆代码库：
+1. Clone the repository：
    ```bash
    git https://github.com/SpringStudent/remote-desktop-control
    cd remote-desktop-control
    ```
 
-2. 构建项目：
+2. Build the project:
    ```bash
    mvn clean install
    ```
 
-3. 运行服务端：修改application.properties配置文件数据库信息和netty.server.server和port配置
+3. Run the server: Modify the application.properties configuration file with the database information and the netty.server.server and port configurations.
    ```bash
    RemoteServer.java
    ```
 
-4. 运行客户端：修改RemoteClient.java参数中的serverIp和serverPort
+4. Run the client: Modify the RemoteClient.java parameters for serverIp and serverPort.
    ```bash
    RemoteClient.java
    ```
-
-### 未来规划
-
-* 支持粘贴板文字和图片(已完成)  
-* 客户端信息持久化
-* 分布式。。。可能吧
-
