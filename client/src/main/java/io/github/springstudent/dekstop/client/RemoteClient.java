@@ -7,6 +7,8 @@ import io.github.springstudent.dekstop.client.core.RemoteScreen;
 import io.github.springstudent.dekstop.client.netty.RemoteChannelHandler;
 import io.github.springstudent.dekstop.client.netty.RemoteStateIdleHandler;
 import io.github.springstudent.dekstop.common.command.Cmd;
+import io.github.springstudent.dekstop.common.command.CmdResCliInfo;
+import io.github.springstudent.dekstop.common.command.CmdType;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
@@ -122,16 +124,22 @@ public class RemoteClient extends RemoteFrame {
     }
 
     public void handleCmd(Cmd cmd) {
-        controller.handleCmd(cmd);
-        controlled.handleCmd(cmd);
+        if (cmd.getType().equals(CmdType.ResCliInfo)) {
+            CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
+            setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
+            updateConnectionStatus(true);
+        } else {
+            controller.handleCmd(cmd);
+            controlled.handleCmd(cmd);
+        }
     }
 
-    public void setControllChannel(Channel channel){
+    public void setControllChannel(Channel channel) {
         controller.setChannel(channel);
         controlled.setChannel(channel);
     }
 
-    public void stopClient(){
+    public void stopClient() {
         showMessageDialog("连接异常", JOptionPane.ERROR_MESSAGE);
         remoteScreen.close();
         controller.stop();
