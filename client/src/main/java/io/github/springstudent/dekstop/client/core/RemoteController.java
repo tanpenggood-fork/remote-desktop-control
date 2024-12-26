@@ -305,7 +305,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 pane.add(maxSizeLbl);
                 pane.add(maxSizeTf);
 
-                final JLabel purgeSizeLbl = new JLabel("缓存充值值");
+                final JLabel purgeSizeLbl = new JLabel("缓存重置值");
                 final JTextField purgeSizeTf = new JTextField(valueOf(compressorEngineConfiguration.getCachePurgeSize()));
                 pane.add(purgeSizeLbl);
                 pane.add(purgeSizeTf);
