@@ -146,7 +146,7 @@ public class RemoteClient extends RemoteFrame {
     }
 
     public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321);
+        RemoteClient remoteClient = new RemoteClient("192.168.0.104", 54321);
     }
 
 }
