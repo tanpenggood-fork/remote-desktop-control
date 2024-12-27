@@ -305,7 +305,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 pane.add(maxSizeLbl);
                 pane.add(maxSizeTf);
 
-                final JLabel purgeSizeLbl = new JLabel("缓存充值值");
+                final JLabel purgeSizeLbl = new JLabel("缓存重置值");
                 final JTextField purgeSizeTf = new JTextField(valueOf(compressorEngineConfiguration.getCachePurgeSize()));
                 pane.add(purgeSizeLbl);
                 pane.add(purgeSizeTf);
@@ -427,11 +427,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
      */
     @Override
     public void onKeyReleased(final int keyCode, final char keyChar) {
-        if (keyCode == -1) {
-            Log.warn(format("Got keyCode %s keyChar '%s' - releasing all keys", keyCode, keyChar));
-            pressedKeys.forEach(this::onKeyReleased);
-            return;
-        }
         if (!pressedKeys.containsKey(keyCode)) {
             Log.warn(format("Not releasing unpressed keyCode %s keyChar '%s'", keyCode, keyChar));
             return;

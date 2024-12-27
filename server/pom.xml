@@ -69,6 +69,10 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.github.springstudent</groupId>
+            <artifactId>GyJdbc</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

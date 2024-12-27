@@ -72,7 +72,7 @@ public class ClipboardPoller {
                             if (lastImage == null || !FileUtilities.bufferedImgMd5(currentImage).equals(FileUtilities.bufferedImgMd5(lastImage))) {
                                 Log.info("Clipboard contains new image: " + currentImage.getWidth() + "x" + currentImage.getHeight());
                                 lastImage = currentImage;
-                                fireClipboardImg(currentImage);
+//                                fireClipboardImg(currentImage);
                             }
                         }
                     } else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
