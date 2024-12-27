@@ -427,11 +427,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
      */
     @Override
     public void onKeyReleased(final int keyCode, final char keyChar) {
-        if (keyCode == -1) {
-            Log.warn(format("Got keyCode %s keyChar '%s' - releasing all keys", keyCode, keyChar));
-            pressedKeys.forEach(this::onKeyReleased);
-            return;
-        }
         if (!pressedKeys.containsKey(keyCode)) {
             Log.warn(format("Not releasing unpressed keyCode %s keyChar '%s'", keyCode, keyChar));
             return;
