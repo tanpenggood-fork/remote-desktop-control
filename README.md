@@ -56,3 +56,7 @@ This project is a **Java** and **Netty** based remote desktop control applicatio
    ```bash
    RemoteClient.java
    ```
+
+### Future Plan
+
+* WebSocket-based clipboard text and image transmission
