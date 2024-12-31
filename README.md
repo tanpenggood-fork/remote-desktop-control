@@ -59,4 +59,4 @@ This project is a **Java** and **Netty** based remote desktop control applicatio
 
 ### Future Plan
 
-* WebSocket-based clipboard text and image transmission
+* http-based clipboard text and image transmission
