@@ -32,10 +32,11 @@ import static java.lang.String.format;
 public class RemoteClient extends RemoteFrame {
     private static RemoteClient remoteClient;
 
-
     private String serverIp;
 
     private Integer serverPort;
+
+    private String fileServer;
 
     private boolean connectStatus;
 
@@ -45,15 +46,17 @@ public class RemoteClient extends RemoteFrame {
 
     private RemoteController controller;
 
-    public RemoteClient(String serverIp, Integer serverPort) {
+    public RemoteClient(String serverIp, Integer serverPort, String fileServer) {
         remoteClient = this;
         this.serverIp = serverIp;
         this.serverPort = serverPort;
+        this.fileServer = fileServer;
         this.controlled = new RemoteControlled();
         this.controller = new RemoteController();
         this.remoteScreen = new RemoteScreen();
         this.connectServer();
     }
+
 
     @Override
     public void openRemoteScreen(String deviceCode) {
@@ -149,12 +152,17 @@ public class RemoteClient extends RemoteFrame {
         connectServer();
     }
 
+    public String getFileServer() {
+        return fileServer;
+    }
+
     public static RemoteClient getRemoteClient() {
         return remoteClient;
     }
 
     public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321);
+        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, null);
+
     }
 
 }
