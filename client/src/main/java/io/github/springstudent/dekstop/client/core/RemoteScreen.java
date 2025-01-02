@@ -142,7 +142,7 @@ public class RemoteScreen extends JFrame {
 
     public final void transferClipboarButton(boolean enabled) {
         this.sendClipboardButton.setEnabled(enabled);
-        this.sendClipboardButton.setEnabled(enabled);
+        this.reqClipboardButton.setEnabled(enabled);
     }
 
     private JButton createButton(Action action) {
