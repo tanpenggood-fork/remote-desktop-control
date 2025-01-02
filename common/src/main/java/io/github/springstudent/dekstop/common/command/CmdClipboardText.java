@@ -12,8 +12,11 @@ import java.nio.charset.StandardCharsets;
 public class CmdClipboardText extends Cmd {
     private String payload;
 
-    public CmdClipboardText(String payload) {
+    private String controlType;
+
+    public CmdClipboardText(String payload, String controlType) {
         this.payload = payload;
+        this.controlType = controlType;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class CmdClipboardText extends Cmd {
     @Override
     public int getWireSize() {
         // 修改为根据UTF-8字符集来计算字节数
-        return 4 + payload.getBytes(StandardCharsets.UTF_8).length;
+        return 8 + payload.getBytes(StandardCharsets.UTF_8).length + controlType.length();
     }
 
     @Override
@@ -36,11 +39,17 @@ public class CmdClipboardText extends Cmd {
         return payload;
     }
 
+    public String getControlType() {
+        return controlType;
+    }
+
     @Override
     public void encode(ByteBuf out) throws IOException {
         byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
         out.writeInt(payloadBytes.length);
         out.writeBytes(payloadBytes);
+        out.writeInt(controlType.length());
+        out.writeCharSequence(controlType, StandardCharsets.UTF_8);
     }
 
     public static CmdClipboardText decode(ByteBuf in) {
@@ -48,6 +57,8 @@ public class CmdClipboardText extends Cmd {
         byte[] payloadBytes = new byte[payloadLength];
         in.readBytes(payloadBytes);
         String payload = new String(payloadBytes, StandardCharsets.UTF_8);
-        return new CmdClipboardText(payload);
+        int controllTypeLength = in.readInt();
+        String controlType = in.readCharSequence(controllTypeLength, StandardCharsets.UTF_8).toString();
+        return new CmdClipboardText(payload, controlType);
     }
 }

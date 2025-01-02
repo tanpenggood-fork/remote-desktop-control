@@ -138,7 +138,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
             countReceivedBit(cmd);
-        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer)) {
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer) && needSetClipboard(cmd)) {
             super.setClipboard(cmd).whenComplete((o, o2) -> RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true));
         } else if (cmd.getType().equals(CmdType.ResRemoteClipboard)) {
             RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);

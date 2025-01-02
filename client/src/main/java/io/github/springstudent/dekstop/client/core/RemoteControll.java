@@ -91,7 +91,7 @@ public abstract class RemoteControll implements ClipboardOwner {
                 }
                 if (EmptyUtils.isNotEmpty(text)) {
                     final String finalText = text;
-                    fireCmd(new CmdClipboardText(finalText));
+                    fireCmd(new CmdClipboardText(finalText, getType()));
                     return CmdResRemoteClipboard.OK;
                 } else {
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
@@ -163,7 +163,7 @@ public abstract class RemoteControll implements ClipboardOwner {
             processFile(file, null, remoteClipboards);
         }
         RemoteUtils.saveClipboard(remoteClipboards, map);
-        fireCmd(new CmdClipboardTransfer(getDeviceCode()));
+        fireCmd(new CmdClipboardTransfer(getDeviceCode(), getType()));
     }
 
     private void processFile(File file, String filePid, List<RemoteClipboard> remoteClipboards) throws Exception {
@@ -230,6 +230,15 @@ public abstract class RemoteControll implements ClipboardOwner {
                 Log.error("setClipboard error", e);
             }
         });
+    }
+
+    public boolean needSetClipboard(Cmd cmd) {
+        if (cmd.getType().equals(CmdType.ClipboardText)) {
+            return !((CmdClipboardText) cmd).getControlType().equals(getType());
+        } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
+            return !((CmdClipboardTransfer) cmd).getControlType().equals(getType());
+        }
+        return false;
     }
 
     public List<File> processClipboard(List<RemoteClipboard> remoteClipboards) throws Exception {

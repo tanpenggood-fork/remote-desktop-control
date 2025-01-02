@@ -13,12 +13,19 @@ public class CmdClipboardTransfer extends Cmd {
 
     private String deviceCode;
 
-    public CmdClipboardTransfer(String deviceCode) {
+    private String controlType;
+
+    public CmdClipboardTransfer(String deviceCode, String controlType) {
         this.deviceCode = deviceCode;
+        this.controlType = controlType;
     }
 
     public String getDeviceCode() {
         return deviceCode;
+    }
+
+    public String getControlType() {
+        return controlType;
     }
 
     @Override
@@ -28,7 +35,7 @@ public class CmdClipboardTransfer extends Cmd {
 
     @Override
     public int getWireSize() {
-        return 4 + deviceCode.length();
+        return 8 + deviceCode.length() + controlType.length();
     }
 
     @Override
@@ -40,11 +47,15 @@ public class CmdClipboardTransfer extends Cmd {
     public void encode(ByteBuf out) throws IOException {
         out.writeInt(deviceCode.length());
         out.writeCharSequence(deviceCode, StandardCharsets.UTF_8);
+        out.writeInt(controlType.length());
+        out.writeCharSequence(controlType, StandardCharsets.UTF_8);
     }
 
     public static CmdClipboardTransfer decode(ByteBuf in) {
         int deviceCodeLength = in.readInt();
         String deviceCode = in.readCharSequence(deviceCodeLength, StandardCharsets.UTF_8).toString();
-        return new CmdClipboardTransfer(deviceCode);
+        int controllTypeLength = in.readInt();
+        String controlType = in.readCharSequence(controllTypeLength, StandardCharsets.UTF_8).toString();
+        return new CmdClipboardTransfer(deviceCode, controlType);
     }
 }
