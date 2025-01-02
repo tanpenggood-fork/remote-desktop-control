@@ -11,7 +11,7 @@
  Target Server Version : 50742 (5.7.42)
  File Encoding         : 65001
 
- Date: 31/12/2024 16:00:29
+ Date: 02/01/2025 22:56:09
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `clipboard`  (
   `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `deviceCode` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `fileInfoId` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `fileName` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `fileName` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `filePid` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `isFile` tinyint(1) NULL DEFAULT NULL COMMENT '0.否，1.是',
   PRIMARY KEY (`id`) USING BTREE
@@ -52,7 +52,7 @@ CREATE TABLE `file_info`  (
   `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `fileName` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `fileMd5` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `suffix` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `suffix` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `fileSize` bigint(20) NOT NULL,
   `uploadTime` datetime NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
