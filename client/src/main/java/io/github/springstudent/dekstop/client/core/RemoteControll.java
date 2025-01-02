@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.TransferableFiles;
+import io.github.springstudent.dekstop.client.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.bean.FileInfo;
 import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
 import io.github.springstudent.dekstop.common.command.*;
@@ -49,10 +50,6 @@ public abstract class RemoteControll implements ClipboardOwner {
         if (!FileUtil.exist(downloadDir)) {
             FileUtil.mkdir(downloadDir);
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getProperty("java.io.tmpdir"));
     }
 
     public Channel getChannel() {
@@ -239,7 +236,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         remoteClipboard.setIsFile(0);
         remoteClipboard.setChilds(remoteClipboards);
         downloadClipboardFile(tmpDir, remoteClipboard);
-        return FileUtil.loopFiles(tmpDir);
+        return FileUtilities.loopFiles(tmpDir);
     }
 
     private void downloadClipboardFile(String tmpDir, RemoteClipboard remoteClipboard) throws Exception {
