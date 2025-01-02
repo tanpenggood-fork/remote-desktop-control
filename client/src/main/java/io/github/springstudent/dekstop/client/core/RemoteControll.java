@@ -236,7 +236,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         remoteClipboard.setIsFile(0);
         remoteClipboard.setChilds(remoteClipboards);
         downloadClipboardFile(tmpDir, remoteClipboard);
-        return FileUtilities.loopFiles(tmpDir);
+        return FileUtilities.getFiles(tmpDir);
     }
 
     private void downloadClipboardFile(String tmpDir, RemoteClipboard remoteClipboard) throws Exception {
