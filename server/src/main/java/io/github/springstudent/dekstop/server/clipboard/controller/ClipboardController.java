@@ -31,12 +31,12 @@ public class ClipboardController {
         }
     }
 
-    @PostMapping("/add")
-    public String add(@RequestBody Clipboard clipboard) throws Exception {
+    @PostMapping("/save")
+    public void save(@RequestBody List<Clipboard> clipboards) throws Exception {
         try {
-            return clipboardService.add(clipboard);
+            clipboardService.save(clipboards);
         } catch (Exception e) {
-            log.error("add error,clipboard={}", clipboard, e);
+            log.error("save error,clipboards={}", clipboards, e);
             throw e;
         }
     }
@@ -46,7 +46,7 @@ public class ClipboardController {
         try {
             return clipboardService.get(deviceCode);
         } catch (Exception e) {
-            log.error("get error,deviceCode={}",deviceCode,e);
+            log.error("get error,deviceCode={}", deviceCode, e);
             throw e;
         }
     }

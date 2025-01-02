@@ -11,7 +11,7 @@ import java.util.List;
 public interface ClipboardService {
     void clear(String deviceCode)throws Exception;
 
-    String add(Clipboard clipboard)throws Exception;
+    void save(List<Clipboard> clipboards)throws Exception;
 
     List<Clipboard> get(String deviceCode)throws Exception;
 }

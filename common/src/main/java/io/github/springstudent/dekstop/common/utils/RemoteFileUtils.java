@@ -1,6 +1,7 @@
 package io.github.springstudent.dekstop.common.utils;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpRequest;
@@ -25,7 +26,7 @@ import java.util.*;
  * @author ZhouNing
  * @date 2024/12/31 15:34
  **/
-public class FileUtils {
+public class RemoteFileUtils {
     public static final String TMP_PATH_KEY = "fileTmpPath";
     public static final String REQUEST_URL_KEY = "requestUrl";
     public static final String REQUEST_TIMEOUT_KEY = "requestTimeout";
@@ -46,7 +47,7 @@ public class FileUtils {
      */
     private static final String UPLOAD_CHUNK_REQUEST = "/file/uploadFileChunk";
 
-    private static final String DOWNLOAD_FILE_REQUEST = "/file/download";
+    private static final String DOWNLOAD_FILE_REQUEST = "/file/downloadFile";
 
     /**
      * 文件分片上传
@@ -138,7 +139,7 @@ public class FileUtils {
         JSONObject jsonObject = JSONUtil.parseObj(result);
         if (jsonObject.getInt("code").intValue() == 200) {
             return jsonObject;
-        } else{
+        } else {
             throw new IllegalStateException(jsonObject.getStr("msg"));
         }
     }
@@ -189,20 +190,8 @@ public class FileUtils {
         } catch (IOException e) {
             throw e;
         } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (rbc != null) {
-                try {
-                    rbc.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            IoUtil.close(fos);
+            IoUtil.close(rbc);
         }
     }
 
@@ -210,10 +199,11 @@ public class FileUtils {
         Map<String, Object> map = new HashMap<>();
         map.put(REQUEST_URL_KEY, "http://172.16.1.37:12345/remote-desktop-control");
         map.put(TMP_PATH_KEY, "E:\\tmp");
-        List<String> rebarFiles = Arrays.asList("853c51ecb5154c59a0fd825a999e65c5.png");
+        List<String> rebarFiles = Arrays.asList("management-center-3.8.3.zip");
         for (String rf : rebarFiles) {
             FileInfo fileInfo = uploadFile("D:\\tmp\\" + rf, map);
             System.out.println(fileInfo.getFileUuid());
         }
+
     }
 }

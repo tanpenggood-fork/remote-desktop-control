@@ -13,24 +13,23 @@ import java.util.List;
  * @date 2024/12/31 16:19
  **/
 @Service
-public class ClipboardServiceImpl implements ClipboardService{
+public class ClipboardServiceImpl implements ClipboardService {
 
     @Resource
     private ClipboardDao clipboardDao;
 
     @Override
     public void clear(String deviceCode) throws Exception {
-        clipboardDao.deleteWithCriteria(new Criteria().where(Clipboard::getDeviceCode,deviceCode));
+        clipboardDao.deleteWithCriteria(new Criteria().where(Clipboard::getDeviceCode, deviceCode));
     }
 
     @Override
-    public String add(Clipboard clipboard) throws Exception {
-        clipboardDao.save(clipboard);
-        return clipboard.getId();
+    public void save(List<Clipboard> clipboards) throws Exception {
+        clipboardDao.saveAll(clipboards);
     }
 
     @Override
     public List<Clipboard> get(String deviceCode) throws Exception {
-        return clipboardDao.queryWithCriteria(new Criteria().where(Clipboard::getDeviceCode,deviceCode));
+        return clipboardDao.queryWithCriteria(new Criteria().where(Clipboard::getDeviceCode, deviceCode));
     }
 }
