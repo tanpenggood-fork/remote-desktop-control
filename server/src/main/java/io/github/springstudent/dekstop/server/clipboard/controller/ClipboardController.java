@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -19,10 +20,11 @@ public class ClipboardController {
 
     private static final Logger log = LoggerFactory.getLogger(FileController.class);
 
+    @Resource
     private ClipboardService clipboardService;
 
     @PostMapping("/clear")
-    public void clear(@RequestParam String deviceCode) throws Exception {
+    public void clear(@RequestParam(name = "deviceCode") String deviceCode) throws Exception {
         try {
             clipboardService.clear(deviceCode);
         } catch (Exception e) {
@@ -42,7 +44,7 @@ public class ClipboardController {
     }
 
     @GetMapping("/get")
-    public List<Clipboard> get(@RequestParam String deviceCode) throws Exception {
+    public List<Clipboard> get(@RequestParam(name = "deviceCode") String deviceCode) throws Exception {
         try {
             return clipboardService.get(deviceCode);
         } catch (Exception e) {

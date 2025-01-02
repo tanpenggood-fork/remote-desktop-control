@@ -6,14 +6,18 @@ import io.github.springstudent.dekstop.client.core.RemoteFrame;
 import io.github.springstudent.dekstop.client.core.RemoteScreen;
 import io.github.springstudent.dekstop.client.netty.RemoteChannelHandler;
 import io.github.springstudent.dekstop.client.netty.RemoteStateIdleHandler;
+import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
 import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.command.CmdResCliInfo;
 import io.github.springstudent.dekstop.common.command.CmdType;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
+import io.github.springstudent.dekstop.common.utils.NettyUtils;
+import io.github.springstudent.dekstop.common.utils.RemoteUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,8 +25,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.swing.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.springstudent.dekstop.common.utils.RemoteUtils.REQUEST_URL_KEY;
 import static java.lang.String.format;
 
 /**
@@ -36,7 +46,7 @@ public class RemoteClient extends RemoteFrame {
 
     private Integer serverPort;
 
-    private String fileServer;
+    private String clipboardServer;
 
     private boolean connectStatus;
 
@@ -46,11 +56,11 @@ public class RemoteClient extends RemoteFrame {
 
     private RemoteController controller;
 
-    public RemoteClient(String serverIp, Integer serverPort, String fileServer) {
+    public RemoteClient(String serverIp, Integer serverPort, String clipboardServer) {
         remoteClient = this;
         this.serverIp = serverIp;
         this.serverPort = serverPort;
-        this.fileServer = fileServer;
+        this.clipboardServer = clipboardServer;
         this.controlled = new RemoteControlled();
         this.controller = new RemoteController();
         this.remoteScreen = new RemoteScreen();
@@ -126,10 +136,11 @@ public class RemoteClient extends RemoteFrame {
         return controlled;
     }
 
-    public void handleCmd(Cmd cmd) {
+    public void handleCmd(ChannelHandlerContext ctx, Cmd cmd) {
         if (cmd.getType().equals(CmdType.ResCliInfo)) {
             CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
             setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
+            NettyUtils.updateControllDeviceCode(ctx.channel(), clientInfo.getDeviceCode());
             updateConnectionStatus(true);
         } else {
             controller.handleCmd(cmd);
@@ -152,17 +163,20 @@ public class RemoteClient extends RemoteFrame {
         connectServer();
     }
 
-    public String getFileServer() {
-        return fileServer;
+    public String getClipboardServer() {
+        return clipboardServer;
     }
 
     public static RemoteClient getRemoteClient() {
         return remoteClient;
     }
 
-    public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, null);
-
+    public static void main(String[] args) throws Exception {
+        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, "http://172.16.1.37:12345/remote-desktop-control");
+        Map<String, Object> map = new HashMap<>();
+        map.put(REQUEST_URL_KEY, "http://172.16.1.37:12345/remote-desktop-control");
+        List<RemoteClipboard> result = RemoteUtils.getClipboard("test", map);
+        remoteClient.getController().processClipboard(result);
     }
 
 }

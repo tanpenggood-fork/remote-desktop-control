@@ -6,7 +6,6 @@ import io.github.springstudent.dekstop.client.capture.RobotCaptureFactory;
 import io.github.springstudent.dekstop.client.compress.CompressorEngine;
 import io.github.springstudent.dekstop.client.compress.CompressorEngineListener;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
-import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.MemByteBuffer;
 import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
@@ -89,14 +88,11 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             this.handleMessage((CmdKeyControl) cmd);
         } else if (cmd.getType().equals(CmdType.MouseControl)) {
             this.handleMessage((CmdMouseControl) cmd);
-        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
-            setClipboard(cmd);
+        } else if (cmd.getType().equals(CmdType.ReqRemoteClipboard)) {
+            super.sendClipboard();
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer)) {
+            super.setClipboard(cmd);
         }
-    }
-
-    @Override
-    public String getType() {
-        return Constants.CONTROLLED;
     }
 
     @Override

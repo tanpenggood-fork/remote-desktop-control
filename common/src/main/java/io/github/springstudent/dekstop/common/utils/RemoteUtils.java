@@ -8,6 +8,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import io.github.springstudent.dekstop.common.bean.FileInfo;
+import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,12 +22,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author ZhouNing
  * @date 2024/12/31 15:34
  **/
-public class RemoteFileUtils {
+public class RemoteUtils {
     public static final String TMP_PATH_KEY = "fileTmpPath";
     public static final String REQUEST_URL_KEY = "requestUrl";
     public static final String REQUEST_TIMEOUT_KEY = "requestTimeout";
@@ -48,17 +50,19 @@ public class RemoteFileUtils {
     private static final String UPLOAD_CHUNK_REQUEST = "/file/uploadFileChunk";
 
     private static final String DOWNLOAD_FILE_REQUEST = "/file/downloadFile";
+    private static final String CLEAR_CLIPBOARD = "/clipboard/clear";
+    private static final String SAVE_CLIPBOARD = "/clipboard/save";
+    private static final String GET_CLIPBOARD = "/clipboard/get";
 
     /**
      * 文件分片上传
      *
-     * @param filePath
+     * @param file
      * @param requestParam
      * @return FileInfo
      * @throws Exception
      */
-    public static FileInfo uploadFile(String filePath, Map<String, Object> requestParam) throws Exception {
-        File file = new File(filePath);
+    public static FileInfo uploadFile(File file, Map<String, Object> requestParam) throws Exception {
         String fileTmpPath = MapUtil.getStr(requestParam, TMP_PATH_KEY);
         String reqUrl = MapUtil.getStr(requestParam, REQUEST_URL_KEY);
         int reqTimeout = MapUtil.getInt(requestParam, REQUEST_TIMEOUT_KEY, 10000);
@@ -82,10 +86,7 @@ public class RemoteFileUtils {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("md5", fileMd5);
         paramMap.put("fileSize", fileSize);
-        String uploadResult = parseObj(HttpRequest.get(reqUrl + QUICK_UPLOAD_REQUEST)
-                .form(paramMap)
-                .timeout(reqTimeout)
-                .execute().body()).getStr("result");
+        String uploadResult = parseObj(HttpRequest.get(reqUrl + QUICK_UPLOAD_REQUEST).form(paramMap).timeout(reqTimeout).execute().body()).getStr("result");
         if (!uploadResult.equals("-1")) {
             fileInfo.setFileUuid(uploadResult);
             return fileInfo;
@@ -105,18 +106,12 @@ public class RemoteFileUtils {
                 paramMap.put("md5", fileMd5);
                 paramMap.put("chunkNo", i + 1);
                 paramMap.put("chunkSize", FileUtil.size(chunkFile));
-                boolean checkChunkResult = parseObj(HttpRequest.get(reqUrl + CHECK_CHUNK_REQUEST)
-                        .form(paramMap)
-                        .timeout(reqTimeout)
-                        .execute().body()).getBool("result");
+                boolean checkChunkResult = parseObj(HttpRequest.get(reqUrl + CHECK_CHUNK_REQUEST).form(paramMap).timeout(reqTimeout).execute().body()).getBool("result");
                 //3.分片未被上传,执行上传分片逻辑
                 if (!checkChunkResult) {
                     paramMap.put("file", chunkFile);
                     paramMap.put("fileName", FileUtil.getName(chunkFile));
-                    String uploadChunkResult = parseObj(HttpRequest.post(reqUrl + UPLOAD_CHUNK_REQUEST)
-                            .form(paramMap)
-                            .timeout(reqTimeout)
-                            .execute().body()).getStr("result");
+                    String uploadChunkResult = parseObj(HttpRequest.post(reqUrl + UPLOAD_CHUNK_REQUEST).form(paramMap).timeout(reqTimeout).execute().body()).getStr("result");
                     if (!uploadChunkResult.equals("-1")) {
                         fileUuid = uploadChunkResult;
                         break;
@@ -161,8 +156,7 @@ public class RemoteFileUtils {
         // 分片文件名称
         Path chunkFile = Paths.get(chunk);
         try (FileChannel fileChannel = FileChannel.open(file, EnumSet.of(StandardOpenOption.READ))) {
-            try (FileChannel chunkFileChannel = FileChannel.open(chunkFile,
-                    EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE))) {
+            try (FileChannel chunkFileChannel = FileChannel.open(chunkFile, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE))) {
                 // 返回写入的数据长度
                 fileChannel.transferTo(start, end - start, chunkFileChannel);
                 return chunkFile.toFile();
@@ -195,15 +189,48 @@ public class RemoteFileUtils {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Map<String, Object> map = new HashMap<>();
-        map.put(REQUEST_URL_KEY, "http://172.16.1.37:12345/remote-desktop-control");
-        map.put(TMP_PATH_KEY, "E:\\tmp");
-        List<String> rebarFiles = Arrays.asList("management-center-3.8.3.zip");
-        for (String rf : rebarFiles) {
-            FileInfo fileInfo = uploadFile("D:\\tmp\\" + rf, map);
-            System.out.println(fileInfo.getFileUuid());
-        }
+    public static void saveClipboard(List<RemoteClipboard> clipboards, Map<String, Object> requestParam) {
+        String reqUrl = MapUtil.getStr(requestParam, REQUEST_URL_KEY);
+        int reqTimeout = MapUtil.getInt(requestParam, REQUEST_TIMEOUT_KEY, 10000);
+        parseObj(HttpRequest.post(reqUrl + SAVE_CLIPBOARD).body(JSONUtil.toJsonStr(clipboards)).timeout(reqTimeout).execute().body());
 
+    }
+
+    public static void clearClipboard(String deviceCode, Map<String, Object> requestParam) {
+        String reqUrl = MapUtil.getStr(requestParam, REQUEST_URL_KEY);
+        int reqTimeout = MapUtil.getInt(requestParam, REQUEST_TIMEOUT_KEY, 10000);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("deviceCode", deviceCode);
+        parseObj(HttpRequest.post(reqUrl + CLEAR_CLIPBOARD).form(paramMap).timeout(reqTimeout).execute().body());
+    }
+
+    public static List<RemoteClipboard> getClipboard(String deviceCode, Map<String, Object> requestParam) {
+        String reqUrl = MapUtil.getStr(requestParam, REQUEST_URL_KEY);
+        int reqTimeout = MapUtil.getInt(requestParam, REQUEST_TIMEOUT_KEY, 10000);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("deviceCode", deviceCode);
+        JSONObject result = parseObj(HttpRequest.get(reqUrl + GET_CLIPBOARD).form(paramMap).timeout(reqTimeout).execute().body());
+        return buildTree(JSONUtil.toList(result.getStr("result"), RemoteClipboard.class));
+    }
+
+    public static List<RemoteClipboard> buildTree(List<RemoteClipboard> clipboards) {
+        Map<String, RemoteClipboard> clipboardMap = clipboards.stream()
+                .collect(Collectors.toMap(RemoteClipboard::getId, clipboard -> clipboard));
+        List<RemoteClipboard> roots = new ArrayList<>();
+        for (RemoteClipboard clipboard : clipboards) {
+            String parentId = clipboard.getFilePid();
+            if (EmptyUtils.isEmpty(parentId)) {
+                roots.add(clipboard);
+            } else {
+                RemoteClipboard parent = clipboardMap.get(parentId);
+                if (parent != null) {
+                    if (parent.getChilds() == null) {
+                        parent.setChilds(new ArrayList<>());
+                    }
+                    parent.getChilds().add(clipboard);
+                }
+            }
+        }
+        return roots;
     }
 }

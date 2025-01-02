@@ -89,7 +89,7 @@ public class FileServiceImpl implements FileService {
             fileChunk.setChunkBlob(chunk.getBytes());
             fileChunk.setChunkSize(chunk.getSize());
             fileChunk.setId(IdUtil.fastSimpleUUID());
-            fileChunkDao.uploadFile(fileChunk,chunk);
+            fileChunkDao.uploadFile(fileChunk, chunk);
             Long fileSize = fileUploadProgress.getFileSize();
             Long finishSize = fileUploadProgress.getFinishSize();
             if (finishSize + chunk.getSize() == fileSize) {
@@ -100,9 +100,13 @@ public class FileServiceImpl implements FileService {
                 FileInfo fileInfo = new FileInfo();
                 fileInfo.setId(fileInfoId);
                 fileInfo.setFileMd5(md5);
-                fileInfo.setFileName(fileName.substring(0, fileName.lastIndexOf(".")));
                 fileInfo.setFileSize(fileSize);
-                fileInfo.setSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
+                if (fileName.indexOf(".") != -1) {
+                    fileInfo.setFileName(fileName.substring(0, fileName.lastIndexOf(".")));
+                    fileInfo.setSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
+                } else {
+                    fileInfo.setFileName(fileName);
+                }
                 fileInfo.setUploadTime(new Date());
                 fileInfoDao.save(fileInfo);
                 return fileInfoId;
@@ -125,7 +129,14 @@ public class FileServiceImpl implements FileService {
         if (EmptyUtils.isNotEmpty(fileChunks)) {
             response.setContentLengthLong(fileInfo.getFileSize());
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileInfo.getFileName() + "." + fileInfo.getSuffix(), "UTF-8"));
+
+            String encodeFileName = null;
+            if (EmptyUtils.isNotEmpty(fileInfo.getSuffix())) {
+                URLEncoder.encode(fileInfo.getFileName() + "." + fileInfo.getSuffix(), "UTF-8");
+            } else {
+                URLEncoder.encode(fileInfo.getFileName(), "UTF-8");
+            }
+            response.setHeader("Content-Disposition", "attachment;filename=" + encodeFileName);
             try (OutputStream out = response.getOutputStream()) {
                 for (FileChunk fileChunk : fileChunks) {
                     out.write(fileChunk.getChunkBlob());

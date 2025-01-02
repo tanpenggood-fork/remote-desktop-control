@@ -2,8 +2,6 @@ package io.github.springstudent.dekstop.client.netty;
 
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.common.command.Cmd;
-import io.github.springstudent.dekstop.common.command.CmdResCliInfo;
-import io.github.springstudent.dekstop.common.command.CmdType;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -20,7 +18,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
     protected void channelRead0(ChannelHandlerContext ctx, Cmd cmd) throws Exception {
         try {
             Log.info(format("client recieved msg=%s", cmd));
-            RemoteClient.getRemoteClient().handleCmd(cmd);
+            RemoteClient.getRemoteClient().handleCmd(ctx, cmd);
         } catch (Exception e) {
             Log.info("client channelRead0 errro");
             e.printStackTrace();
