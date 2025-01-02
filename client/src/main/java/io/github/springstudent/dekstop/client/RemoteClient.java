@@ -173,10 +173,6 @@ public class RemoteClient extends RemoteFrame {
 
     public static void main(String[] args) throws Exception {
         RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, "http://172.16.1.37:12345/remote-desktop-control");
-        Map<String, Object> map = new HashMap<>();
-        map.put(REQUEST_URL_KEY, "http://172.16.1.37:12345/remote-desktop-control");
-        List<RemoteClipboard> result = RemoteUtils.getClipboard("test", map);
-        remoteClient.getController().processClipboard(result);
     }
 
 }
