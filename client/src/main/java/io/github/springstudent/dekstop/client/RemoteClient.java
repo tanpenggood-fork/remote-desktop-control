@@ -132,7 +132,7 @@ public class RemoteClient extends RemoteFrame {
         if (cmd.getType().equals(CmdType.ResCliInfo)) {
             CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
             setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
-            NettyUtils.updateControllDeviceCode(ctx.channel(), clientInfo.getDeviceCode());
+            NettyUtils.updateDeviceCode(ctx.channel(), clientInfo.getDeviceCode());
             updateConnectionStatus(true);
         } else {
             controller.handleCmd(cmd);
