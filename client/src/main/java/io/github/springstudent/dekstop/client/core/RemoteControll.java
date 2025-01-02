@@ -139,7 +139,7 @@ public abstract class RemoteControll implements ClipboardOwner {
                     final List<File> finalFiles = files;
                     try {
                         doSendClipboard(finalFiles);
-                        return true;
+                        return CmdResRemoteClipboard.OK;
                     } catch (Exception e) {
                         Log.error("send clipboardFiles error", e);
                         return CmdResRemoteClipboard.CLIPBOARD_SENDDATA_ERROR;
