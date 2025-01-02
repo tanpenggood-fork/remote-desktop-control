@@ -6,7 +6,6 @@ import io.github.springstudent.dekstop.client.core.RemoteFrame;
 import io.github.springstudent.dekstop.client.core.RemoteScreen;
 import io.github.springstudent.dekstop.client.netty.RemoteChannelHandler;
 import io.github.springstudent.dekstop.client.netty.RemoteStateIdleHandler;
-import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
 import io.github.springstudent.dekstop.common.command.Cmd;
 import io.github.springstudent.dekstop.common.command.CmdResCliInfo;
 import io.github.springstudent.dekstop.common.command.CmdType;
@@ -14,7 +13,6 @@ import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
-import io.github.springstudent.dekstop.common.utils.RemoteUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,14 +23,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.swing.*;
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.springstudent.dekstop.common.utils.RemoteUtils.REQUEST_URL_KEY;
 import static java.lang.String.format;
 
 /**
@@ -159,6 +151,7 @@ public class RemoteClient extends RemoteFrame {
         controller.stop();
         controlled.stop();
         updateConnectionStatus(false);
+        setControlledAndCloseSessionLabelVisible(false);
         setControllChannel(null);
         connectServer();
     }
