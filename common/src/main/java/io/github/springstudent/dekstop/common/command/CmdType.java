@@ -11,7 +11,7 @@ public enum CmdType {
     ResCliInfo,
     ResCapture,
     ResPong,
-
+    ResRemoteClipboard,
     Capture,
     CompressorConfig,
     CaptureConfig,

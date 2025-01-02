@@ -210,10 +210,10 @@ public class RemoteUtils {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("deviceCode", deviceCode);
         JSONObject result = parseObj(HttpRequest.get(reqUrl + GET_CLIPBOARD).form(paramMap).timeout(reqTimeout).execute().body());
-        return buildTree(JSONUtil.toList(result.getStr("result"), RemoteClipboard.class));
+        return buildClipboard(JSONUtil.toList(result.getStr("result"), RemoteClipboard.class));
     }
 
-    public static List<RemoteClipboard> buildTree(List<RemoteClipboard> clipboards) {
+    public static List<RemoteClipboard> buildClipboard(List<RemoteClipboard> clipboards) {
         Map<String, RemoteClipboard> clipboardMap = clipboards.stream()
                 .collect(Collectors.toMap(RemoteClipboard::getId, clipboard -> clipboard));
         List<RemoteClipboard> roots = new ArrayList<>();

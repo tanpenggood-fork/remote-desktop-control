@@ -44,6 +44,10 @@ public class RemoteScreen extends JFrame {
 
     private Timer sessionTimer;
 
+    private JButton reqClipboardButton;
+
+    private JButton sendClipboardButton;
+
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
@@ -126,14 +130,19 @@ public class RemoteScreen extends JFrame {
         if (EmptyUtils.isNotEmpty(RemoteClient.getRemoteClient().getClipboardServer())) {
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-            JButton getClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createRequireRemoteClipboardAction());
-            JButton sendClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createSendLoacalClibboardAction());
-            buttonPanel.add(getClipboardButton);
+            this.reqClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createRequireRemoteClipboardAction());
+            this.sendClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createSendLoacalClibboardAction());
+            buttonPanel.add(reqClipboardButton);
             buttonPanel.add(Box.createHorizontalStrut(10));
             buttonPanel.add(sendClipboardButton);
             menuBar.add(buttonPanel);
         }
         this.setJMenuBar(menuBar);
+    }
+
+    public final void transferClipboarButton(boolean enabled) {
+        this.sendClipboardButton.setEnabled(enabled);
+        this.sendClipboardButton.setEnabled(enabled);
     }
 
     private JButton createButton(Action action) {

@@ -4,12 +4,10 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.TransferableFiles;
+import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.FileInfo;
 import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
-import io.github.springstudent.dekstop.common.command.Cmd;
-import io.github.springstudent.dekstop.common.command.CmdClipboardText;
-import io.github.springstudent.dekstop.common.command.CmdClipboardTransfer;
-import io.github.springstudent.dekstop.common.command.CmdType;
+import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.utils.EmptyUtils;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
@@ -24,6 +22,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.springstudent.dekstop.common.utils.RemoteUtils.REQUEST_URL_KEY;
 import static io.github.springstudent.dekstop.common.utils.RemoteUtils.TMP_PATH_KEY;
@@ -74,6 +74,7 @@ public abstract class RemoteControll implements ClipboardOwner {
     }
 
     protected void sendClipboard() {
+        AtomicBoolean sendFlag = new AtomicBoolean(false);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
             String text = null;
@@ -83,7 +84,9 @@ public abstract class RemoteControll implements ClipboardOwner {
                 Log.error("clipboard.getData(DataFlavor.stringFlavor) error", e);
             }
             if (EmptyUtils.isNotEmpty(text)) {
-                this.fireCmd(new CmdClipboardText(text));
+                final String finalText = text;
+                this.fireCmd(new CmdClipboardText(finalText));
+                sendFlag.set(true);
             }
         } else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
             BufferedImage image = null;
@@ -100,8 +103,9 @@ public abstract class RemoteControll implements ClipboardOwner {
                         outputFile = new File(uploadDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
                         ImageIO.write(clipboardImage, "png", outputFile);
                         doSendClipboard(Arrays.asList(outputFile));
+                        sendFlag.set(true);
                     } catch (Exception e) {
-                        Log.error("sendClipboard error", e);
+                        Log.error("send clipboardImage error", e);
                     } finally {
                         if (outputFile != null) {
                             FileUtil.del(outputFile);
@@ -121,27 +125,32 @@ public abstract class RemoteControll implements ClipboardOwner {
                 new Thread(() -> {
                     try {
                         doSendClipboard(finalFiles);
+                        sendFlag.set(true);
                     } catch (Exception e) {
-                        Log.error("sendClipboard error", e);
+                        Log.error("send clipboardFiles error", e);
                     }
-                });
+                }).start();
+            }
+        }
+        //未发送成功,设置粘贴板按钮可点
+        if (!sendFlag.get()) {
+            if (getType().equals(Constants.CONTROLLER)) {
+                RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
+            } else {
+                fireCmd(new CmdResRemoteClipboard());
             }
         }
     }
 
-    public void doSendClipboard(List<File> files) throws Exception {
+    private void doSendClipboard(List<File> files) throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put(REQUEST_URL_KEY, RemoteClient.getRemoteClient().getClipboardServer());
-        //clear clipboardInfo
         RemoteUtils.clearClipboard(getDeviceCode(), map);
-        //upload clipboard file and folder
         List<RemoteClipboard> remoteClipboards = new ArrayList<>();
         for (File file : files) {
             processFile(file, null, remoteClipboards);
         }
-        //save clipboard info
         RemoteUtils.saveClipboard(remoteClipboards, map);
-        //notice remote to download clipboard
         fireCmd(new CmdClipboardTransfer(getDeviceCode()));
     }
 
@@ -177,7 +186,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         }
     }
 
-    public String getDeviceCode() {
+    private String getDeviceCode() {
         if (channel != null) {
             String deviceCode = NettyUtils.getDeviceCode(this.channel);
             if (EmptyUtils.isEmpty(deviceCode)) {
@@ -190,24 +199,25 @@ public abstract class RemoteControll implements ClipboardOwner {
         }
     }
 
-
-    protected void setClipboard(Cmd cmd) {
-        try {
-            if (cmd.getType().equals(CmdType.ClipboardText)) {
-                StringSelection stringSelection = new StringSelection(((CmdClipboardText) cmd).getPayload());
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, this);
-            } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
-                String deviceCode = ((CmdClipboardTransfer) cmd).getDeviceCode();
-                Map<String, Object> map = new HashMap<>();
-                map.put(REQUEST_URL_KEY, RemoteClient.getRemoteClient().getClipboardServer());
-                List<RemoteClipboard> remoteClipboards = RemoteUtils.getClipboard(deviceCode, map);
-                if (EmptyUtils.isNotEmpty(remoteClipboards)) {
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableFiles(processClipboard(remoteClipboards)), this);
+    protected CompletableFuture setClipboard(Cmd cmd) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                if (cmd.getType().equals(CmdType.ClipboardText)) {
+                    StringSelection stringSelection = new StringSelection(((CmdClipboardText) cmd).getPayload());
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, this);
+                } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
+                    String deviceCode = ((CmdClipboardTransfer) cmd).getDeviceCode();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put(REQUEST_URL_KEY, RemoteClient.getRemoteClient().getClipboardServer());
+                    List<RemoteClipboard> remoteClipboards = RemoteUtils.getClipboard(deviceCode, map);
+                    if (EmptyUtils.isNotEmpty(remoteClipboards)) {
+                        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferableFiles(processClipboard(remoteClipboards)), this);
+                    }
                 }
+            } catch (Exception e) {
+                Log.error("setClipboard error", e);
             }
-        } catch (Exception e) {
-            Log.error("setClipboard error", e);
-        }
+        });
     }
 
     public List<File> processClipboard(List<RemoteClipboard> remoteClipboards) throws Exception {
@@ -246,6 +256,7 @@ public abstract class RemoteControll implements ClipboardOwner {
 
     public abstract void handleCmd(Cmd cmd);
 
+    public abstract String getType();
 
     public void start() {
     }
@@ -255,6 +266,6 @@ public abstract class RemoteControll implements ClipboardOwner {
 
     @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
-
+        Log.info("lostOwnership ....");
     }
 }

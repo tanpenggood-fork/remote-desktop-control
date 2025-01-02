@@ -139,8 +139,15 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             deCompressorEngine.handleCapture((CmdCapture) cmd);
             countReceivedBit(cmd);
         } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer)) {
-            super.setClipboard(cmd);
+            super.setClipboard(cmd).whenComplete((o, o2) -> RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true));
+        } else if (cmd.getType().equals(CmdType.ResCapture)) {
+            RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
         }
+    }
+
+    @Override
+    public String getType() {
+        return Constants.CONTROLLED;
     }
 
     private void countReceivedBit(Cmd cmd) {
@@ -444,6 +451,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     private void requireRemoteClipboard() {
+        RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
         new Thread(() -> fireCmd(new CmdReqRemoteClipboard()));
     }
 
@@ -451,9 +459,9 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         final Action setRemoteClipboard = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent ev) {
+                RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
                 RemoteController.this.sendClipboard();
             }
-
         };
         setRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "发送本机粘贴板");
         setRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("up.png"));
