@@ -4,7 +4,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.TransferableFiles;
-import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.FileInfo;
 import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
 import io.github.springstudent.dekstop.common.command.*;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.springstudent.dekstop.common.utils.RemoteUtils.REQUEST_URL_KEY;
 import static io.github.springstudent.dekstop.common.utils.RemoteUtils.TMP_PATH_KEY;
@@ -73,73 +71,81 @@ public abstract class RemoteControll implements ClipboardOwner {
         SwingUtilities.invokeLater(() -> RemoteClient.getRemoteClient().showMessageDialog(msg, messageType));
     }
 
-    protected void sendClipboard() {
-        AtomicBoolean sendFlag = new AtomicBoolean(false);
+    protected CompletableFuture<Byte> sendClipboard() {
+        CompletableFuture result = null;
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-            String text = null;
-            try {
-                text = (String) clipboard.getData(DataFlavor.stringFlavor);
-            } catch (Exception e) {
-                Log.error("clipboard.getData(DataFlavor.stringFlavor) error", e);
-            }
-            if (EmptyUtils.isNotEmpty(text)) {
-                final String finalText = text;
-                this.fireCmd(new CmdClipboardText(finalText));
-                sendFlag.set(true);
-            }
+            result = CompletableFuture.supplyAsync(() -> {
+                String text = null;
+                try {
+                    text = (String) clipboard.getData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
+                    Log.error("clipboard.getData(DataFlavor.stringFlavor) error", e);
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
+                }
+                if (EmptyUtils.isNotEmpty(text)) {
+                    final String finalText = text;
+                    fireCmd(new CmdClipboardText(finalText));
+                    return CmdResRemoteClipboard.OK;
+                } else {
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
+                }
+            });
         } else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
-            BufferedImage image = null;
-            try {
-                image = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-            } catch (Exception e) {
-                Log.error("clipboard.getData(DataFlavor.imageFlavor) error", e);
-            }
-            final BufferedImage clipboardImage = image;
-            if (image != null) {
-                new Thread(() -> {
+            result = CompletableFuture.supplyAsync(() -> {
+                BufferedImage image = null;
+                try {
+                    image = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
+                } catch (Exception e) {
+                    Log.error("clipboard.getData(DataFlavor.imageFlavor) error", e);
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
+                }
+                final BufferedImage clipboardImage = image;
+                if (image != null) {
                     File outputFile = null;
                     try {
                         outputFile = new File(uploadDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
                         ImageIO.write(clipboardImage, "png", outputFile);
                         doSendClipboard(Arrays.asList(outputFile));
-                        sendFlag.set(true);
+                        return CmdResRemoteClipboard.OK;
                     } catch (Exception e) {
                         Log.error("send clipboardImage error", e);
+                        return CmdResRemoteClipboard.CLIPBOARD_SENDDATA_ERROR;
                     } finally {
                         if (outputFile != null) {
                             FileUtil.del(outputFile);
                         }
                     }
-                }).start();
-            }
+                } else {
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
+                }
+            });
         } else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
-            List<File> files = null;
-            try {
-                files = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-            } catch (Exception e) {
-                Log.error("clipboard.getData(DataFlavor.javaFileListFlavor)", e);
-            }
-            if (!files.isEmpty()) {
-                final List<File> finalFiles = files;
-                new Thread(() -> {
+            result = CompletableFuture.supplyAsync(() -> {
+                List<File> files = null;
+                try {
+                    files = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                } catch (Exception e) {
+                    Log.error("clipboard.getData(DataFlavor.javaFileListFlavor)", e);
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
+                }
+                if (!files.isEmpty()) {
+                    final List<File> finalFiles = files;
                     try {
                         doSendClipboard(finalFiles);
-                        sendFlag.set(true);
+                        return true;
                     } catch (Exception e) {
                         Log.error("send clipboardFiles error", e);
+                        return CmdResRemoteClipboard.CLIPBOARD_SENDDATA_ERROR;
                     }
-                }).start();
-            }
+                } else {
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
+                }
+            });
+        } else {
+            result = CompletableFuture.supplyAsync(() -> CmdResRemoteClipboard.CLIPBOARD_DATA_NOTSUPPORT);
         }
-        //未发送成功,设置粘贴板按钮可点
-        if (!sendFlag.get()) {
-            if (getType().equals(Constants.CONTROLLER)) {
-                RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
-            } else {
-                fireCmd(new CmdResRemoteClipboard());
-            }
-        }
+        return result;
     }
 
     private void doSendClipboard(List<File> files) throws Exception {

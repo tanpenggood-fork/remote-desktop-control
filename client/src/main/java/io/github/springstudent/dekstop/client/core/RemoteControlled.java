@@ -90,7 +90,11 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         } else if (cmd.getType().equals(CmdType.MouseControl)) {
             this.handleMessage((CmdMouseControl) cmd);
         } else if (cmd.getType().equals(CmdType.ReqRemoteClipboard)) {
-            super.sendClipboard();
+            super.sendClipboard().whenComplete((aByte, throwable) -> {
+                if (throwable != null || aByte != CmdResRemoteClipboard.OK) {
+                    fireCmd(new CmdResRemoteClipboard());
+                }
+            });
         } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer)) {
             super.setClipboard(cmd).whenComplete((o, o2) -> {
                 fireCmd(new CmdResRemoteClipboard());

@@ -10,6 +10,12 @@ import java.io.IOException;
  **/
 public class CmdResRemoteClipboard extends Cmd {
 
+    public static final byte OK = 0x00;
+    public static final byte CLIPBOARD_GETDATA_ERROR = 0x01;
+    public static final byte CLIPBOARD_GETDATA_EMPTY = 0x02;
+    public static final byte CLIPBOARD_SENDDATA_ERROR = 0x03;
+    public static final byte CLIPBOARD_DATA_NOTSUPPORT = 0x04;
+
     @Override
     public CmdType getType() {
         return CmdType.ResRemoteClipboard;

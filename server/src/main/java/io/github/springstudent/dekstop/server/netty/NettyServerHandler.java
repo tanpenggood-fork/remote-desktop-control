@@ -61,14 +61,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
                     ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
                 }
             }
-        } else if (cmd.getType().equals(CmdType.Capture)) {
+        } else if (cmd.getType().equals(CmdType.Capture) || cmd.getType().equals(CmdType.ResRemoteClipboard)) {
             Channel controllerChannel = NettyChannelManager.getControllerChannel(ctx.channel());
             if (controllerChannel != null) {
                 controllerChannel.writeAndFlush(cmd);
             } else {
                 ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
             }
-        } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig) || cmd.getType().equals(CmdType.KeyControl) || cmd.getType().equals(CmdType.MouseControl) || cmd.getType().equals(CmdType.ReqRemoteClipboard) || cmd.getType().equals(CmdType.ResRemoteClipboard)) {
+        } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig) || cmd.getType().equals(CmdType.KeyControl) || cmd.getType().equals(CmdType.MouseControl) || cmd.getType().equals(CmdType.ReqRemoteClipboard)) {
             if (StrUtil.isNotEmpty(NettyUtils.getControllFlag(ctx.channel()))) {
                 Channel controlledChannel = NettyChannelManager.getControlledChannel(ctx.channel());
                 if (controlledChannel != null) {

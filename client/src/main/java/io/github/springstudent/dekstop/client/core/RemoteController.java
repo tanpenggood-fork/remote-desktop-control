@@ -147,7 +147,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public String getType() {
-        return Constants.CONTROLLED;
+        return Constants.CONTROLLER;
     }
 
     private void countReceivedBit(Cmd cmd) {
@@ -460,7 +460,11 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             @Override
             public void actionPerformed(ActionEvent ev) {
                 RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
-                RemoteController.this.sendClipboard();
+                RemoteController.this.sendClipboard().whenComplete((aByte, throwable) -> {
+                    if (throwable != null || aByte != CmdResRemoteClipboard.OK) {
+                        RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
+                    }
+                });
             }
         };
         setRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "发送本机粘贴板");
