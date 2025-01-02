@@ -12,8 +12,10 @@ import io.github.springstudent.dekstop.common.command.CmdType;
 import io.github.springstudent.dekstop.common.log.Log;
 import io.github.springstudent.dekstop.common.protocol.NettyDecoder;
 import io.github.springstudent.dekstop.common.protocol.NettyEncoder;
+import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -32,10 +34,11 @@ import static java.lang.String.format;
 public class RemoteClient extends RemoteFrame {
     private static RemoteClient remoteClient;
 
-
     private String serverIp;
 
     private Integer serverPort;
+
+    private String clipboardServer;
 
     private boolean connectStatus;
 
@@ -45,15 +48,17 @@ public class RemoteClient extends RemoteFrame {
 
     private RemoteController controller;
 
-    public RemoteClient(String serverIp, Integer serverPort) {
+    public RemoteClient(String serverIp, Integer serverPort, String clipboardServer) {
         remoteClient = this;
         this.serverIp = serverIp;
         this.serverPort = serverPort;
+        this.clipboardServer = clipboardServer;
         this.controlled = new RemoteControlled();
         this.controller = new RemoteController();
         this.remoteScreen = new RemoteScreen();
         this.connectServer();
     }
+
 
     @Override
     public void openRemoteScreen(String deviceCode) {
@@ -123,10 +128,11 @@ public class RemoteClient extends RemoteFrame {
         return controlled;
     }
 
-    public void handleCmd(Cmd cmd) {
+    public void handleCmd(ChannelHandlerContext ctx, Cmd cmd) {
         if (cmd.getType().equals(CmdType.ResCliInfo)) {
             CmdResCliInfo clientInfo = (CmdResCliInfo) cmd;
             setDeviceCodeAndPassword(clientInfo.getDeviceCode(), clientInfo.getPassword());
+            NettyUtils.updateDeviceCode(ctx.channel(), clientInfo.getDeviceCode());
             updateConnectionStatus(true);
         } else {
             controller.handleCmd(cmd);
@@ -145,16 +151,22 @@ public class RemoteClient extends RemoteFrame {
         controller.stop();
         controlled.stop();
         updateConnectionStatus(false);
+        setControlledAndCloseSessionLabelVisible(false);
         setControllChannel(null);
         connectServer();
+    }
+
+    public String getClipboardServer() {
+        return clipboardServer;
     }
 
     public static RemoteClient getRemoteClient() {
         return remoteClient;
     }
 
-    public static void main(String[] args) {
-        RemoteClient remoteClient = new RemoteClient("192.168.0.104", 54321);
+
+    public static void main(String[] args) throws Exception {
+        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, "http://172.16.1.37:12345/remote-desktop-control");
     }
 
 }

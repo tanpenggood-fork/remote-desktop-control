@@ -5,6 +5,7 @@ import io.github.springstudent.dekstop.client.bean.Listeners;
 import io.github.springstudent.dekstop.client.bean.StatusBar;
 import io.github.springstudent.dekstop.client.monitor.Counter;
 import io.github.springstudent.dekstop.common.log.Log;
+import io.github.springstudent.dekstop.common.utils.EmptyUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +43,10 @@ public class RemoteScreen extends JFrame {
     private JScrollPane screenPanelWrapper;
 
     private Timer sessionTimer;
+
+    private JButton reqClipboardButton;
+
+    private JButton sendClipboardButton;
 
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
@@ -121,7 +126,35 @@ public class RemoteScreen extends JFrame {
         optionsMenu.add(sessionConfigItem);
         optionsMenu.add(compressionConfigItem);
         menuBar.add(optionsMenu);
+        //粘贴板按钮
+        if (EmptyUtils.isNotEmpty(RemoteClient.getRemoteClient().getClipboardServer())) {
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+            this.reqClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createRequireRemoteClipboardAction());
+            this.sendClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createSendLoacalClibboardAction());
+            buttonPanel.add(reqClipboardButton);
+            buttonPanel.add(Box.createHorizontalStrut(10));
+            buttonPanel.add(sendClipboardButton);
+            menuBar.add(buttonPanel);
+        }
         this.setJMenuBar(menuBar);
+    }
+
+    public final void transferClipboarButton(boolean enabled) {
+        this.sendClipboardButton.setEnabled(enabled);
+        this.reqClipboardButton.setEnabled(enabled);
+    }
+
+    private JButton createButton(Action action) {
+        final JButton button = new JButton();
+        button.setMargin(new Insets(1, 1, 1, 1));
+        button.setHideActionText(true);
+        button.setAction(action);
+        button.setFocusable(false);
+        button.setDisabledIcon(null);
+        button.setSelected(false);
+        button.setVisible(true);
+        return button;
     }
 
     private void initListeners() {

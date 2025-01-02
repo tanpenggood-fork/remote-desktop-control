@@ -2,7 +2,9 @@
 
 ### Remote Desktop Application
 
-This project is a **Java** and **Netty** based remote desktop control application. Through this application, users can connect and control remote devices in real-time. It is based on the client-server-client version of the core code from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks to the Dayon project author.
+This project is a **Java** and **Netty** based remote desktop control application. Through this application, users can
+connect and control remote devices in real-time. It is based on the client-server-client version of the core code
+from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks to the Dayon project author.
 
 ### Features
 
@@ -47,7 +49,8 @@ This project is a **Java** and **Netty** based remote desktop control applicatio
    mvn clean install
    ```
 
-3. Run the server: Modify the application.properties configuration file with the database information and the netty.server.server and port configurations.
+3. Run the server: Modify the application.properties configuration file with the database information and the
+   netty.server.server and port configurations.
    ```bash
    RemoteServer.java
    ```
@@ -59,4 +62,4 @@ This project is a **Java** and **Netty** based remote desktop control applicatio
 
 ### Future Plan
 
-* WebSocket-based clipboard text and image transmission
+* http-based clipboard transmission (finish)

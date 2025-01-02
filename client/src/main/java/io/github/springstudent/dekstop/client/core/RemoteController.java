@@ -6,6 +6,7 @@ import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
+import io.github.springstudent.dekstop.client.utils.ImageUtilities;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -137,8 +138,10 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
             countReceivedBit(cmd);
-        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardImg)) {
-            setClipboard(cmd);
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer) && needSetClipboard(cmd)) {
+            super.setClipboard(cmd).whenComplete((o, o2) -> RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true));
+        } else if (cmd.getType().equals(CmdType.ResRemoteClipboard)) {
+            RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
         }
     }
 
@@ -434,4 +437,39 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         pressedKeys.remove(keyCode);
         fireCmd(new CmdKeyControl(RELEASED, keyCode, keyChar));
     }
+
+    public Action createRequireRemoteClipboardAction() {
+        final Action getRemoteClipboard = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                requireRemoteClipboard();
+            }
+        };
+        getRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "获取远程粘贴板");
+        getRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("down.png"));
+        return getRemoteClipboard;
+    }
+
+    private void requireRemoteClipboard() {
+        RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
+        fireCmd(new CmdReqRemoteClipboard());
+    }
+
+    public Action createSendLoacalClibboardAction() {
+        final Action setRemoteClipboard = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
+                RemoteController.this.sendClipboard().whenComplete((aByte, throwable) -> {
+                    if (throwable != null || aByte != CmdResRemoteClipboard.OK) {
+                        RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
+                    }
+                });
+            }
+        };
+        setRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "发送本机粘贴板");
+        setRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("up.png"));
+        return setRemoteClipboard;
+    }
+
 }

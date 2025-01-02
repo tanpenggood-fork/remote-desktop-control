@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -47,13 +48,19 @@ public final class FileUtilities {
         return path.replace('\\', File.separatorChar);
     }
 
-    public static String bufferedImgMd5(BufferedImage bufferedImage) throws IOException {
-
-        // 将BufferedImage转换为字节数组
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        String md5 = DigestUtil.md5Hex(imageBytes);
-        return md5;
+    // 递归获取目录下的所有文件和文件夹
+    public static List<File> getFiles(String dirPath) {
+        List<File> fileList = new ArrayList<>();
+        File dir = new File(dirPath);
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    fileList.add(file);
+                }
+            }
+        }
+        return fileList;
     }
+
 }
