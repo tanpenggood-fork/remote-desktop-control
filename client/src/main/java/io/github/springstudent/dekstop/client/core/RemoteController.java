@@ -452,7 +452,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private void requireRemoteClipboard() {
         RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(false);
-        new Thread(() -> fireCmd(new CmdReqRemoteClipboard()));
+        fireCmd(new CmdReqRemoteClipboard());
     }
 
     public Action createSendLoacalClibboardAction() {
