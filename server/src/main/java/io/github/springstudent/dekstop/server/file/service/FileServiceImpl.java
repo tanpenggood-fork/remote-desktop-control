@@ -163,7 +163,7 @@ public class FileServiceImpl implements FileService {
             for (FileInfo fileInfo : fileInfos) {
                 md5s.add(fileInfo.getFileMd5());
             }
-            //查找这些文件信息的md5
+            //查找这些md5对应的所有文件信息
             List<FileInfo> retainFileInfos = fileInfoDao.queryWithCriteria(new Criteria().in(FileInfo::getFileMd5, md5s));
             for (FileInfo fileInfo : retainFileInfos) {
                 //如果存在其他文件和待删除文件的md5相同，则不能删除真实文件

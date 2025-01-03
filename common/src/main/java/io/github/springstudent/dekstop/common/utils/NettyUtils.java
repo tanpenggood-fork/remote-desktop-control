@@ -10,9 +10,7 @@ import io.netty.util.AttributeKey;
 public class NettyUtils {
     private static final AttributeKey<String> ATTR_KEY_READER_TIME = AttributeKey.valueOf("readerTime");
     private static final AttributeKey<String> ATTR_KEY_DEVICE_CODE = AttributeKey.valueOf("deviceCode");
-
     private static final AttributeKey<String> ATTR_KEY_CONTROLL_FLAG = AttributeKey.valueOf("controllFlag");
-
     private static final AttributeKey<String> ATTR_KEY_CONTROLL_DEVICECODE = AttributeKey.valueOf("contollDeviceCode");
 
     public static void updateReaderTime(Channel channel, Long time) {

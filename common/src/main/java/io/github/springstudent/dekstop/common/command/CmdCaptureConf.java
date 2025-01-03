@@ -1,9 +1,7 @@
 package io.github.springstudent.dekstop.common.command;
 
-import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
-import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;

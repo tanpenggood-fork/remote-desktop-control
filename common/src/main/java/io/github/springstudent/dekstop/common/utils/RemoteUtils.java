@@ -193,7 +193,6 @@ public class RemoteUtils {
         String reqUrl = MapUtil.getStr(requestParam, REQUEST_URL_KEY);
         int reqTimeout = MapUtil.getInt(requestParam, REQUEST_TIMEOUT_KEY, 10000);
         parseObj(HttpRequest.post(reqUrl + SAVE_CLIPBOARD).body(JSONUtil.toJsonStr(clipboards)).timeout(reqTimeout).execute().body());
-
     }
 
     public static void clearClipboard(String deviceCode, Map<String, Object> requestParam) {

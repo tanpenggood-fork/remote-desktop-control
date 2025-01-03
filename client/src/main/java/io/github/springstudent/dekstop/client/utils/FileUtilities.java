@@ -1,10 +1,5 @@
 package io.github.springstudent.dekstop.client.utils;
 
-import cn.hutool.crypto.digest.DigestUtil;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,7 +43,6 @@ public final class FileUtilities {
         return path.replace('\\', File.separatorChar);
     }
 
-    // 递归获取目录下的所有文件和文件夹
     public static List<File> getFiles(String dirPath) {
         List<File> fileList = new ArrayList<>();
         File dir = new File(dirPath);
