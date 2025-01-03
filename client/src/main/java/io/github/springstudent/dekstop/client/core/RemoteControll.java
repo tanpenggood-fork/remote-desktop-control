@@ -94,7 +94,7 @@ public abstract class RemoteControll implements ClipboardOwner {
                     fireCmd(new CmdClipboardText(finalText, getType()));
                     return CmdResRemoteClipboard.OK;
                 } else {
-                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
+                    return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
                 }
             });
         } else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
@@ -232,7 +232,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         });
     }
 
-    public boolean needSetClipboard(Cmd cmd) {
+    protected boolean needSetClipboard(Cmd cmd) {
         if (cmd.getType().equals(CmdType.ClipboardText)) {
             return !((CmdClipboardText) cmd).getControlType().equals(getType());
         } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
@@ -241,7 +241,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         return false;
     }
 
-    public List<File> processClipboard(List<RemoteClipboard> remoteClipboards) throws Exception {
+    private List<File> processClipboard(List<RemoteClipboard> remoteClipboards) throws Exception {
         String fileName = IdUtil.fastSimpleUUID();
         String tmpDir = downloadDir + File.separator + fileName;
         FileUtil.mkdir(tmpDir);
