@@ -169,7 +169,7 @@ public class FileServiceImpl implements FileService {
             //删除真实文件
             if (EmptyUtils.isNotEmpty(md5s)) {
                 fileChunkDao.deleteWithCriteria(new Criteria().in(FileChunk::getChunkName, md5s));
-                fileUploadProgressDao.deleteWithCriteria(new Criteria().in(FileChunk::getChunkName, md5s));
+                fileUploadProgressDao.deleteWithCriteria(new Criteria().in(FileUploadProgress::getFileMd5, md5s));
             }
             //删除文件信息
             fileInfoDao.batchDelete(fileInfoIds);
