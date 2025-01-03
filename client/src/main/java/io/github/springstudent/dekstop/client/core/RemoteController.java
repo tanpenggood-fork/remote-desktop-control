@@ -97,6 +97,11 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     @Override
     public void start() {
         super.start();
+        synchronized (prevBufferLOCK) {
+            prevBuffer = null;
+            prevWidth = -1;
+            prevHeight = -1;
+        }
     }
 
     public void openSession(String deviceCode) {
