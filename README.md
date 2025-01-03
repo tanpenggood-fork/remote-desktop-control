@@ -25,11 +25,18 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 
 ### Remote Connection Established
 
+
 ![remote-desktop-control](z_screen.png)
+
+
+![remote-desktop-control](z_monitor.png)
 
 ### Settings Menu
 
 ![remote-desktop-control](z_screen_setting.png)
+![remote-desktop-control](z_compress_setting.png)
+![remote-desktop-control](z_clipboard.png)
+
 
 ### Environment
 
@@ -55,7 +62,7 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
    RemoteServer.java
    ```
 
-4. Run the client: Modify the RemoteClient.java parameters for serverIp and serverPort.
+4. Run the client: Modify the RemoteClient.java parameters for serverIp and serverPort and clipboardServer addr
    ```bash
    RemoteClient.java
    ```

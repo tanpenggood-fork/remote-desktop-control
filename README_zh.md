@@ -27,9 +27,14 @@
 
 ![remote-desktop-control](z_screen.png)
 
+
+![remote-desktop-control](z_monitor.png)
+
 ### 设置菜单
 
 ![remote-desktop-control](z_screen_setting.png)
+![remote-desktop-control](z_compress_setting.png)
+![remote-desktop-control](z_clipboard.png)
 
 ### 运行环境
 
@@ -54,7 +59,7 @@
    RemoteServer.java
    ```
 
-4. 运行客户端：修改RemoteClient.java参数中的serverIp和serverPort
+4. 运行客户端：修改RemoteClient.java参数中的serverIp和serverPort和clipboardServer
    ```bash
    RemoteClient.java
    ```
