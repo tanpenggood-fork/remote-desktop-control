@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -145,4 +147,32 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    @Override
+    public void deleteFile(List<String> fileInfoIds) throws Exception {
+        if (EmptyUtils.isEmpty(fileInfoIds)) {
+            return;
+        }
+        List<FileInfo> fileInfos = fileInfoDao.queryWithCriteria(new Criteria().in(FileInfo::getId, fileInfoIds));
+        if (EmptyUtils.isNotEmpty(fileInfos)) {
+            List<String> md5s = new ArrayList<>();
+            for (FileInfo fileInfo : fileInfos) {
+                md5s.add(fileInfo.getFileMd5());
+            }
+            //查找这些文件信息的md5
+            List<FileInfo> retainFileInfos = fileInfoDao.queryWithCriteria(new Criteria().in(FileInfo::getFileMd5, md5s));
+            for (FileInfo fileInfo : retainFileInfos) {
+                //如果存在其他文件和待删除文件的md5相同，则不能删除真实文件
+                if (!fileInfoIds.contains(fileInfo.getId())) {
+                    md5s.removeAll(Arrays.asList(fileInfo.getFileMd5()));
+                }
+            }
+            //删除真实文件
+            if (EmptyUtils.isNotEmpty(md5s)) {
+                fileChunkDao.deleteWithCriteria(new Criteria().in(FileChunk::getChunkName, md5s));
+                fileUploadProgressDao.deleteWithCriteria(new Criteria().in(FileChunk::getChunkName, md5s));
+            }
+            //删除文件信息
+            fileInfoDao.batchDelete(fileInfoIds);
+        }
+    }
 }
