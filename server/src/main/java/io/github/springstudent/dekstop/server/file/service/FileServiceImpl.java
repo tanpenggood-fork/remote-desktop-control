@@ -12,6 +12,7 @@ import io.github.springstudent.dekstop.server.file.pojo.FileChunk;
 import io.github.springstudent.dekstop.server.file.pojo.FileInfo;
 import io.github.springstudent.dekstop.server.file.pojo.FileUploadProgress;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -41,6 +42,7 @@ public class FileServiceImpl implements FileService {
     private FileChunkDao fileChunkDao;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String quickUploadFile(String md5, Long fileSize) throws Exception {
         List<FileInfo> fileInfos = fileInfoDao.queryWithCriteria(new Criteria().where(FileInfo::getFileMd5, md5));
         if (EmptyUtils.isNotEmpty(fileInfos)) {
@@ -63,6 +65,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean checkChunk(String md5, Integer chunkNo, Long chunkSize) throws Exception {
         FileChunk fileChunk = fileChunkDao.queryOne(new Criteria().where(FileChunk::getChunkName, md5).and(FileChunk::getChunkNo, chunkNo));
         if (fileChunk != null && fileChunk.getChunkSize() - chunkSize == 0) {
@@ -79,6 +82,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String uploadFileChunk(MultipartFile chunk, String md5, Integer chunkNo, String fileName) throws Exception {
         FileUploadProgress fileUploadProgress = fileUploadProgressDao.queryOne(new Criteria().where(FileUploadProgress::getFileMd5, md5));
         if (fileUploadProgress == null) {
@@ -148,6 +152,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteFile(List<String> fileInfoIds) throws Exception {
         if (EmptyUtils.isEmpty(fileInfoIds)) {
             return;

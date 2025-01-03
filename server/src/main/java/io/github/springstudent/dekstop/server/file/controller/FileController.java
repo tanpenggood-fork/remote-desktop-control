@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author ZhouNing
@@ -64,6 +65,16 @@ public class FileController {
             return fileService.uploadFileChunk(file, md5, chunkNo, fileName);
         } catch (Exception e) {
             log.error("uploadFileChunk error md5={},chunkNo={},fileName={}", md5, chunkNo, fileName, e);
+            throw e;
+        }
+    }
+
+    @PostMapping(value = "/deleteFile")
+    public void deleteFile(@RequestBody List<String> fileInfoIds) throws Exception {
+        try {
+            fileService.deleteFile(fileInfoIds);
+        } catch (Exception e) {
+            log.error("deleteFile error fileInfoIds={}", fileInfoIds, e);
             throw e;
         }
     }

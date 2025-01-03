@@ -6,6 +6,7 @@ import io.github.springstudent.dekstop.server.clipboard.dao.ClipboardDao;
 import io.github.springstudent.dekstop.server.clipboard.pojo.Clipboard;
 import io.github.springstudent.dekstop.server.file.service.FileService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,6 +26,7 @@ public class ClipboardServiceImpl implements ClipboardService {
     private FileService fileService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void clear(String deviceCode) throws Exception {
         List<Clipboard> clipboards = clipboardDao.queryWithCriteria(new Criteria().where(Clipboard::getDeviceCode, deviceCode));
         if (EmptyUtils.isNotEmpty(clipboards)) {
@@ -34,6 +36,7 @@ public class ClipboardServiceImpl implements ClipboardService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(List<Clipboard> clipboards) throws Exception {
         clipboardDao.saveAll(clipboards);
     }
