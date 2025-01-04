@@ -214,10 +214,10 @@ public abstract class RemoteControll implements ClipboardOwner {
     protected CompletableFuture setClipboard(Cmd cmd) {
         return CompletableFuture.runAsync(() -> {
             try {
-                if (cmd.getType().equals(CmdType.ClipboardText) && !((CmdClipboardText) cmd).getControlType().equals(getType())) {
+                if (cmd.getType().equals(CmdType.ClipboardText)) {
                     StringSelection stringSelection = new StringSelection(((CmdClipboardText) cmd).getPayload());
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, this);
-                } else if (cmd.getType().equals(CmdType.ClipboardTransfer) && !((CmdClipboardTransfer) cmd).getControlType().equals(getType())) {
+                } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
                     String deviceCode = ((CmdClipboardTransfer) cmd).getDeviceCode();
                     Map<String, Object> map = new HashMap<>();
                     map.put(REQUEST_URL_KEY, RemoteClient.getRemoteClient().getClipboardServer());
@@ -230,6 +230,15 @@ public abstract class RemoteControll implements ClipboardOwner {
                 Log.error("setClipboard error", e);
             }
         });
+    }
+
+    protected boolean needSetClipboard(Cmd cmd) {
+        if (cmd.getType().equals(CmdType.ClipboardText)) {
+            return !((CmdClipboardText) cmd).getControlType().equals(getType());
+        } else if (cmd.getType().equals(CmdType.ClipboardTransfer)) {
+            return !((CmdClipboardTransfer) cmd).getControlType().equals(getType());
+        }
+        return false;
     }
 
     private List<File> processClipboard(List<RemoteClipboard> remoteClipboards) throws Exception {
