@@ -17,6 +17,9 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 3. **Cross-platform Support**
     * Developed using Java, compatible with most operating systems.
 
+4. **Clipboard Support**
+    * No speed limit file transfer.
+
 ## Screenshots
 
 ### Main Control Panel
@@ -25,9 +28,7 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 
 ### Remote Connection Established
 
-
 ![remote-desktop-control](z_screen.png)
-
 
 ![remote-desktop-control](z_monitor.png)
 
@@ -36,7 +37,6 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 ![remote-desktop-control](z_screen_setting.png)
 ![remote-desktop-control](z_compress_setting.png)
 ![remote-desktop-control](z_clipboard.png)
-
 
 ### Environment
 
