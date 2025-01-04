@@ -36,22 +36,24 @@ public abstract class RemoteControll implements ClipboardOwner {
 
     protected Channel channel;
 
+    private String rootDir;
+
     private String uploadDir;
 
     private String downloadDir;
 
     public RemoteControll() {
-        String tmpDir = getProperty("java.io.tmpdir") + File.separator + "remoteDeskopControll";
-        if (FileUtil.exist(tmpDir)) {
-            FileUtil.clean(tmpDir);
+        this.rootDir = getProperty("java.io.tmpdir") + File.separator + "remoteDeskopControll";
+        if (FileUtil.exist(rootDir)) {
+            FileUtil.clean(rootDir);
         } else {
-            FileUtil.mkdir(tmpDir);
+            FileUtil.mkdir(rootDir);
         }
-        this.uploadDir = tmpDir + File.separator + "rmdupload";
+        this.uploadDir = rootDir + File.separator + "rmdupload";
         if (!FileUtil.exist(uploadDir)) {
             FileUtil.mkdir(uploadDir);
         }
-        this.downloadDir = tmpDir + File.separator + "rmddownload";
+        this.downloadDir = rootDir + File.separator + "rmddownload";
         if (!FileUtil.exist(downloadDir)) {
             FileUtil.mkdir(downloadDir);
         }
@@ -110,7 +112,7 @@ public abstract class RemoteControll implements ClipboardOwner {
                 if (image != null) {
                     File outputFile = null;
                     try {
-                        outputFile = new File(uploadDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
+                        outputFile = new File(this.rootDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
                         ImageIO.write(clipboardImage, "png", outputFile);
                         doSendClipboard(Arrays.asList(outputFile));
                         return CmdResRemoteClipboard.OK;
