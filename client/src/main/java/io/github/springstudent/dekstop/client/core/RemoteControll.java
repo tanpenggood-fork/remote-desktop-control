@@ -82,19 +82,25 @@ public abstract class RemoteControll implements ClipboardOwner {
     protected CompletableFuture<Byte> sendClipboard() {
         CompletableFuture result = null;
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+        //兼容mac javaFileListFlavor必须放在第一位
+        if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
             result = CompletableFuture.supplyAsync(() -> {
-                String text = null;
+                List<File> files = null;
                 try {
-                    text = (String) clipboard.getData(DataFlavor.stringFlavor);
+                    files = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                 } catch (Exception e) {
-                    Log.error("clipboard.getData(DataFlavor.stringFlavor) error", e);
+                    Log.error("clipboard.getData(DataFlavor.javaFileListFlavor)", e);
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
                 }
-                if (EmptyUtils.isNotEmpty(text)) {
-                    final String finalText = text;
-                    fireCmd(new CmdClipboardText(finalText, getType()));
-                    return CmdResRemoteClipboard.OK;
+                if (!files.isEmpty()) {
+                    final List<File> finalFiles = files;
+                    try {
+                        doSendClipboard(finalFiles);
+                        return CmdResRemoteClipboard.OK;
+                    } catch (Exception e) {
+                        Log.error("send clipboardFiles error", e);
+                        return CmdResRemoteClipboard.CLIPBOARD_SENDDATA_ERROR;
+                    }
                 } else {
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
                 }
@@ -128,24 +134,19 @@ public abstract class RemoteControll implements ClipboardOwner {
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
                 }
             });
-        } else if (clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+        } else if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
             result = CompletableFuture.supplyAsync(() -> {
-                List<File> files = null;
+                String text = null;
                 try {
-                    files = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                    text = (String) clipboard.getData(DataFlavor.stringFlavor);
                 } catch (Exception e) {
-                    Log.error("clipboard.getData(DataFlavor.javaFileListFlavor)", e);
+                    Log.error("clipboard.getData(DataFlavor.stringFlavor) error", e);
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_ERROR;
                 }
-                if (!files.isEmpty()) {
-                    final List<File> finalFiles = files;
-                    try {
-                        doSendClipboard(finalFiles);
-                        return CmdResRemoteClipboard.OK;
-                    } catch (Exception e) {
-                        Log.error("send clipboardFiles error", e);
-                        return CmdResRemoteClipboard.CLIPBOARD_SENDDATA_ERROR;
-                    }
+                if (EmptyUtils.isNotEmpty(text)) {
+                    final String finalText = text;
+                    fireCmd(new CmdClipboardText(finalText, getType()));
+                    return CmdResRemoteClipboard.OK;
                 } else {
                     return CmdResRemoteClipboard.CLIPBOARD_GETDATA_EMPTY;
                 }
