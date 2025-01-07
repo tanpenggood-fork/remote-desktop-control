@@ -17,8 +17,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.awt.event.KeyEvent.VK_META;
-import static java.awt.event.KeyEvent.VK_WINDOWS;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
 
@@ -229,7 +228,8 @@ public class RemoteScreen extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent ev) {
-                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META) {
+                System.out.println(ev);
+                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META || ev.getKeyCode() == VK_ALT) {
                     return;
                 }
                 fireOnKeyPressed(ev.getKeyCode(), ev.getKeyChar());
@@ -237,13 +237,14 @@ public class RemoteScreen extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent ev) {
-                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META) {
+                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META || ev.getKeyCode() == VK_ALT) {
                     return;
                 }
                 fireOnKeyReleased(ev.getKeyCode(), ev.getKeyChar());
             }
         });
     }
+
     private void addResizeListener() {
         addComponentListener(new ComponentAdapter() {
             private Timer resizeTimer;
