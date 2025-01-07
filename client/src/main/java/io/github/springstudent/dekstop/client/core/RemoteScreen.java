@@ -2,6 +2,7 @@ package io.github.springstudent.dekstop.client.core;
 
 import io.github.springstudent.dekstop.client.RemoteClient;
 import io.github.springstudent.dekstop.client.bean.Listeners;
+import io.github.springstudent.dekstop.client.bean.RepeatingReleasedEventsFixer;
 import io.github.springstudent.dekstop.client.bean.StatusBar;
 import io.github.springstudent.dekstop.client.monitor.Counter;
 import io.github.springstudent.dekstop.common.log.Log;
@@ -16,6 +17,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.awt.event.KeyEvent.VK_META;
+import static java.awt.event.KeyEvent.VK_WINDOWS;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
 
@@ -56,6 +59,7 @@ public class RemoteScreen extends JFrame {
 
     public RemoteScreen() {
         super("远程桌面");
+        RepeatingReleasedEventsFixer.install();
         listeners.add(RemoteClient.getRemoteClient().getController());
         counters.addAll(RemoteClient.getRemoteClient().getController().getCounters());
         initFrame();
@@ -225,24 +229,21 @@ public class RemoteScreen extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent ev) {
+                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META) {
+                    return;
+                }
                 fireOnKeyPressed(ev.getKeyCode(), ev.getKeyChar());
             }
 
             @Override
             public void keyReleased(KeyEvent ev) {
+                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META) {
+                    return;
+                }
                 fireOnKeyReleased(ev.getKeyCode(), ev.getKeyChar());
             }
         });
     }
-
-    public void addListener(RemoteScreenListener listener) {
-        listeners.add(listener);
-    }
-
-    public void addCounts(ArrayList<Counter<?>> list) {
-        counters.addAll(list);
-    }
-
     private void addResizeListener() {
         addComponentListener(new ComponentAdapter() {
             private Timer resizeTimer;
