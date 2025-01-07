@@ -44,8 +44,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         compressorEngine.addListener(this);
         try {
             robot = new Robot();
-            robot.setAutoDelay(0);
-            robot.setAutoWaitForIdle(false);
+            robot.setAutoDelay(1);
         } catch (AWTException ex) {
             throw new IllegalStateException(ex);
         }
