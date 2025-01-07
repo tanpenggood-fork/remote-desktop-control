@@ -228,7 +228,6 @@ public class RemoteScreen extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent ev) {
-                System.out.println(ev);
                 if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META || ev.getKeyCode() == VK_ALT) {
                     return;
                 }
