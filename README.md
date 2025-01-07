@@ -70,3 +70,12 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 ### Future Plan
 
 * http-based clipboard transmission (finish)
+
+### Q&A
+
+* This program will prevent the control end from sending Windows events to the controlled end to avoid causing keyboard
+  confusion.
+* It is recommended that both the control end and the controlled end run the program with administrator privileges,
+  otherwise, some programs on the controlled end may not be controllable due to lack of permissions.
+* For the best control experience, it is recommended to set the input language preference on the control end to "
+  English (United States)".
