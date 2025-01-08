@@ -230,7 +230,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
 
     private int escapeByOsId(int keyCode) {
         if (osId == 'm' && keyCode == VK_WINDOWS) {
-            return VK_CONTROL;
+            return VK_META;
         } else {
             return keyCode;
         }
