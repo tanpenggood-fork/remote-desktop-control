@@ -263,6 +263,14 @@ public class RemoteScreen extends JFrame {
         addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent ev) {
+                if(windowsKeyActivated.get()){
+                    windowsKeyToggleButton.setSelected(false);
+                    windowsKeyActivated.set(!windowsKeyActivated.get());
+                }
+                if(ctrlKeyActivated.get()){
+                    ctrlKeyToggleButton.setSelected(false);
+                    ctrlKeyActivated.set(!windowsKeyActivated.get());
+                }
                 fireOnKeyReleased(-1, Character.MIN_VALUE);
             }
         });
