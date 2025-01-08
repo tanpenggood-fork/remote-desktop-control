@@ -24,6 +24,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.PRESSED;
@@ -422,7 +423,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
 
-    private final HashMap<Integer, Character> pressedKeys = new HashMap<>();
+    private final Map<Integer, Character> pressedKeys = new ConcurrentHashMap<>();
 
     @Override
     public void onKeyPressed(final int keyCode, final char keyChar) {
@@ -489,6 +490,5 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         setRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("up.png"));
         return setRemoteClipboard;
     }
-
 
 }

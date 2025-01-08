@@ -179,7 +179,6 @@ public class RemoteScreen extends JFrame {
         return sendWindowsKey;
     }
 
-
     private Action createSendCtrlKeyAction() {
         final Action sendCtrlKey = new AbstractAction() {
             @Override
@@ -368,6 +367,8 @@ public class RemoteScreen extends JFrame {
             statusBar.setSessionDuration(format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
         });
         sessionTimer.start();
+        sendClipboardButton.setEnabled(true);
+        reqClipboardButton.setEnabled(true);
         SwingUtilities.invokeLater(() -> this.setVisible(true));
 
     }
@@ -381,6 +382,7 @@ public class RemoteScreen extends JFrame {
             this.dispose();
         });
     }
+
 
     public void computeScaleFactors(int sourceWidth, int sourceHeight, boolean keepAspectRatio) {
         Log.debug(format("ComputeScaleFactors for w: %d h: %d", sourceWidth, sourceHeight));
