@@ -17,7 +17,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.awt.event.KeyEvent.*;
+import static io.github.springstudent.dekstop.client.utils.ImageUtilities.getOrCreateIcon;
+import static java.awt.event.KeyEvent.VK_CONTROL;
+import static java.awt.event.KeyEvent.VK_WINDOWS;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
 
@@ -50,11 +52,19 @@ public class RemoteScreen extends JFrame {
 
     private JButton sendClipboardButton;
 
+    private JToggleButton windowsKeyToggleButton;
+
+    private JToggleButton ctrlKeyToggleButton;
+
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean isImmutableWindowsSize = new AtomicBoolean(false);
+
+    private final AtomicBoolean windowsKeyActivated = new AtomicBoolean(false);
+
+    private final AtomicBoolean ctrlKeyActivated = new AtomicBoolean(false);
 
     public RemoteScreen() {
         super("远程桌面");
@@ -63,6 +73,8 @@ public class RemoteScreen extends JFrame {
         counters.addAll(RemoteClient.getRemoteClient().getController().getCounters());
         initFrame();
         initCanvasPanel();
+        //allows for seeing the TAB with a regular KEY listener ...
+        setFocusTraversalKeysEnabled(false);
         initMenuBar();
         initListeners();
         initStatusBar();
@@ -129,6 +141,13 @@ public class RemoteScreen extends JFrame {
         optionsMenu.add(sessionConfigItem);
         optionsMenu.add(compressionConfigItem);
         menuBar.add(optionsMenu);
+        //发送win键
+        this.windowsKeyToggleButton = createToggleButton(createSendWindowsKeyAction());
+        menuBar.add(windowsKeyToggleButton);
+        menuBar.add(Box.createHorizontalStrut(5));
+        this.ctrlKeyToggleButton = createToggleButton(createSendCtrlKeyAction());
+        menuBar.add(ctrlKeyToggleButton);
+        menuBar.add(Box.createHorizontalStrut(5));
         //粘贴板按钮
         if (EmptyUtils.isNotEmpty(RemoteClient.getRemoteClient().getClipboardServer())) {
             JPanel buttonPanel = new JPanel();
@@ -136,20 +155,67 @@ public class RemoteScreen extends JFrame {
             this.reqClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createRequireRemoteClipboardAction());
             this.sendClipboardButton = createButton(RemoteClient.getRemoteClient().getController().createSendLoacalClibboardAction());
             buttonPanel.add(reqClipboardButton);
-            buttonPanel.add(Box.createHorizontalStrut(10));
+            buttonPanel.add(Box.createHorizontalStrut(5));
             buttonPanel.add(sendClipboardButton);
             menuBar.add(buttonPanel);
         }
         this.setJMenuBar(menuBar);
     }
 
+    private Action createSendWindowsKeyAction() {
+        final Action sendWindowsKey = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                if (windowsKeyActivated.get()) {
+                    fireOnKeyReleased(VK_WINDOWS, ' ');
+                } else {
+                    fireOnKeyPressed(VK_WINDOWS, ' ');
+                }
+                windowsKeyActivated.set(!windowsKeyActivated.get());
+            }
+        };
+        sendWindowsKey.putValue(Action.SHORT_DESCRIPTION, "发送win键(mac中对应为command)");
+        sendWindowsKey.putValue(Action.SMALL_ICON, getOrCreateIcon("win.png"));
+        return sendWindowsKey;
+    }
+
+
+    private Action createSendCtrlKeyAction() {
+        final Action sendCtrlKey = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                if (ctrlKeyActivated.get()) {
+                    fireOnKeyReleased(VK_CONTROL, ' ');
+                } else {
+                    fireOnKeyPressed(VK_CONTROL, ' ');
+                }
+                ctrlKeyActivated.set(!ctrlKeyActivated.get());
+            }
+        };
+        sendCtrlKey.putValue(Action.SHORT_DESCRIPTION, "发送ctrl键");
+        sendCtrlKey.putValue(Action.SMALL_ICON, getOrCreateIcon("ctrl.png"));
+        return sendCtrlKey;
+    }
+
+
     public final void transferClipboarButton(boolean enabled) {
         this.sendClipboardButton.setEnabled(enabled);
         this.reqClipboardButton.setEnabled(enabled);
     }
 
+    protected JToggleButton createToggleButton(Action action) {
+        final JToggleButton button = new JToggleButton();
+        addButtonProperties(action, button);
+        return button;
+    }
+
     private JButton createButton(Action action) {
         final JButton button = new JButton();
+        addButtonProperties(action, button);
+        return button;
+    }
+
+    private void addButtonProperties(Action action, AbstractButton button) {
         button.setMargin(new Insets(1, 1, 1, 1));
         button.setHideActionText(true);
         button.setAction(action);
@@ -157,10 +223,10 @@ public class RemoteScreen extends JFrame {
         button.setDisabledIcon(null);
         button.setSelected(false);
         button.setVisible(true);
-        return button;
     }
 
     private void initListeners() {
+        addFocusListener();
         addKeyListeners();
         addMouseListeners();
         addResizeListener();
@@ -192,6 +258,15 @@ public class RemoteScreen extends JFrame {
         if (!currentKeyboardLayout.equals(statusBar.getKeyboardLayout())) {
             statusBar.setKeyboardLayout(currentKeyboardLayout);
         }
+    }
+
+    private void addFocusListener() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent ev) {
+                fireOnKeyReleased(-1, Character.MIN_VALUE);
+            }
+        });
     }
 
     private void addMouseListeners() {
@@ -228,17 +303,11 @@ public class RemoteScreen extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent ev) {
-                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META || ev.getKeyCode() == VK_ALT) {
-                    return;
-                }
                 fireOnKeyPressed(ev.getKeyCode(), ev.getKeyChar());
             }
 
             @Override
             public void keyReleased(KeyEvent ev) {
-                if (ev.getKeyCode() == VK_WINDOWS || ev.getKeyCode() == VK_META || ev.getKeyCode() == VK_ALT) {
-                    return;
-                }
                 fireOnKeyReleased(ev.getKeyCode(), ev.getKeyChar());
             }
         });

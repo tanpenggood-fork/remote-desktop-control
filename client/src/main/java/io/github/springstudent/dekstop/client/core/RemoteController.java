@@ -435,6 +435,19 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
      */
     @Override
     public void onKeyReleased(final int keyCode, final char keyChar) {
+        // -------------------------------------------------------------------------------------------------------------
+        // E.g., Windows + R : [Windows.PRESSED] and then the focus is LOST =>
+        // missing RELEASED events
+        //
+        // Currently trying to lease the 'assisted' in a consistent state - not
+        // sure I should send the
+        // [Windows] key and the like (e.g.,CTRL-ALT-DEL, etc...) at all ...
+        // -------------------------------------------------------------------------------------------------------------
+        if (keyCode == -1) {
+            Log.warn(format("Got keyCode %s keyChar '%s' - releasing all keys", keyCode, keyChar));
+            pressedKeys.forEach(this::onKeyReleased);
+            return;
+        }
         if (!pressedKeys.containsKey(keyCode)) {
             Log.warn(format("Not releasing unpressed keyCode %s keyChar '%s'", keyCode, keyChar));
             return;
@@ -476,5 +489,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         setRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("up.png"));
         return setRemoteClipboard;
     }
+
 
 }
