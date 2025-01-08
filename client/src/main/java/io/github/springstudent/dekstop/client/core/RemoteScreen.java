@@ -174,7 +174,7 @@ public class RemoteScreen extends JFrame {
                 windowsKeyActivated.set(!windowsKeyActivated.get());
             }
         };
-        sendWindowsKey.putValue(Action.SHORT_DESCRIPTION, "发送win键(mac中对应为command)");
+        sendWindowsKey.putValue(Action.SHORT_DESCRIPTION, "发送win键(mac的command)");
         sendWindowsKey.putValue(Action.SMALL_ICON, getOrCreateIcon("win.png"));
         return sendWindowsKey;
     }
