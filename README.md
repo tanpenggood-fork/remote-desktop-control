@@ -70,6 +70,7 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
 ### Future Plan
 
 * http-based clipboard transmission (finish)
+* internationalize  
 
 ### Q&A
 
