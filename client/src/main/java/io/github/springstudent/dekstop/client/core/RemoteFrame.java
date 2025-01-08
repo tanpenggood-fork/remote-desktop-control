@@ -1,5 +1,6 @@
 package io.github.springstudent.dekstop.client.core;
 
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 
 import javax.swing.*;
@@ -133,6 +134,8 @@ public abstract class RemoteFrame extends JFrame {
                 showMessageDialog("请输入远程设备代码", JOptionPane.ERROR_MESSAGE);
             } else if (remoteDeviceField.getText().equals(deviceCodeField.getText())) {
                 showMessageDialog("远程控制设备代码不能为自己", JOptionPane.ERROR_MESSAGE);
+            } else if (!ReUtil.isMatch("^[a-zA-Z0-9]+$", remoteDeviceField.getText())) {
+                showMessageDialog("远程控制设备代码只能为数字与字母的组合", JOptionPane.ERROR_MESSAGE);
             } else {
                 openRemoteScreen(remoteDeviceField.getText());
             }

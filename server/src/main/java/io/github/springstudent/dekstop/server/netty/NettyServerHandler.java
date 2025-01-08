@@ -105,5 +105,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
         log.info(cause.getMessage());
         ctx.close();
     }
+
 }
 
