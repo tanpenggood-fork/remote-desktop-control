@@ -30,7 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = FileException.class)
     @ResponseBody
-    public ResponseResult<Object> resultExceptionHandler(HttpServletRequest req, HttpServletResponse rep, Exception e) throws Exception {
+    public ResponseResult<Object> fileExceptionHandler(HttpServletRequest req, HttpServletResponse rep, Exception e) throws Exception {
         return ResponseResult.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
     }
 

@@ -65,7 +65,7 @@ public class NettyServer implements InitializingBean, DisposableBean {
     public void destroy() throws Exception {
         if (channel != null && channel.isActive()) {
             channel.close();
-            logger.info("server  stop success");
+            logger.info("server stop success");
         }
     }
 
