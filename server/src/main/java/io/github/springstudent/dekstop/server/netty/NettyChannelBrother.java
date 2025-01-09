@@ -40,14 +40,18 @@ public class NettyChannelBrother {
         NettyUtils.updateControllDeviceCode(controller, null);
         NettyUtils.updateControllFlag(controlled, null);
         NettyUtils.updateControllDeviceCode(controlled, null);
-        if (stopType == CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED) {
-            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_BYCONTROLLED));
-        } else if (stopType == CmdReqCapture.STOP_CAPTURE_CHANNEL_INACTIVE) {
-            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_CHANNELINACTIVE));
-        } else {
-            controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
+        if(controller.isActive()){
+            if (stopType == CmdReqCapture.STOP_CAPTURE_BY_CONTROLLED) {
+                controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_BYCONTROLLED));
+            } else if (stopType == CmdReqCapture.STOP_CAPTURE_CHANNEL_INACTIVE) {
+                controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_CHANNELINACTIVE));
+            } else {
+                controller.writeAndFlush(new CmdResCapture(CmdResCapture.STOP));
+            }
         }
-        controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
+        if(controlled.isActive()){
+            controlled.writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
+        }
     }
 
     public Channel getController() {
