@@ -3,13 +3,13 @@ package io.github.springstudent.dekstop.common.configuration;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
 
 public class CaptureEngineConfiguration extends Configuration {
-    private static final String PREF_VERSION = "assistant.capture.version";
+    private static final String PREF_VERSION = "capture.version";
 
-    private static final String PREF_CAPTURE_TICK = "assistant.capture.tick";
+    private static final String PREF_CAPTURE_TICK = "capture.tick";
 
-    private static final String PREF_CAPTURE_QUANTIZATION = "assistant.capture.grayLevelQuantization";
+    private static final String PREF_CAPTURE_QUANTIZATION = "capture.grayLevelQuantization";
 
-    private static final String PREF_CAPTURE_COLORS = "assistant.capture.colors";
+    private static final String PREF_CAPTURE_COLORS = "capture.colors";
 
     /**
      * A capture is performed every tick (millis).

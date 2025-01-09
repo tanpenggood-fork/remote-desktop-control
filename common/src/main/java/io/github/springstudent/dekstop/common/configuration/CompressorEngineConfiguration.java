@@ -5,15 +5,15 @@ import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 
 public class CompressorEngineConfiguration extends Configuration {
-    private static final String PREF_VERSION = "assistant.compression.version";
+    private static final String PREF_VERSION = "compression.version";
 
-    private static final String PREF_METHOD = "assistant.compression.method";
+    private static final String PREF_METHOD = "compression.method";
 
-    private static final String PREF_USE_CACHE = "assistant.compression.useCache";
+    private static final String PREF_USE_CACHE = "compression.useCache";
 
-    private static final String PREF_CACHE_MAX_SIZE = "assistant.compression.cacheMaxSize";
+    private static final String PREF_CACHE_MAX_SIZE = "compression.cacheMaxSize";
 
-    private static final String PREF_CACHE_PURGE_SIZE = "assistant.compression.cachePurgeSize";
+    private static final String PREF_CACHE_PURGE_SIZE = "compression.cachePurgeSize";
 
     private final CompressionMethod method;
 

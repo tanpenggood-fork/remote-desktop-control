@@ -24,9 +24,7 @@ import static java.lang.System.getProperty;
 public final class SystemUtilities {
 
     public static final String JAVA_CLASS_PATH = "java.class.path";
-    public static final String FLATPAK_BROWSER = "/app/bin/dayon.browser";
     private static final String JAVA_VENDOR = "java.vendor";
-    public static final String DEFAULT_TOKEN_SERVER_URL = "https://fensterkitt.ch/dayon/";
 
     private SystemUtilities() {
     }
@@ -36,7 +34,7 @@ public final class SystemUtilities {
     }
 
     private static File getOrCreateTransferDir() throws IOException {
-        final File transferDir = new File(getProperty("dayon.home"), ".transfer");
+        final File transferDir = new File(getProperty("remoteDesktopControl.home"), ".transfer");
         if (transferDir.exists()) {
             cleanDir(transferDir);
         } else if (!transferDir.mkdir()) {
@@ -139,14 +137,6 @@ public final class SystemUtilities {
             return classPath.substring(classPath.indexOf("dayon") + 6, classPath.lastIndexOf("/jar"));
         }
         return "";
-    }
-
-    /**
-     * Computes the absolute path to dayon.browser
-     */
-    public static String getSnapBrowserCommand() {
-        String cp = getProperty(JAVA_CLASS_PATH);
-        return cp.substring(0, cp.indexOf("jar")) + "bin/dayon.browser";
     }
 
     public static boolean isValidPortNumber(String portNumber) {

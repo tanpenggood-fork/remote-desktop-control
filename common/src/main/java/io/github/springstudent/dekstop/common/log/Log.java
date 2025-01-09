@@ -18,7 +18,7 @@ import static java.lang.System.getProperty;
  * later (!)
  */
 public final class Log {
-    private static final boolean DEBUG = System.getProperty("dayon.debug") != null;
+    private static final boolean DEBUG = System.getProperty("remoteDesktopControl.debug") != null;
 
     private static LogAppender out;
 
@@ -26,7 +26,7 @@ public final class Log {
     }
 
     static {
-        String mode = System.getProperty("dayon.log", "console");
+        String mode = System.getProperty("remoteDesktopControl.log", "console");
         out = new ConsoleAppender();
         if (mode.equals("file")) {
             out = createFileAppender();
@@ -45,7 +45,7 @@ public final class Log {
     }
 
     private static File getOrCreateLogFile() throws IOException {
-        final File file = new File(getProperty("dayon.home"), getProperty("dayon.application.name") + ".log");
+        final File file = new File(getProperty("remoteDesktopControl.home"), getProperty("remoteDesktopControl.application.name") + ".log");
         if (file.isDirectory()) {
             throw new IOException(format("Error creating %s", file.getName()));
         }
