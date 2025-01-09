@@ -56,7 +56,7 @@
    mvn clean install
    ```
 
-3. 运行服务端：修改application.properties配置文件数据库信息和netty.server.server和port配置
+3. 运行服务端：将remote-desktop-control.sql导入mysql数据库，修改application.properties配置文件数据库信息和netty.server.server和port配置
    ```bash
    RemoteServer.java
    ```

@@ -56,7 +56,7 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
    mvn clean install
    ```
 
-3. Run the server: Modify the application.properties configuration file with the database information and the
+3. Run the server: Export remote-desktop-control.sql to mysql's databases,Modify the application.properties configuration file with the database information and the
    netty.server.server and port configurations.
    ```bash
    RemoteServer.java
