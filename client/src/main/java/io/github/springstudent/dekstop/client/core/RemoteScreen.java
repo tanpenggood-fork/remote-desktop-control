@@ -270,7 +270,7 @@ public class RemoteScreen extends JFrame {
                 }
                 if (ctrlKeyActivated.get()) {
                     ctrlKeyToggleButton.setSelected(false);
-                    ctrlKeyActivated.set(!windowsKeyActivated.get());
+                    ctrlKeyActivated.set(!ctrlKeyActivated.get());
                 }
             }
         });
