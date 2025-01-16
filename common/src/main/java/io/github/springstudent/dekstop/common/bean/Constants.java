@@ -22,12 +22,12 @@ public class Constants {
     /**
      * Maximum number of tiles; currently a tile is basically a 32x32 byte array (i.e., 1K for gray, 4K for color).
      */
-    public static final int DEFAULT_MAX_SIZE = 32 * 4096;
+    public static final int DEFAULT_MAX_SIZE = 32 * 1024;
 
     /**
      * Number of tiles after a purge.
      */
-    public static final int DEFAULT_PURGE_SIZE = 24 * 4096;
+    public static final int DEFAULT_PURGE_SIZE = 16 * 1024;
 
 
 }
