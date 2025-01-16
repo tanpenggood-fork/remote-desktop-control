@@ -6,7 +6,6 @@ import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
-import io.github.springstudent.dekstop.client.utils.ImageUtilities;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -27,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import static io.github.springstudent.dekstop.client.utils.ImageUtilities.getOrCreateIcon;
 import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.PRESSED;
 import static io.github.springstudent.dekstop.common.command.CmdKeyControl.KeyState.RELEASED;
 import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
@@ -383,6 +383,18 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         new Thread(() -> this.fireCmd(new CmdCompressorConf(compressorEngineConfiguration))).start();
     }
 
+    public Action createResetAction() {
+        final Action configure = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                sendCaptureConfiguration(captureEngineConfiguration);
+            }
+        };
+        configure.putValue(Action.SHORT_DESCRIPTION, "重置屏幕捕获");
+        configure.putValue(Action.SMALL_ICON, getOrCreateIcon("reset_capture.png"));
+        return configure;
+    }
+
     @Override
     public void onMouseMove(final int xs, final int ys) {
         fireCmd(new CmdMouseControl(xs, ys));
@@ -465,7 +477,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             }
         };
         getRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "获取远程粘贴板");
-        getRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("down.png"));
+        getRemoteClipboard.putValue(Action.SMALL_ICON, getOrCreateIcon("down.png"));
         return getRemoteClipboard;
     }
 
@@ -487,7 +499,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
             }
         };
         setRemoteClipboard.putValue(Action.SHORT_DESCRIPTION, "发送本机粘贴板");
-        setRemoteClipboard.putValue(Action.SMALL_ICON, ImageUtilities.getOrCreateIcon("up.png"));
+        setRemoteClipboard.putValue(Action.SMALL_ICON, getOrCreateIcon("up.png"));
         return setRemoteClipboard;
     }
 

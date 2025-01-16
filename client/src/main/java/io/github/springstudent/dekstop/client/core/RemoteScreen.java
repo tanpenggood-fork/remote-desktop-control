@@ -159,6 +159,10 @@ public class RemoteScreen extends JFrame {
             buttonPanel.add(sendClipboardButton);
             menuBar.add(buttonPanel);
         }
+        //重置捕获按钮
+        menuBar.add(Box.createHorizontalStrut(5));
+        JButton resetCaptureButton = createButton(RemoteClient.getRemoteClient().getController().createResetAction());
+        menuBar.add(resetCaptureButton);
         this.setJMenuBar(menuBar);
     }
 
