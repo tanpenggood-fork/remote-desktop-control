@@ -68,7 +68,7 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
    ```
 ### Demo Video
 
-[![Bilibili Video](https://i0.hdslb.com/bfs/archive/6f2f28a5ec06208ef1b7b78d134fa7b970c4e265.jpg@672w_378h_1c.avif)](https://www.bilibili.com/video/BV11qNCeNEoZ/)
+[Bilibili Video](https://www.bilibili.com/video/BV11qNCeNEoZ/)
 
 ### Future Plan
 
