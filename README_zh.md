@@ -67,7 +67,7 @@
    ```
 ### 视频演示
 
-<iframe src="https://www.bilibili.com/video/BV11qNCeNEoZ" width="640" height="360" frameborder="0" allowfullscreen></iframe>
+[![Bilibili Video](https://i0.hdslb.com/bfs/archive/6f2f28a5ec06208ef1b7b78d134fa7b970c4e265.jpg@672w_378h_1c.avif)](https://www.bilibili.com/video/BV11qNCeNEoZ/)
 
 ### 未来规划
 
