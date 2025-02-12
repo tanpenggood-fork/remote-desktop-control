@@ -66,6 +66,9 @@ from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks 
    ```bash
    RemoteClient.java
    ```
+### Demo Video
+
+<iframe src="https://www.bilibili.com/video/BV11qNCeNEoZ" width="640" height="360" frameborder="0" allowfullscreen></iframe>
 
 ### Future Plan
 
