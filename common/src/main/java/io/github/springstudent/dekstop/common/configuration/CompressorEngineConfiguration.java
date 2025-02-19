@@ -25,11 +25,10 @@ public class CompressorEngineConfiguration extends Configuration {
 
     /**
      * Default : takes its values from the current preferences.
-     *
      */
     public CompressorEngineConfiguration() {
         final Preferences prefs = Preferences.getPreferences();
-        this.method = prefs.getEnumPreference(PREF_METHOD, CompressionMethod.ZIP, CompressionMethod.values());
+        this.method = prefs.getEnumPreference(PREF_METHOD, CompressionMethod.ZSTD, CompressionMethod.values());
         this.useCache = prefs.getBooleanPreference(PREF_USE_CACHE, true);
         this.maxSize = prefs.getIntPreference(PREF_CACHE_MAX_SIZE, Constants.DEFAULT_MAX_SIZE);
         this.purgeSize = prefs.getIntPreference(PREF_CACHE_PURGE_SIZE, Constants.DEFAULT_PURGE_SIZE);
