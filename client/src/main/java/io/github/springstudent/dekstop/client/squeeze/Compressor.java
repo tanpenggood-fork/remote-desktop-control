@@ -28,6 +28,11 @@ public final class Compressor {
      */
     private static final Compressor XZ_COMPRESSOR = new Compressor(CompressionMethod.XZ, new NullRunLengthEncoder(), new XzZipper());
 
+    /**
+     * ZSTD
+     */
+    private static final Compressor ZSTD_COMPRESSOR = new Compressor(CompressionMethod.ZSTD, new NullRunLengthEncoder(), new ZstdZipper());
+
     private final CompressionMethod method;
 
     private final RunLengthEncoder rle;
@@ -47,6 +52,8 @@ public final class Compressor {
                 return ZIP_COMPRESSOR;
             case XZ:
                 return XZ_COMPRESSOR;
+            case ZSTD:
+                return ZSTD_COMPRESSOR;
             case NONE:
                 return NULL_COMPRESSOR;
             default:
