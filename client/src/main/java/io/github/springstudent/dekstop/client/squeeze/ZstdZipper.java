@@ -15,7 +15,7 @@ public class ZstdZipper implements Zipper {
     @Override
     public MemByteBuffer zip(MemByteBuffer unzipped) throws IOException {
         try (MemByteBuffer zipped = new MemByteBuffer()) {
-            try (ZstdOutputStream zstdOutputStream = new ZstdOutputStream(zipped, 18)) {
+            try (ZstdOutputStream zstdOutputStream = new ZstdOutputStream(zipped)) {
                 zstdOutputStream.write(unzipped.getInternal(), 0, unzipped.size());
                 zstdOutputStream.flush();
                 return zipped;
