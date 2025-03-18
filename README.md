@@ -6,6 +6,9 @@ This project is a **Java** and **Netty** based remote desktop control applicatio
 connect and control remote devices in real-time. It is based on the client-server-client version of the core code
 from [Dayon GitHub Repository](https://github.com/RetGal/Dayon). Special thanks to the Dayon project author.
 
+If you have a higher frame rate requirement, you can check out my other remote desktop control project based on
+streaming media: https://github.com/SpringStudent/a-da
+
 ### Features
 
 1. **Real-time Remote Desktop Control**

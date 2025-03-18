@@ -6,6 +6,9 @@
 开发的远程桌面控制应用程序。通过该应用程序，用户可以实时连接并控制远程设备。是基于https://github.com/RetGal/Dayon
 核心代码实现的client-server-client版本，在这里再次感谢Dayon作者的项目。
 
+如果对帧率要求比较高，可以查看我的另一个基于流媒体的远程桌面控制项目：
+https://github.com/SpringStudent/a-da
+
 ### 功能
 
 1. **实时远程桌面控制**
@@ -68,6 +71,7 @@
 ### 视频演示
 
 [Bilibili Video](https://www.bilibili.com/video/BV11qNCeNEoZ/)
+
 
 ### 未来规划
 
