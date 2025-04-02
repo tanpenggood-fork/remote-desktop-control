@@ -60,6 +60,9 @@ public class RemoteScreen extends JFrame {
 
     private JMenu selectScreenMenu;
 
+    private JCheckBoxMenuItem fitToScreenItem;
+
+    private JCheckBoxMenuItem keepAspectRatioItem;
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
@@ -109,10 +112,11 @@ public class RemoteScreen extends JFrame {
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         // 适配屏幕菜单项
-        JCheckBoxMenuItem fitToScreenItem = new JCheckBoxMenuItem(new AbstractAction("适配屏幕") {
+        fitToScreenItem = new JCheckBoxMenuItem(new AbstractAction("适配屏幕") {
             @Override
             public void actionPerformed(ActionEvent ev) {
                 fitToScreenActivated.set(!fitToScreenActivated.get());
+                fitToScreenItem.setSelected(fitToScreenActivated.get());
                 if (fitToScreenActivated.get()) {
                     resetCanvas();
                 } else {
@@ -122,10 +126,11 @@ public class RemoteScreen extends JFrame {
             }
         });
         // 保持宽高比菜单项
-        JCheckBoxMenuItem keepAspectRatioItem = new JCheckBoxMenuItem(new AbstractAction("保持宽高比") {
+        keepAspectRatioItem = new JCheckBoxMenuItem(new AbstractAction("保持宽高比") {
             @Override
             public void actionPerformed(ActionEvent ev) {
                 keepAspectRatioActivated.set(!keepAspectRatioActivated.get());
+                keepAspectRatioItem.setSelected(keepAspectRatioActivated.get());
                 resetCanvas();
                 repaint();
             }
@@ -368,9 +373,15 @@ public class RemoteScreen extends JFrame {
         addWindowStateListener(event -> isImmutableWindowsSize.set((event.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED || (event.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH));
     }
 
-    public void disableFitToScreen(){
+    public void disableFitToScreen() {
         fitToScreenActivated.set(false);
+        if (fitToScreenItem != null) {
+            fitToScreenItem.setSelected(false);
+        }
         keepAspectRatioActivated.set(false);
+        if (keepAspectRatioItem != null) {
+            keepAspectRatioItem.setSelected(false);
+        }
     }
 
     public boolean getFitToScreenActivated() {
