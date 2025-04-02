@@ -23,6 +23,9 @@ streaming media: https://github.com/SpringStudent/a-da
 4. **Clipboard Support**
     * No speed limit file transfer.
 
+5. **Multiscreen Support**
+    * Select diff screen realtime.
+
 ## Screenshots
 
 ### Main Control Panel
