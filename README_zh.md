@@ -78,6 +78,7 @@ https://github.com/SpringStudent/a-da
 ### 未来规划
 
 * 基于http的粘贴板传输 (已完成)
+* 多屏幕切换支持 (已完成)
 * 国际化
 
 ### Q&A

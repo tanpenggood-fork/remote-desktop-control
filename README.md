@@ -79,6 +79,7 @@ streaming media: https://github.com/SpringStudent/a-da
 ### Future Plan
 
 * http-based clipboard transmission (finish)
+* multi-screen select support (finish)
 * internationalize  
 
 ### Q&A
