@@ -24,7 +24,7 @@ streaming media: https://github.com/SpringStudent/a-da
     * No speed limit file transfer.
 
 5. **Multiscreen Support**
-    * Select diff screen realtime.
+    * View different screens in real time by selecting them.
 
 ## Screenshots
 
