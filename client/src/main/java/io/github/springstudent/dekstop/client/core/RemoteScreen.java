@@ -179,6 +179,7 @@ public class RemoteScreen extends JFrame {
             screenItem.addActionListener(e -> RemoteClient.getRemoteClient().getController().sendScreenSelect(-1));
             screenGroup.add(screenItem);
             selectScreenMenu.add(screenItem);
+            screenItem.setSelected(true);
         }
         for (int i = 0; i < screenNum; i++) {
             JRadioButtonMenuItem screenItem = new JRadioButtonMenuItem("屏幕 " + (i + 1));
@@ -186,9 +187,6 @@ public class RemoteScreen extends JFrame {
             screenItem.addActionListener(e -> RemoteClient.getRemoteClient().getController().sendScreenSelect(screenIndex));
             screenGroup.add(screenItem);
             selectScreenMenu.add(screenItem);
-            if (i == 0) {
-                screenItem.setSelected(true);
-            }
         }
         return selectScreenMenu;
     }
