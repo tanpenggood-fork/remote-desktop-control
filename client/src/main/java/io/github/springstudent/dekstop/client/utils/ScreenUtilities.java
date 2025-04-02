@@ -26,8 +26,6 @@ public final class ScreenUtilities {
 
     private static byte[] gray;
 
-    private static int screenSelected;
-
     private ScreenUtilities() {
     }
 
@@ -46,7 +44,6 @@ public final class ScreenUtilities {
     }
 
     public static synchronized void setShareAllScreens(int screenIndex) {
-        screenSelected = screenIndex;
         if (screenIndex == -1) {
             sharedScreenSize = COMBINED_SCREEN_SIZE;
         } else {
@@ -74,10 +71,6 @@ public final class ScreenUtilities {
 
     private static int countScreens() {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices().length;
-    }
-
-    public static int getScreenSelected() {
-        return screenSelected;
     }
 
     private static Rectangle getCombinedScreenSize() {
