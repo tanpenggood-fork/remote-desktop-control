@@ -174,13 +174,6 @@ public class RemoteScreen extends JFrame {
     private JMenu createScreenSelectionMenu(int screenNum) {
         this.selectScreenMenu = new JMenu("屏幕切换");
         ButtonGroup screenGroup = new ButtonGroup();
-        if (screenNum > 1) {
-            JRadioButtonMenuItem screenItem = new JRadioButtonMenuItem("所有屏幕");
-            screenItem.addActionListener(e -> RemoteClient.getRemoteClient().getController().sendScreenSelect(-1));
-            screenGroup.add(screenItem);
-            selectScreenMenu.add(screenItem);
-            screenItem.setSelected(true);
-        }
         for (int i = 0; i < screenNum; i++) {
             JRadioButtonMenuItem screenItem = new JRadioButtonMenuItem("屏幕 " + (i + 1));
             final int screenIndex = i;
