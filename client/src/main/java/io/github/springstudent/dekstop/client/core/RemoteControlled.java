@@ -5,6 +5,7 @@ import io.github.springstudent.dekstop.client.capture.CaptureEngine;
 import io.github.springstudent.dekstop.client.capture.RobotCaptureFactory;
 import io.github.springstudent.dekstop.client.compress.CompressorEngine;
 import io.github.springstudent.dekstop.client.compress.CompressorEngineListener;
+import io.github.springstudent.dekstop.client.utils.ScreenUtilities;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.MemByteBuffer;
@@ -114,7 +115,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             super.setClipboard(cmd).whenComplete((o, o2) -> {
                 fireCmd(new CmdResRemoteClipboard());
             });
-        } else if(cmd.getType().equals(CmdType.SelectScreen)){
+        } else if (cmd.getType().equals(CmdType.SelectScreen)) {
             int screenIndex = ((CmdSelectScreen) cmd).getScreenIndex();
             if (captureEngineConfiguration == null) {
                 Log.error("CaptureEngineConfiguration is null");
@@ -163,7 +164,13 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         } else if (message.isWheel()) {
             robot.mouseWheel(message.getRotations());
         }
-        robot.mouseMove(message.getX(), message.getY());
+        int x = message.getX();
+        int y = message.getY();
+        if (!ScreenUtilities.inScreenBounds(x, y)) {
+            x = (x < ScreenUtilities.getSharedScreenSize().x) ? x + ScreenUtilities.getSharedScreenSize().x : x - ScreenUtilities.getSharedScreenSize().x;
+            y = (y < ScreenUtilities.getSharedScreenSize().y) ? y + ScreenUtilities.getSharedScreenSize().y : y - ScreenUtilities.getSharedScreenSize().y;
+        }
+        robot.mouseMove(x, y);
     }
 
     @Override

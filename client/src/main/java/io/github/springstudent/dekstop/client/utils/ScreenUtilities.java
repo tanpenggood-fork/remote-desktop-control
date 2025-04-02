@@ -14,6 +14,7 @@ public final class ScreenUtilities {
 
     private static final int NUMBER_OF_SCREENS;
 
+
     private static final Rectangle COMBINED_SCREEN_SIZE;
 
     private static final Rectangle DEFAULT_SIZE;
@@ -59,6 +60,10 @@ public final class ScreenUtilities {
 
     public static Rectangle getSharedScreenSize() {
         return new Rectangle(sharedScreenSize);
+    }
+
+    public static boolean inScreenBounds(int x, int y) {
+       return sharedScreenSize.contains(x, y);
     }
 
     public static int getNumberOfScreens() {
