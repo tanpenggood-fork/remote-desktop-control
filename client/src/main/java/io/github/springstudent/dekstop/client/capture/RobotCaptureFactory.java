@@ -6,8 +6,8 @@ import java.awt.*;
 
 public class RobotCaptureFactory implements CaptureFactory {
 	private final Dimension captureDimension;
-	public RobotCaptureFactory(boolean allScreens) {
-		ScreenUtilities.setShareAllScreens(allScreens);
+	public RobotCaptureFactory(int screenIndex) {
+		ScreenUtilities.setShareAllScreens(screenIndex);
 		captureDimension = ScreenUtilities.getSharedScreenSize().getSize();
 	}
 

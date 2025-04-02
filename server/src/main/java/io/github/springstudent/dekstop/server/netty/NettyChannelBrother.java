@@ -30,7 +30,7 @@ public class NettyChannelBrother {
         NettyUtils.updateControllDeviceCode(controller, NettyUtils.getDeviceCode(controlled));
         NettyUtils.updateControllFlag(controlled, Constants.CONTROLLED);
         NettyUtils.updateControllDeviceCode(controlled, NettyUtils.getDeviceCode(controller));
-        controller.writeAndFlush(new CmdResCapture(CmdResCapture.START));
+        controller.writeAndFlush(new CmdResCapture(CmdResCapture.START,NettyUtils.getCliInfo(controlled).getScreenNum()));
         controlled.writeAndFlush(new CmdResCapture(CmdResCapture.START_));
     }
 

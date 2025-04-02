@@ -56,6 +56,8 @@ public class RemoteScreen extends JFrame {
 
     private JToggleButton ctrlKeyToggleButton;
 
+    private JMenu optionsMenu;
+
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
@@ -133,8 +135,9 @@ public class RemoteScreen extends JFrame {
         JMenuItem sessionConfigItem = new JMenuItem(RemoteClient.getRemoteClient().getController().createCaptureConfigurationAction());
         // 压缩设置
         JMenuItem compressionConfigItem = new JMenuItem(RemoteClient.getRemoteClient().getController().createCompressionConfigurationAction());
+
         // 菜单分组
-        JMenu optionsMenu = new JMenu("选项");
+        this.optionsMenu = new JMenu("选项");
         optionsMenu.add(fitToScreenItem);
         optionsMenu.add(keepAspectRatioItem);
         optionsMenu.addSeparator();
@@ -164,6 +167,22 @@ public class RemoteScreen extends JFrame {
         JButton resetCaptureButton = createButton(RemoteClient.getRemoteClient().getController().createResetAction());
         menuBar.add(resetCaptureButton);
         this.setJMenuBar(menuBar);
+    }
+
+    private JMenu createScreenSelectionMenu(int screenNum) {
+        JMenu screenSelectionMenu = new JMenu("屏幕切换");
+        ButtonGroup screenGroup = new ButtonGroup();
+        for (int i = 0; i < screenNum; i++) {
+            JRadioButtonMenuItem screenItem = new JRadioButtonMenuItem("屏幕 " + (i + 1));
+            final int screenIndex = i;
+            screenItem.addActionListener(e -> RemoteClient.getRemoteClient().getController().sendScreenSelect(screenIndex));
+            screenGroup.add(screenItem);
+            screenSelectionMenu.add(screenItem);
+            if (i == 0) {
+                screenItem.setSelected(true);
+            }
+        }
+        return screenSelectionMenu;
     }
 
     private Action createSendWindowsKeyAction() {
@@ -372,7 +391,10 @@ public class RemoteScreen extends JFrame {
         return screenPanelWrapper;
     }
 
-    public void launch() {
+    public void launch(int screenNum) {
+        if (screenNum > 1) {
+            this.optionsMenu.add(createScreenSelectionMenu(screenNum));
+        }
         long sessionStartTime = Instant.now().getEpochSecond();
         sessionTimer = new Timer(1000, e -> {
             final long seconds = Instant.now().getEpochSecond() - sessionStartTime;
@@ -382,7 +404,6 @@ public class RemoteScreen extends JFrame {
         sendClipboardButton.setEnabled(true);
         reqClipboardButton.setEnabled(true);
         SwingUtilities.invokeLater(() -> this.setVisible(true));
-
     }
 
     public void close() {

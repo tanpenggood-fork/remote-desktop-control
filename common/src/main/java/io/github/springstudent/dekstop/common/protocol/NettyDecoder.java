@@ -70,6 +70,12 @@ public class NettyDecoder extends ByteToMessageDecoder {
             case ResRemoteClipboard:
                 list.add(new CmdResRemoteClipboard());
                 break;
+            case ReqCliInfo:
+                list.add(CmdReqCliInfo.decode(byteBuf));
+                break;
+            case SelectScreen:
+                list.add(CmdSelectScreen.decode(byteBuf));
+                break;
             default:
                 throw new IllegalArgumentException(format("unknown cmdType=%s", cmdType));
         }

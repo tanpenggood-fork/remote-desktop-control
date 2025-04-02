@@ -123,7 +123,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         if (cmd.getType().equals(CmdType.ResCapture)) {
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START) {
-                RemoteClient.getRemoteClient().getRemoteScreen().launch();
+                RemoteClient.getRemoteClient().getRemoteScreen().launch(cmdResCapture.getScreenNum());
                 start();
             } else if (cmdResCapture.getCode() == CmdResCapture.STOP) {
                 RemoteClient.getRemoteClient().getRemoteScreen().close();
@@ -503,4 +503,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         return setRemoteClipboard;
     }
 
+    public void sendScreenSelect(int screenIndex) {
+        fireCmd(new CmdSelectScreen(screenIndex));
+    }
 }

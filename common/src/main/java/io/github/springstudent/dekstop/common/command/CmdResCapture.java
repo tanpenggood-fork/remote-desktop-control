@@ -27,12 +27,23 @@ public class CmdResCapture extends Cmd {
 
     private byte code;
 
+    private int screenNum = 1;
+
     public CmdResCapture(byte code) {
         this.code = code;
     }
 
+    public CmdResCapture(byte code, int screenNum) {
+        this.code = code;
+        this.screenNum = screenNum;
+    }
+
     public byte getCode() {
         return code;
+    }
+
+    public int getScreenNum() {
+        return screenNum;
     }
 
     @Override
@@ -42,20 +53,21 @@ public class CmdResCapture extends Cmd {
 
     @Override
     public int getWireSize() {
-        return 1;
+        return 1 + 4;
     }
 
     @Override
     public String toString() {
-        return String.format("CmdReqCapture={code:}", code);
+        return String.format("CmdReqCapture={code:%d,screenNum:%d}", code,screenNum);
     }
 
     @Override
     public void encode(ByteBuf out) throws IOException {
         out.writeByte(code);
+        out.writeInt(screenNum);
     }
 
     public static CmdResCapture decode(ByteBuf in) {
-        return new CmdResCapture(in.readByte());
+        return new CmdResCapture(in.readByte(), in.readInt());
     }
 }

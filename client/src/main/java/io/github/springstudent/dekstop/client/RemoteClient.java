@@ -56,6 +56,7 @@ public class RemoteClient extends RemoteFrame {
         this.controlled = new RemoteControlled();
         this.controller = new RemoteController();
         this.remoteScreen = new RemoteScreen();
+        remoteScreen.launch(3);
         this.connectServer();
     }
 

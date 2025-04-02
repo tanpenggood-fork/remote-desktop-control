@@ -26,8 +26,6 @@ public final class ScreenUtilities {
 
     private static byte[] gray;
 
-    private static boolean shareAllScreens;
-
     private ScreenUtilities() {
     }
 
@@ -35,7 +33,7 @@ public final class ScreenUtilities {
         NUMBER_OF_SCREENS = countScreens();
         DEFAULT_SIZE = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
         COMBINED_SCREEN_SIZE = getCombinedScreenSize();
-        sharedScreenSize = shareAllScreens ? COMBINED_SCREEN_SIZE : DEFAULT_SIZE;
+        sharedScreenSize = DEFAULT_SIZE;
         rgb = new int[sharedScreenSize.height * sharedScreenSize.width];
         gray = new byte[rgb.length];
         try {
@@ -45,9 +43,16 @@ public final class ScreenUtilities {
         }
     }
 
-    public static synchronized void setShareAllScreens(boolean doShareAllScreens) {
-        shareAllScreens = doShareAllScreens;
-        sharedScreenSize = doShareAllScreens ? COMBINED_SCREEN_SIZE : DEFAULT_SIZE;
+    public static synchronized void setShareAllScreens(int screenIndex) {
+        if (screenIndex == -1) {
+            sharedScreenSize = COMBINED_SCREEN_SIZE;
+        } else {
+            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            if (screenIndex < 0 || screenIndex >= screenDevices.length) {
+                throw new IllegalArgumentException("Invalid screen index.");
+            }
+            sharedScreenSize = screenDevices[screenIndex].getDefaultConfiguration().getBounds();
+        }
         rgb = new int[sharedScreenSize.height * sharedScreenSize.width];
         gray = new byte[rgb.length];
     }
@@ -108,6 +113,7 @@ public final class ScreenUtilities {
 
     private static final short[] red_levels;
     private static final short[] green_blue_levels;
+
     /*
      Cache the conversion from red/green/blue into gray levels.
      */
@@ -125,6 +131,7 @@ public final class ScreenUtilities {
     }
 
     private static final byte[][] grays;
+
     /*
      Cache the quantization of all the gray levels (256).
      */

@@ -28,7 +28,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
         }
         log.info("server recived cmd ={}", cmd);
         NettyUtils.updateReaderTime(ctx.channel(), System.currentTimeMillis());
-        if (cmd.getType().equals(CmdType.ReqPing)) {
+        if (cmd.getType().equals(CmdType.ReqCliInfo)) {
+            CmdReqCliInfo cmdReqCliInfo = (CmdReqCliInfo) cmd;
+            NettyUtils.updateCliInfo(ctx.channel(), cmdReqCliInfo);
+        } else if (cmd.getType().equals(CmdType.ReqPing)) {
             ctx.writeAndFlush(new CmdResPong()).addListeners((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("send pong error,close Channel");
@@ -68,7 +71,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Cmd> {
             } else {
                 ctx.channel().writeAndFlush(new CmdResCapture(CmdResCapture.STOP_));
             }
-        } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig) || cmd.getType().equals(CmdType.KeyControl) || cmd.getType().equals(CmdType.MouseControl) || cmd.getType().equals(CmdType.ReqRemoteClipboard)) {
+        } else if (cmd.getType().equals(CmdType.CaptureConfig) || cmd.getType().equals(CmdType.CompressorConfig) || cmd.getType().equals(CmdType.KeyControl) || cmd.getType().equals(CmdType.MouseControl) || cmd.getType().equals(CmdType.ReqRemoteClipboard)|| cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.SelectScreen)) {
             if (StrUtil.isNotEmpty(NettyUtils.getControllFlag(ctx.channel()))) {
                 Channel controlledChannel = NettyChannelManager.getControlledChannel(ctx.channel());
                 if (controlledChannel != null) {

@@ -19,4 +19,6 @@ public enum CmdType {
     MouseControl,
     ClipboardText,
     ClipboardTransfer,
+    ReqCliInfo,
+    SelectScreen;
 }

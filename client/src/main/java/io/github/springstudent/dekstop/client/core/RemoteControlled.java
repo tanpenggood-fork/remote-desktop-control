@@ -49,7 +49,7 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         osId = System.getProperty("os.name").toLowerCase().charAt(0);
         captureEngineConfiguration = new CaptureEngineConfiguration();
         compressorEngineConfiguration = new CompressorEngineConfiguration();
-        captureEngine = new CaptureEngine(new RobotCaptureFactory(true));
+        captureEngine = new CaptureEngine(new RobotCaptureFactory(-1));
         captureEngine.configure(captureEngineConfiguration);
         compressorEngine = new CompressorEngine();
         compressorEngine.configure(compressorEngineConfiguration);
@@ -95,9 +95,11 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
                 stop();
             }
         } else if (cmd.getType().equals(CmdType.CaptureConfig)) {
-            captureEngine.reconfigure(((CmdCaptureConf) cmd).getConfiguration());
+            this.captureEngineConfiguration = ((CmdCaptureConf) cmd).getConfiguration();
+            captureEngine.reconfigure(this.captureEngineConfiguration);
         } else if (cmd.getType().equals(CmdType.CompressorConfig)) {
-            compressorEngine.reconfigure(((CmdCompressorConf) cmd).getConfiguration());
+            this.compressorEngineConfiguration = ((CmdCompressorConf) cmd).getConfiguration();
+            compressorEngine.reconfigure(compressorEngineConfiguration);
         } else if (cmd.getType().equals(CmdType.KeyControl)) {
             this.handleMessage((CmdKeyControl) cmd);
         } else if (cmd.getType().equals(CmdType.MouseControl)) {
@@ -112,6 +114,21 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
             super.setClipboard(cmd).whenComplete((o, o2) -> {
                 fireCmd(new CmdResRemoteClipboard());
             });
+        } else if(cmd.getType().equals(CmdType.SelectScreen)){
+            int screenIndex = ((CmdSelectScreen) cmd).getScreenIndex();
+            if (captureEngineConfiguration == null) {
+                Log.error("CaptureEngineConfiguration is null");
+                return;
+            }
+            if (captureEngine != null) {
+                captureEngine.stop();
+            }
+            captureEngine = new CaptureEngine(new RobotCaptureFactory(screenIndex));
+            captureEngine.configure(captureEngineConfiguration);
+            if (compressorEngine != null) {
+                captureEngine.addListener(compressorEngine);
+            }
+            captureEngine.start();
         }
     }
 
