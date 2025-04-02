@@ -58,6 +58,8 @@ public class RemoteScreen extends JFrame {
 
     private JMenu optionsMenu;
 
+    private JMenu selectScreenMenu;
+
     private final AtomicBoolean fitToScreenActivated = new AtomicBoolean(false);
 
     private final AtomicBoolean keepAspectRatioActivated = new AtomicBoolean(false);
@@ -170,19 +172,19 @@ public class RemoteScreen extends JFrame {
     }
 
     private JMenu createScreenSelectionMenu(int screenNum) {
-        JMenu screenSelectionMenu = new JMenu("屏幕切换");
+        this.selectScreenMenu = new JMenu("屏幕切换");
         ButtonGroup screenGroup = new ButtonGroup();
         for (int i = 0; i < screenNum; i++) {
             JRadioButtonMenuItem screenItem = new JRadioButtonMenuItem("屏幕 " + (i + 1));
             final int screenIndex = i;
             screenItem.addActionListener(e -> RemoteClient.getRemoteClient().getController().sendScreenSelect(screenIndex));
             screenGroup.add(screenItem);
-            screenSelectionMenu.add(screenItem);
+            selectScreenMenu.add(screenItem);
             if (i == 0) {
                 screenItem.setSelected(true);
             }
         }
-        return screenSelectionMenu;
+        return selectScreenMenu;
     }
 
     private Action createSendWindowsKeyAction() {
@@ -392,6 +394,9 @@ public class RemoteScreen extends JFrame {
     }
 
     public void launch(int screenNum) {
+        if (selectScreenMenu != null) {
+            optionsMenu.remove(selectScreenMenu);
+        }
         if (screenNum > 1) {
             this.optionsMenu.add(createScreenSelectionMenu(screenNum));
         }
