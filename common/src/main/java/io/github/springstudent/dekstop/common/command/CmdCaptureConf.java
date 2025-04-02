@@ -34,7 +34,7 @@ public class CmdCaptureConf extends Cmd {
 
     @Override
     public String toString() {
-        return String.format("[quantization:%s][tick:%d][colors:%b]", configuration.getCaptureQuantization(), configuration.getCaptureTick(), configuration.isCaptureColors());
+        return String.format("CmdCaptureConf={quantization:%s,tick:%d,colors:%b}", configuration.getCaptureQuantization(), configuration.getCaptureTick(), configuration.isCaptureColors());
     }
 
     @Override

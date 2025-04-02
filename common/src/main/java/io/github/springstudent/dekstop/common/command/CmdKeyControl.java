@@ -73,7 +73,7 @@ public class CmdKeyControl extends Cmd {
     }
 
     public String toString() {
-        return String.format("%s [%d] [%s]", toStringPressed(), keyCode, keyChar);
+        return String.format("CmdKeyControl={pressed:%s,key:%d,keyChar:%s}", toStringPressed(), keyCode, keyChar);
     }
 
     private String toStringPressed() {
