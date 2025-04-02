@@ -382,6 +382,7 @@ public class RemoteScreen extends JFrame {
         if (keepAspectRatioItem != null) {
             keepAspectRatioItem.setSelected(false);
         }
+        resetFactors();
     }
 
     public boolean getFitToScreenActivated() {
