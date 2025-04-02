@@ -30,7 +30,7 @@ public class RemoteChannelHandler extends SimpleChannelInboundHandler<Cmd> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        RemoteClient.getRemoteClient().setControllChannel(ctx.channel());
+        RemoteClient.getRemoteClient().setChannel(ctx.channel());
         ctx.channel().writeAndFlush(new CmdReqCliInfo(ScreenUtilities.getNumberOfScreens(), System.getProperty("os.name")));
     }
 

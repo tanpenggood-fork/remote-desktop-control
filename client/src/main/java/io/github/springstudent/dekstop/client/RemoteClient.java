@@ -140,7 +140,7 @@ public class RemoteClient extends RemoteFrame {
         }
     }
 
-    public void setControllChannel(Channel channel) {
+    public void setChannel(Channel channel) {
         controller.setChannel(channel);
         controlled.setChannel(channel);
     }
@@ -152,7 +152,7 @@ public class RemoteClient extends RemoteFrame {
         controlled.stop();
         updateConnectionStatus(false);
         setControlledAndCloseSessionLabelVisible(false);
-        setControllChannel(null);
+        setChannel(null);
         connectServer();
     }
 
