@@ -6,6 +6,7 @@ import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
+import io.github.springstudent.dekstop.client.utils.ScreenUtilities;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -504,6 +505,9 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     public void sendScreenSelect(int screenIndex) {
+        if ((screenIndex == -1 || ScreenUtilities.getScreenSelected() == -1) && ScreenUtilities.getScreenSelected() != screenIndex) {
+            RemoteClient.getRemoteClient().getRemoteScreen().disableFitToScreen();
+        }
         fireCmd(new CmdSelectScreen(screenIndex));
     }
 }

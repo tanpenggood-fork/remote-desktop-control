@@ -368,6 +368,11 @@ public class RemoteScreen extends JFrame {
         addWindowStateListener(event -> isImmutableWindowsSize.set((event.getNewState() & Frame.ICONIFIED) == Frame.ICONIFIED || (event.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH));
     }
 
+    public void disableFitToScreen(){
+        fitToScreenActivated.set(false);
+        keepAspectRatioActivated.set(false);
+    }
+
     public boolean getFitToScreenActivated() {
         return fitToScreenActivated.get();
     }
@@ -390,10 +395,6 @@ public class RemoteScreen extends JFrame {
 
     public CanvasPannel getScreenPannel() {
         return screenPannel;
-    }
-
-    public JScrollPane getScreenPanelWrapper() {
-        return screenPanelWrapper;
     }
 
     public void launch(int screenNum) {
