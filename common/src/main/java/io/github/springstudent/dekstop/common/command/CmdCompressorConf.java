@@ -48,6 +48,6 @@ public class CmdCompressorConf extends Cmd{
 
 
     public String toString() {
-        return String.format("[configuration:%s]", configuration.getMethod());
+        return String.format("CmdCompressorConf={configuration:%s}", configuration.getMethod());
     }
 }
