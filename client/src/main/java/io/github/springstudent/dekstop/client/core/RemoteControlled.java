@@ -167,8 +167,8 @@ public class RemoteControlled extends RemoteControll implements CompressorEngine
         int x = message.getX();
         int y = message.getY();
         if (!ScreenUtilities.inScreenBounds(x, y)) {
-            x = (x < ScreenUtilities.getSharedScreenSize().x) ? x + ScreenUtilities.getSharedScreenSize().x : x - ScreenUtilities.getSharedScreenSize().x;
-            y = (y < ScreenUtilities.getSharedScreenSize().y) ? y + ScreenUtilities.getSharedScreenSize().y : y - ScreenUtilities.getSharedScreenSize().y;
+            x =  x + ScreenUtilities.getSharedScreenSize().x ;
+            y =  y + ScreenUtilities.getSharedScreenSize().y ;
         }
         robot.mouseMove(x, y);
     }
