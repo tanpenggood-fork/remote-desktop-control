@@ -93,9 +93,7 @@ public final class ScreenUtilities {
 
     private static int[] captureRGB(Rectangle bounds) {
         BufferedImage image = ROBOT.createScreenCapture(bounds);
-        final int imageHeight = min(image.getHeight(), bounds.height);
-        final int imageWidth = min(image.getWidth(), bounds.width);
-        return image.getRGB(0, 0, imageWidth, imageHeight, null, 0, imageWidth);
+        return image.getRGB(0, 0, bounds.width, bounds.height, null, 0, bounds.width);
     }
 
     private static byte[] rgbToGray8(Gray8Bits quantization, int[] rgb) {
