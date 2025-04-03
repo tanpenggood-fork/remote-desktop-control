@@ -166,7 +166,7 @@ public class RemoteClient extends RemoteFrame {
 
 
     public static void main(String[] args) throws Exception {
-        RemoteClient remoteClient = new RemoteClient("192.168.0.109", 54321, "http://192.168.0.109:12345/remote-desktop-control");
+        RemoteClient remoteClient = new RemoteClient("172.16.1.37", 54321, "http://172.16.1.37:12345/remote-desktop-control");
     }
 
 }
