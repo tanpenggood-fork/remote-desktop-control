@@ -49,11 +49,11 @@ public abstract class RemoteControll implements ClipboardOwner {
         } else {
             FileUtil.mkdir(rootDir);
         }
-        this.uploadDir = rootDir + File.separator + "rmdupload";
+        this.uploadDir = rootDir + File.separator + "upload";
         if (!FileUtil.exist(uploadDir)) {
             FileUtil.mkdir(uploadDir);
         }
-        this.downloadDir = rootDir + File.separator + "rmddownload";
+        this.downloadDir = rootDir + File.separator + "download";
         if (!FileUtil.exist(downloadDir)) {
             FileUtil.mkdir(downloadDir);
         }
