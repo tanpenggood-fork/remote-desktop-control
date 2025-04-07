@@ -61,8 +61,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private int prevHeight = -1;
 
-    private int screenSelected = -1;
-
     private BitCounter receivedBitCounter;
 
     private TileCounter receivedTileCounter;
@@ -507,10 +505,6 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
     }
 
     public void sendScreenSelect(int screenIndex) {
-        if ((screenIndex == -1 || screenSelected == -1) && screenSelected != screenIndex) {
-            RemoteClient.getRemoteClient().getRemoteScreen().disableFitToScreen();
-        }
-        this.screenSelected = screenIndex;
         fireCmd(new CmdSelectScreen(screenIndex));
     }
 }

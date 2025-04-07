@@ -45,7 +45,7 @@ public final class ScreenUtilities {
 
     public static synchronized void setShareAllScreens(int screenIndex) {
         if (screenIndex == -1) {
-            sharedScreenSize = COMBINED_SCREEN_SIZE;
+            sharedScreenSize = DEFAULT_SIZE;
         } else {
             GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
             if (screenIndex < 0 || screenIndex >= screenDevices.length) {
