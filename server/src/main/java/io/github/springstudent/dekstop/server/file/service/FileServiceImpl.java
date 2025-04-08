@@ -147,7 +147,7 @@ public class FileServiceImpl implements FileService {
                 URLEncoder.encode(fileInfo.getFileName(), "UTF-8");
             }
             response.setHeader("Content-Disposition", "attachment;filename=" + encodeFileName);
-            int pageSize = 10;
+            int pageSize = 20;
             int pageNo = 1;
             try (OutputStream out = response.getOutputStream()) {
                 while (true) {
