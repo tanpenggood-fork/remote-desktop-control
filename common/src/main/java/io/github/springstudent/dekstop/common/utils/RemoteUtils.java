@@ -35,7 +35,7 @@ public class RemoteUtils {
     /**
      * 默认分块大小2M
      */
-    private static final int CHUNK_SIZE = 1024 * 1024 * 8;
+    private static final int CHUNK_SIZE = 1024 * 1024 * 2;
     /**
      * 快速上传请求uri
      */
