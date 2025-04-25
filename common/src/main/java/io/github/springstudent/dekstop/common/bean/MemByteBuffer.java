@@ -34,8 +34,7 @@ public class MemByteBuffer extends OutputStream {
 	}
 
 	public byte[] getInternal() {
-//		return Arrays.copyOf(buffer, count);
-		return buffer;
+		return Arrays.copyOf(buffer, count);
 	}
 
 	public int mark() {
