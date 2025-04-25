@@ -42,7 +42,7 @@ public class NettyServer implements InitializingBean, DisposableBean {
         ServerBootstrap bootstrap = new ServerBootstrap();
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1, new NamedThreadFactory("netty-boss-", true));
         NioEventLoopGroup workerGroup = new NioEventLoopGroup(10, new NamedThreadFactory("netty-worker-", true));
-        workerGroup.setIoRatio(90);
+        workerGroup.setIoRatio(80);
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, true)
