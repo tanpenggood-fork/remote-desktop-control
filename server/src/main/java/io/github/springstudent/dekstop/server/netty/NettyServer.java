@@ -40,8 +40,9 @@ public class NettyServer implements InitializingBean, DisposableBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         ServerBootstrap bootstrap = new ServerBootstrap();
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new NamedThreadFactory("netty-boss-", true));
-        EventLoopGroup workerGroup = new NioEventLoopGroup(10, new NamedThreadFactory("netty-worker-", true));
+        NioEventLoopGroup bossGroup = new NioEventLoopGroup(1, new NamedThreadFactory("netty-boss-", true));
+        NioEventLoopGroup workerGroup = new NioEventLoopGroup(10, new NamedThreadFactory("netty-worker-", true));
+        workerGroup.setIoRatio(80);
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, true)
