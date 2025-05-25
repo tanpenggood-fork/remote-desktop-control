@@ -76,5 +76,12 @@ public class NettyChannelManager {
         return null;
     }
 
+    public static Map<String, Channel> getDeviceCodeChannelMap() {
+        return deviceCodeChannelMap;
+    }
+
+    public static Map<String, NettyChannelBrother> getChannelBrotherMap() {
+        return channelBrotherMap;
+    }
 
 }
