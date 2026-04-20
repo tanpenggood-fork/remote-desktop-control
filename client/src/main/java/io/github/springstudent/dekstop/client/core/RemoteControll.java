@@ -3,13 +3,14 @@ package io.github.springstudent.dekstop.client.core;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import io.github.springstudent.dekstop.client.RemoteClient;
-import io.github.springstudent.dekstop.client.bean.TransferableFiles;
-import io.github.springstudent.dekstop.client.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.bean.FileInfo;
 import io.github.springstudent.dekstop.common.bean.RemoteClipboard;
+import io.github.springstudent.dekstop.common.bean.TransferableFiles;
 import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.log.Log;
+import io.github.springstudent.dekstop.common.remote.RemoteClpboardListener;
 import io.github.springstudent.dekstop.common.utils.EmptyUtils;
+import io.github.springstudent.dekstop.common.utils.FileUtilities;
 import io.github.springstudent.dekstop.common.utils.NettyUtils;
 import io.github.springstudent.dekstop.common.utils.RemoteUtils;
 import io.netty.channel.Channel;
@@ -32,42 +33,47 @@ import static java.lang.System.getProperty;
  * @author ZhouNing
  * @date 2024/12/10 14:20
  **/
-public abstract class RemoteControll implements ClipboardOwner {
+public abstract class RemoteControll implements ClipboardOwner, RemoteClpboardListener {
 
-    protected Channel channel;
+    private static String rootDir;
 
-    private String rootDir;
+    private static String uploadDir;
 
-    private String uploadDir;
+    private static String downloadDir;
 
-    private String downloadDir;
+    private Channel channel;
 
-    public RemoteControll() {
-        this.rootDir = getProperty("java.io.tmpdir") + File.separator + "remoteDeskopControll";
+    static {
+        rootDir = getProperty("java.io.tmpdir") + File.separator + "remoteDeskopControll";
         if (FileUtil.exist(rootDir)) {
             FileUtil.clean(rootDir);
         } else {
             FileUtil.mkdir(rootDir);
         }
-        this.uploadDir = rootDir + File.separator + "upload";
+        uploadDir = rootDir + File.separator + "upload";
         if (!FileUtil.exist(uploadDir)) {
             FileUtil.mkdir(uploadDir);
         }
-        this.downloadDir = rootDir + File.separator + "download";
+        downloadDir = rootDir + File.separator + "download";
         if (!FileUtil.exist(downloadDir)) {
             FileUtil.mkdir(downloadDir);
         }
+    }
+
+    public RemoteControll() {
+
     }
 
     public Channel getChannel() {
         return channel;
     }
 
+
     public void setChannel(Channel channel) {
         this.channel = channel;
     }
 
-    protected void fireCmd(Cmd cmd) {
+    public void fireCmd(Cmd cmd) {
         if (channel != null && channel.isActive()) {
             channel.writeAndFlush(cmd);
         } else {
@@ -79,7 +85,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         SwingUtilities.invokeLater(() -> RemoteClient.getRemoteClient().showMessageDialog(msg, messageType));
     }
 
-    protected CompletableFuture<Byte> sendClipboard() {
+    public CompletableFuture<Byte> sendClipboard() {
         CompletableFuture result = null;
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         //兼容mac javaFileListFlavor必须放在第一位
@@ -118,7 +124,7 @@ public abstract class RemoteControll implements ClipboardOwner {
                 if (image != null) {
                     File outputFile = null;
                     try {
-                        outputFile = new File(this.rootDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
+                        outputFile = new File(rootDir + File.separator + IdUtil.fastSimpleUUID() + ".png");
                         ImageIO.write(clipboardImage, "png", outputFile);
                         doSendClipboard(Arrays.asList(outputFile));
                         return CmdResRemoteClipboard.OK;
@@ -214,7 +220,7 @@ public abstract class RemoteControll implements ClipboardOwner {
         }
     }
 
-    protected CompletableFuture setClipboard(Cmd cmd) {
+    public CompletableFuture setClipboard(Cmd cmd) {
         return CompletableFuture.runAsync(() -> {
             try {
                 if (cmd.getType().equals(CmdType.ClipboardText)) {
@@ -276,7 +282,6 @@ public abstract class RemoteControll implements ClipboardOwner {
             }
         }
     }
-
 
     public abstract void handleCmd(Cmd cmd);
 

@@ -12,6 +12,7 @@
         <module>common</module>
         <module>server</module>
         <module>client</module>
+        <module>robots</module>
     </modules>
 
     <properties>
@@ -54,7 +55,7 @@
             <dependency>
                 <groupId>io.github.springstudent</groupId>
                 <artifactId>GyJdbc</artifactId>
-                <version>1.4.1.RELEASE</version>
+                <version>1.4.8.RELEASE</version>
             </dependency>
             <!--fast json-->
             <dependency>
@@ -76,6 +77,16 @@
                 <groupId>com.github.luben</groupId>
                 <artifactId>zstd-jni</artifactId>
                 <version>1.5.6-10</version>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna-platform</artifactId>
+                <version>5.12.1</version>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.12.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
