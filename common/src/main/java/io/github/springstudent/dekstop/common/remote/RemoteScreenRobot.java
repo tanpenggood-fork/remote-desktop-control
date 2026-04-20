@@ -1,4 +1,4 @@
-package io.github.springstudent.dekstop.client.core;
+package io.github.springstudent.dekstop.common.remote;
 
 import io.github.springstudent.dekstop.common.command.CmdKeyControl;
 import io.github.springstudent.dekstop.common.command.CmdMouseControl;
@@ -9,7 +9,6 @@ import io.github.springstudent.dekstop.common.command.CmdMouseControl;
  **/
 public interface RemoteScreenRobot {
     void handleMessage(CmdMouseControl message);
-
     void handleMessage(CmdKeyControl message);
 
 }

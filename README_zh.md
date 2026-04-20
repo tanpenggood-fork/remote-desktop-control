@@ -85,5 +85,9 @@ https://github.com/SpringStudent/a-da
 
 * 控制端和被控制端最好以管理员权限运行程序，否则会出现被控制端部分程序无权限操控
 * 在控制端最好切换输入法语言首选项为"英语(美国)"以获得最佳控制体验
-
+* 本项目稳定性经过生产验证，可放心食用
+* windows锁屏场景下无法抓图和模拟键盘鼠标事件，参考下面项目解决
+  https://github.com/SpringStudent/windows-lock-helper
+* robots项目是用于解决windows锁屏场景下无法抓图问题引入的服务，非windows系统无需
+  启动该服务，该服务使用说明请参考windows-lock-helper项目
 

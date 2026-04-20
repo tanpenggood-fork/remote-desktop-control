@@ -6,7 +6,6 @@ import io.github.springstudent.dekstop.client.compress.DeCompressorEngine;
 import io.github.springstudent.dekstop.client.compress.DeCompressorEngineListener;
 import io.github.springstudent.dekstop.client.monitor.*;
 import io.github.springstudent.dekstop.client.utils.DialogFactory;
-import io.github.springstudent.dekstop.client.utils.ScreenUtilities;
 import io.github.springstudent.dekstop.common.bean.CompressionMethod;
 import io.github.springstudent.dekstop.common.bean.Constants;
 import io.github.springstudent.dekstop.common.bean.Gray8Bits;
@@ -14,6 +13,7 @@ import io.github.springstudent.dekstop.common.command.*;
 import io.github.springstudent.dekstop.common.configuration.CaptureEngineConfiguration;
 import io.github.springstudent.dekstop.common.configuration.CompressorEngineConfiguration;
 import io.github.springstudent.dekstop.common.log.Log;
+import io.github.springstudent.dekstop.common.remote.RemoteScreenListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,6 +71,8 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     private CaptureCompressionCounter captureCompressionCounter;
 
+    private CaptureRateCounter captureRateCounter;
+
     private ArrayList<Counter<?>> counters;
 
     public RemoteController() {
@@ -88,7 +90,9 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         mergedTileCounter.start(1000);
         captureCompressionCounter = new CaptureCompressionCounter("captureCompression", "压缩比");
         captureCompressionCounter.start(1000);
-        counters = new ArrayList<>(Arrays.asList(receivedBitCounter, receivedTileCounter, skippedTileCounter, mergedTileCounter, captureCompressionCounter));
+        captureRateCounter = new CaptureRateCounter("captureRate", "每秒画面帧数");
+        captureRateCounter.start(1000);
+        counters = new ArrayList<>(Arrays.asList(captureRateCounter, receivedBitCounter, receivedTileCounter, skippedTileCounter, mergedTileCounter, captureCompressionCounter));
     }
 
     @Override
@@ -106,9 +110,9 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         }
     }
 
-    public void openSession(String deviceCode) {
+    public void openSession(String deviceCode, String password) {
         this.deviceCode = deviceCode;
-        fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.START_CAPTURE));
+        fireCmd(new CmdReqCapture(deviceCode, CmdReqCapture.START_CAPTURE, password));
     }
 
     public void closeSession() {
@@ -121,7 +125,16 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
 
     @Override
     public void handleCmd(Cmd cmd) {
-        if (cmd.getType().equals(CmdType.ResCapture)) {
+        if (cmd.getType().equals(CmdType.ResOpen)) {
+            CmdResOpen cmdResOpen = (CmdResOpen) cmd;
+            if (cmdResOpen.getCode() == CmdResOpen.OFFLINE) {
+                showMessageDialog("被控制端不在线", JOptionPane.ERROR_MESSAGE);
+            } else if (cmdResOpen.getCode() == CmdResOpen.CONTROL) {
+                showMessageDialog("请先断开其他远程控制中的连接", JOptionPane.ERROR_MESSAGE);
+            } else if (cmdResOpen.getCode() == CmdResOpen.OK) {
+                SwingUtilities.invokeLater(() -> RemoteClient.getRemoteClient().openRemoteScreen());
+            }
+        } else if (cmd.getType().equals(CmdType.ResCapture)) {
             CmdResCapture cmdResCapture = (CmdResCapture) cmd;
             if (cmdResCapture.getCode() == CmdResCapture.START) {
                 RemoteClient.getRemoteClient().getRemoteScreen().launch(cmdResCapture.getScreenNum());
@@ -141,12 +154,16 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
                 showMessageDialog("被控制端不在线", JOptionPane.ERROR_MESSAGE);
             } else if (cmdResCapture.getCode() == CmdResCapture.CONTROL) {
                 showMessageDialog("请先断开其他远程控制中的连接", JOptionPane.ERROR_MESSAGE);
+            } else if (cmdResCapture.getCode() == CmdResCapture.PWDERROR) {
+                showMessageDialog("密码错误", JOptionPane.ERROR_MESSAGE);
             }
         } else if (cmd.getType().equals(CmdType.Capture)) {
             deCompressorEngine.handleCapture((CmdCapture) cmd);
             countReceivedBit(cmd);
-        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer) && needSetClipboard(cmd)) {
-            super.setClipboard(cmd).whenComplete((o, o2) -> RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true));
+        } else if (cmd.getType().equals(CmdType.ClipboardText) || cmd.getType().equals(CmdType.ClipboardTransfer)) {
+            if (needSetClipboard(cmd)) {
+                super.setClipboard(cmd).whenComplete((o, o2) -> RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true));
+            }
         } else if (cmd.getType().equals(CmdType.ResRemoteClipboard)) {
             RemoteClient.getRemoteClient().getRemoteScreen().transferClipboarButton(true);
         }
@@ -187,6 +204,7 @@ public class RemoteController extends RemoteControll implements DeCompressorEngi
         receivedTileCounter.add(capture.getDirtyTileCount(), cacheHits);
         skippedTileCounter.add(capture.getSkipped());
         mergedTileCounter.add(capture.getMerged());
+        captureRateCounter.add(1);
         captureCompressionCounter.add(capture.getDirtyTileCount(), compressionRatio);
     }
 

@@ -116,7 +116,7 @@ public class Capture {
 	public void mergeDirtyTiles(Capture[] olders) {
 		int xskipped = 0;
 		int xmerged = 0;
-		for (final Capture older : olders) {
+		for (Capture older : olders) {
 			doMergeDirtyTiles(older);
 			xskipped += older.getSkipped();
 			xmerged += older.getMerged();
@@ -143,11 +143,10 @@ public class Capture {
 			return; // we're keeping the newest (FULL capture anyway)
 		}
 
+		CaptureTile[] olderDirty = older.getDirty();
 		for (int idx = 0; idx < dirty.length; idx++) {
-			final CaptureTile thisTile = dirty[idx];
-			final CaptureTile olderTile = older.getDirty()[idx];
-			if (olderTile != null && thisTile == null) {
-				dirty[idx] = olderTile;
+			if (olderDirty[idx] != null && dirty[idx] == null) {
+				dirty[idx] = olderDirty[idx];
 			}
 		}
 	}
@@ -164,7 +163,7 @@ public class Capture {
 	/**
 	 * Tile-rectangle buffer to screen-rectangle buffer. (monochromatic, 1 byte per pixel)
 	 */
-    private AbstractMap.SimpleEntry<BufferedImage, byte[]> createBufferedMonochromeImage(byte[] prevBuffer, int prevWidth, int prevHeight) {
+	private AbstractMap.SimpleEntry<BufferedImage, byte[]> createBufferedMonochromeImage(byte[] prevBuffer, int prevWidth, int prevHeight) {
 		final int capWidth = captureDimension.width;
 		final int capHeight = captureDimension.height;
 		final byte[] buffer = (prevBuffer != null && capWidth == prevWidth && capHeight == prevHeight && prevBuffer.length == capWidth * capHeight) ? prevBuffer : new byte[capWidth * capHeight];
@@ -176,7 +175,7 @@ public class Capture {
 					final int tileWidth = tile.getWidth();
 					final int srcSize = tileWidth * tile.getHeight();
 					int destPos = tile.getY() * capWidth + tile.getX();
-					for (int srcPos = 0; srcPos < srcSize; srcPos += tileWidth) {
+					for (int srcPos = 0; srcPos + tileWidth <= srcSize; srcPos += tileWidth) {
 						System.arraycopy(src.getInternal(), srcPos, buffer, destPos, tileWidth);
 						destPos += capWidth;
 					}
@@ -191,7 +190,7 @@ public class Capture {
 	/**
 	 * Tile-rectangle buffer to screen-rectangle buffer. (color, 4 bytes per pixel)
 	 */
-    private AbstractMap.SimpleEntry<BufferedImage, byte[]> createBufferedColorImage(byte[] prevBuffer, int prevWidth, int prevHeight) {
+	private AbstractMap.SimpleEntry<BufferedImage, byte[]> createBufferedColorImage(byte[] prevBuffer, int prevWidth, int prevHeight) {
 		final int capWidth = captureDimension.width;
 		final int capHeight = captureDimension.height;
 		final byte[] buffer = (prevBuffer != null && capWidth == prevWidth && capHeight == prevHeight && prevBuffer.length == capWidth * capHeight * 4) ? prevBuffer : new byte[capWidth * capHeight * 4];
@@ -204,7 +203,7 @@ public class Capture {
 					final int tileWidthByteSize = tile.getWidth() * 4;
 					final int srcSize = tileWidthByteSize * tile.getHeight();
 					int destPos = tile.getY() * capWidthByteSize + tile.getX() * 4;
-					for (int srcPos = 0; srcPos < srcSize; srcPos += tileWidthByteSize) {
+					for (int srcPos = 0; srcPos + tileWidthByteSize <= srcSize; srcPos += tileWidthByteSize) {
 						System.arraycopy(src.getInternal(), srcPos, buffer, destPos, tileWidthByteSize);
 						destPos += capWidthByteSize;
 					}

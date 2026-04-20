@@ -76,6 +76,15 @@ public class NettyDecoder extends ByteToMessageDecoder {
             case SelectScreen:
                 list.add(CmdSelectScreen.decode(byteBuf));
                 break;
+            case ChangePwd:
+                list.add(CmdChangePwd.decode(byteBuf));
+                break;
+            case ReqOpen:
+                list.add(CmdReqOpen.decode(byteBuf));
+                break;
+            case ResOpen:
+                list.add(CmdResOpen.decode(byteBuf));
+                break;
             default:
                 throw new IllegalArgumentException(format("unknown cmdType=%s", cmdType));
         }
